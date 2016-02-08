@@ -68,6 +68,8 @@ struct Koma
 struct GridPos
 {
 	GridPos() : x(0), y(0) {}
+	GridPos(int ay, int ax) : x(ax), y(ay) {}
+
 	bool operator==(const GridPos & n) const
 	{
 		return this->x == n.x && this->y == n.y;
@@ -101,23 +103,22 @@ public:
 	bool IsBanjyo(const GridPos& gp) const;
 	bool IsBanjyo(int y, int x) const;
 	bool IsNareru(const GridPos& from, const GridPos& to, ESengo teban) const;
-	void DoMove(bool isNaru);
+	void DecideMove(bool isNaru);
 	void SetSFEN(const string& sfen);
 	void Split1(const string& str, vector<string>& out, const char splitter = ' ') const;
+
+	void SetMoveFromPos(const GridPos& gp) { mMoveFromPos = gp; }
+	const GridPos& GetMoveFromPos() const { return mMoveFromPos; }
+
+	void SetMoveToPos(const GridPos& gp) { mMoveToPos = gp; }
+	const GridPos& GetMoveToPos() const { return mMoveToPos; }
 
 protected:
 
 	// ï∂éöóÒï™äÑ
 	// ãÛï∂éöóÒÇ†ÇËÇÃÇ∆Ç´Ç‡çló∂Ç∑ÇÈÇ±Ç∆ÅB
 
-	vector < vector <Masu> > mGrid;
-	vector <int> mMochigoma[NUM_SEN_GO];
-	ESengo mTeban;
-	vector <Move> mMoves;
 
-	EInputState mInputState = E_IDLE;
-	GridPos mGrabbedPos;
-	GridPos mMoveToPos;
 	EKomaType mHaruKomaType = E_EMPTY;
 
 	const vector <Koma> mKoma =
@@ -138,5 +139,14 @@ protected:
 		{ { "+L", "+l" }, E_EMPTY, E_KYO },
 		{ { "+P", "+p" }, E_EMPTY, E_FU },
 	};
+
+	vector < vector <Masu> > mGrid;
+	vector <int> mMochigoma[NUM_SEN_GO];
+	ESengo mTeban;
+	vector <Move> mMoves;
+
+private:
+	GridPos mMoveFromPos;
+	GridPos mMoveToPos;
 
 };

@@ -67,7 +67,7 @@ bool Board::IsNareru(const GridPos& from, const GridPos& to, ESengo teban) const
 
 
 
-void Board::DoMove(bool isNaru)
+void Board::DecideMove(bool isNaru)
 {
 	// ˆÚ“®æ‚É‹î‚ª‚ ‚éê‡‚Íæ‚é
 	if (mGrid[mMoveToPos.y][mMoveToPos.x].type != E_EMPTY)
@@ -79,24 +79,21 @@ void Board::DoMove(bool isNaru)
 
 	// ˆÚ“®‚·‚é
 	{
-		mGrid[mMoveToPos.y][mMoveToPos.x] = mGrid[mGrabbedPos.y][mGrabbedPos.x];
+		mGrid[mMoveToPos.y][mMoveToPos.x] = mGrid[mMoveFromPos.y][mMoveFromPos.x];
 		if (isNaru)
 		{
 			mGrid[mMoveToPos.y][mMoveToPos.x].type = mKoma[mGrid[mMoveToPos.y][mMoveToPos.x].type].narigoma;
 		}
 
-		mGrid[mGrabbedPos.y][mGrabbedPos.x].type = E_EMPTY;
+		mGrid[mMoveFromPos.y][mMoveFromPos.x].type = E_EMPTY;
 	}
 
-	mInputState = E_IDLE;
 	mTeban = static_cast<ESengo>(1 - mTeban);
 }
 
 
 void Board::SetSFEN(const string& sfen)
 {
-	mInputState = E_IDLE;
-
 	vector <string> splitted;
 	Split1(sfen, splitted);
 

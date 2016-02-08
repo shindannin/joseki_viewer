@@ -32,7 +32,26 @@ BoardSiv3D::BoardSiv3D()
 	mOffsetX = 0;
 	mOffsetY = 0;
 
+	mInputState = E_IDLE;
+
 	SetOffset(100, 0);
+}
+
+int BoardSiv3D::GetGridLeftX() const
+{
+	return (mBoardTextureWidth - mKomaTextureWidth * BOARD_SIZE) / 2 + mOffsetX;
+}
+
+int BoardSiv3D::GetGridTopY() const
+{
+	return (mBoardTextureHeight - mKomaTextureHeight * BOARD_SIZE) / 2 + mOffsetY;
+}
+
+void BoardSiv3D::DrawCursor(const GridPos& gp, const Color& color) const
+{
+	const int leftX = GetGridLeftX();
+	const int topY = GetGridTopY();
+	Rect(leftX + (BOARD_SIZE - 1 - gp.x) * mKomaTextureWidth, topY + gp.y* mKomaTextureHeight, mKomaTextureWidth, mKomaTextureHeight).draw(color);
 }
 
 void BoardSiv3D::Draw()
@@ -40,24 +59,24 @@ void BoardSiv3D::Draw()
 	mTextureBoard.draw(mOffsetX, mOffsetY);
 	mTextureGrid.draw(mOffsetX, mOffsetY);
 
-	const int leftX = (mBoardTextureWidth - mKomaTextureWidth * BOARD_SIZE) / 2 + mOffsetX;
-	const int topY = (mBoardTextureHeight - mKomaTextureHeight * BOARD_SIZE) / 2 + mOffsetY;
+	const int leftX = GetGridLeftX();
+	const int topY = GetGridTopY();
 	const int tebanOffestX = 10;
 
 	//----- カーソル -----
-	// 現在
+	// マウスが指しているマス
 	{
 		GridPos gp;
 		if (GetGridPosFromMouse(gp))
 		{
-			Rect(leftX + (BOARD_SIZE - 1 - gp.x) * mKomaTextureWidth, topY + gp.y* mKomaTextureHeight, mKomaTextureWidth, mKomaTextureHeight).draw({ 128, 0, 0, 127 });
+			DrawCursor(gp, { 128, 0, 0, 127 });
 		}
 	}
 
+	// つかんだ駒のマス
 	if (mInputState == E_GRABBED || mInputState == E_CHOICE)
 	{
-		// つかんだ位置
-		Rect(leftX + (BOARD_SIZE - 1 - mGrabbedPos.x) * mKomaTextureWidth, topY + mGrabbedPos.y* mKomaTextureHeight, mKomaTextureWidth, mKomaTextureHeight).draw({ 255, 0, 0, 127 });
+		DrawCursor(GetMoveFromPos(), { 255, 0, 0, 127 });
 	}
 
 	//----- 持ち駒 -----
@@ -95,7 +114,8 @@ void BoardSiv3D::Draw()
 		{
 			if (mInputState == E_GRABBED || mInputState == E_CHOICE)
 			{
-				if (y == mGrabbedPos.y && x == mGrabbedPos.x)
+				// つかんだ駒は、つかんだ位置には表示しない。
+				if (GridPos(y,x) == GetMoveFromPos())
 				{
 					continue;
 				}
@@ -109,9 +129,11 @@ void BoardSiv3D::Draw()
 	}
 
 	// つかんだ駒
+
+	// TODO : ここ、もうちょっとリファクタリングできそう。
 	if (mInputState == E_GRABBED || mInputState == E_CHOICE)
 	{
-		const Masu& masu = mGrid[mGrabbedPos.y][mGrabbedPos.x];
+		const Masu& masu = mGrid[GetMoveFromPos().y][GetMoveFromPos().x];
 		mTexture[masu.sengo][masu.type].draw(Mouse::Pos().x - mKomaTextureWidth / 2, Mouse::Pos().y - mKomaTextureHeight / 2);
 	}
 	else if (mInputState == E_HARU)
@@ -122,8 +144,8 @@ void BoardSiv3D::Draw()
 	// 成り選択画面
 	if (mInputState == E_CHOICE)
 	{
-		const Masu& grabbed = mGrid[mGrabbedPos.y][mGrabbedPos.x];
-		DrawKoma(grabbed.sengo, grabbed.type, mMoveToPos.y, mMoveToPos.x, 0, true);
+		const Masu& grabbed = mGrid[GetMoveFromPos().y][GetMoveFromPos().x];
+		DrawKoma(grabbed.sengo, grabbed.type, GetMoveToPos().y, GetMoveToPos().x, 0, true);
 	}
 
 }
@@ -178,8 +200,8 @@ void BoardSiv3D::SetOffset(int offsetX, int offsetY)
 
 bool BoardSiv3D::GetGridPosFromMouse(GridPos& gridPos) const
 {
-	const int leftX = (mBoardTextureWidth - mKomaTextureWidth * BOARD_SIZE) / 2 + mOffsetX;
-	const int topY = (mBoardTextureHeight - mKomaTextureHeight * BOARD_SIZE) / 2 + mOffsetY;
+	const int leftX = GetGridLeftX();
+	const int topY = GetGridTopY();
 	const int x = BOARD_SIZE - 1 - (Mouse::Pos().x - leftX) / mKomaTextureWidth;
 	const int y = (Mouse::Pos().y - topY) / mKomaTextureHeight;
 
@@ -188,7 +210,6 @@ bool BoardSiv3D::GetGridPosFromMouse(GridPos& gridPos) const
 		return false;
 	}
 
-	// こまだいチェックはあとで実装！
 	gridPos.x = x;
 	gridPos.y = y;
 	return true;
@@ -196,8 +217,8 @@ bool BoardSiv3D::GetGridPosFromMouse(GridPos& gridPos) const
 
 void BoardSiv3D::GetXYNaruNarazuChoice(int& y, int& x) const
 {
-	const int leftX = (mBoardTextureWidth - mKomaTextureWidth * BOARD_SIZE) / 2 + mOffsetX;
-	const int topY = (mBoardTextureHeight - mKomaTextureHeight * BOARD_SIZE) / 2 + mOffsetY;
+	const int leftX = GetGridLeftX();
+	const int topY = GetGridTopY();
 
 	if (Mouse::Pos().x - leftX >= 0)
 	{
@@ -213,8 +234,8 @@ void BoardSiv3D::GetXYNaruNarazuChoice(int& y, int& x) const
 
 void BoardSiv3D::GetXYNaruNarazuChoice(float& y, float& x) const
 {
-	const int leftX = (mBoardTextureWidth - mKomaTextureWidth * BOARD_SIZE) / 2 + mOffsetX;
-	const int topY = (mBoardTextureHeight - mKomaTextureHeight * BOARD_SIZE) / 2 + mOffsetY;
+	const int leftX = GetGridLeftX();
+	const int topY = GetGridTopY();
 
 	if (Mouse::Pos().x - leftX >= 0)
 	{
@@ -243,7 +264,7 @@ void BoardSiv3D::Update()
 				// 自分の駒だけ！
 				if (mGrid[gp.y][gp.x].sengo == mTeban && mGrid[gp.y][gp.x].type != E_EMPTY)
 				{
-					mGrabbedPos = gp;
+					SetMoveFromPos(gp);
 					mInputState = E_GRABBED;
 				}
 			}
@@ -257,19 +278,23 @@ void BoardSiv3D::Update()
 		case E_GRABBED:
 		{
 			GridPos gp;
-			if (GetGridPosFromMouse(gp) && gp != mGrabbedPos)
+			if (GetGridPosFromMouse(gp) && gp != GetMoveFromPos())
 			{
 				// TODO : 合法手のチェック
+				// 自分の駒のあるところには動かせない。
+
+
 				// 成りのチェック
-				mMoveToPos = gp;
-				if (IsNareru(mGrabbedPos, gp, mTeban))
+				SetMoveToPos(gp);
+				if (IsNareru(GetMoveFromPos(), gp, mTeban))
 				{
 					// 成り選択画面へ
 					mInputState = E_CHOICE;
 				}
 				else
 				{
-					DoMove(false);
+					DecideMove(false);
+					mInputState = E_IDLE;
 				}
 			}
 
@@ -283,11 +308,13 @@ void BoardSiv3D::Update()
 			GridPos gp;
 			if (GetGridPosFromMouse(gp) && mGrid[gp.y][gp.x].type == E_EMPTY)
 			{
-				mMoveToPos = gp;
+				SetMoveToPos(gp);
 
 				mMochigoma[mTeban][mHaruKomaType]--;
-				mGrid[mMoveToPos.y][mMoveToPos.x].sengo = mTeban;
-				mGrid[mMoveToPos.y][mMoveToPos.x].type = mHaruKomaType;
+
+				// TODO:もうちょっとリファクタリング
+				mGrid[GetMoveToPos().y][GetMoveToPos().x].sengo = mTeban;
+				mGrid[GetMoveToPos().y][GetMoveToPos().x].type = mHaruKomaType;
 
 				mInputState = E_IDLE;
 				mTeban = static_cast<ESengo>(1 - mTeban);
@@ -299,7 +326,8 @@ void BoardSiv3D::Update()
 			// 成り成らずを選択する
 			if (IsNaruChoice() || IsNarazuChoice())
 			{
-				DoMove(IsNaruChoice());
+				DecideMove(IsNaruChoice());
+				mInputState = E_IDLE;
 			}
 			break;
 
@@ -412,8 +440,8 @@ bool BoardSiv3D::IsNaruChoice() const
 	float y, x;
 	GetXYNaruNarazuChoice(y, x);
 
-	float cy = mMoveToPos.y;
-	float cx = mMoveToPos.x;
+	float cy = GetMoveToPos().y;
+	float cx = GetMoveToPos().x;
 	NariOffsetY(cy);
 
 	return (INRANGE(x, cx - 0.5f, cx + 0.5f) && INRANGE(y, cy, cy + 1.0f));
@@ -424,8 +452,8 @@ bool BoardSiv3D::IsNarazuChoice() const
 	float y, x;
 	GetXYNaruNarazuChoice(y, x);
 
-	float cy = mMoveToPos.y;
-	float cx = mMoveToPos.x;
+	float cy = GetMoveToPos().y;
+	float cx = GetMoveToPos().x;
 	NariOffsetY(cy);
 
 	return (INRANGE(x, cx + 0.5f, cx + 1.5f) && INRANGE(y, cy, cy + 1.0f));

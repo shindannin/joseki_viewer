@@ -15,6 +15,7 @@ public:
 	virtual void Draw() override;
 	virtual void Update() override;
 
+	void DrawCursor(const GridPos& gp, const Color& color) const;
 	void DrawKoma(const Masu& masu, int y, int x) const;
 	void DrawKoma(int sengo, int type, int y, int x, int maisu = 0, bool isChoice = false) const;
 	void SetOffset(int offsetX, int offsetY);
@@ -26,6 +27,8 @@ public:
 	bool GetHarukomaType(EKomaType& harukomaType) const;
 	bool IsNaruChoice() const;
 	bool IsNarazuChoice() const;
+	int GetGridLeftX() const;
+	int GetGridTopY() const;
 
 private:
 
@@ -59,4 +62,5 @@ private:
 	int mKomaTextureHeight;
 	int mBoardTextureWidth;
 	int mBoardTextureHeight;
+	EInputState mInputState = E_IDLE;
 };
