@@ -166,9 +166,6 @@ using namespace s3d;
 
 void Main()
 {
-//	TCHAR* lpszClientPath[] = { TEXT(""), TEXT("hoge.txt") };
-//	testMain(2, lpszClientPath);
-
 
 
 /* サーバサンプル

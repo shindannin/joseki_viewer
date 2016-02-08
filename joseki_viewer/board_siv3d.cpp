@@ -157,8 +157,8 @@ void BoardSiv3D::DrawKoma(const Masu& masu, int y, int x) const
 
 void BoardSiv3D::DrawKoma(int sengo, int type, int y, int x, int maisu, bool isChoice) const
 {
-	const int leftX = (mBoardTextureWidth - mKomaTextureWidth * BOARD_SIZE) / 2 + mOffsetX;
-	const int topY = (mBoardTextureHeight - mKomaTextureHeight * BOARD_SIZE) / 2 + mOffsetY;
+	const int leftX = GetGridLeftX();
+	const int topY = GetGridTopY();
 
 	if (isChoice)
 	{
@@ -167,15 +167,15 @@ void BoardSiv3D::DrawKoma(int sengo, int type, int y, int x, int maisu, bool isC
 		NariOffsetY(y);
 
 		{
-			const int drawX = leftX + (BOARD_SIZE - 1.5f - x)*mKomaTextureWidth;
-			const int drawY = topY + y*mKomaTextureHeight;
+			const int drawX = static_cast<int>(leftX + (BOARD_SIZE - 1.5f - x)*mKomaTextureWidth);
+			const int drawY = static_cast<int>(topY + y*mKomaTextureHeight);
 			Rect(drawX, drawY, mKomaTextureWidth, mKomaTextureHeight).draw({ 128, 128, 0, 192 });
 			mTexture[sengo][type].draw(drawX, drawY);
 		}
 
 		{
-			const int drawX = leftX + (BOARD_SIZE - 0.5f - x)*mKomaTextureWidth;
-			const int drawY = topY + y*mKomaTextureHeight;
+			const int drawX = static_cast<int>(leftX + (BOARD_SIZE - 0.5f - x)*mKomaTextureWidth);
+			const int drawY = static_cast<int>(topY + y*mKomaTextureHeight);
 			Rect(drawX, drawY, mKomaTextureWidth, mKomaTextureHeight).draw({ 255, 0, 0, 192 });
 			mTexture[sengo][nariType].draw(drawX, drawY);
 		}
@@ -246,7 +246,7 @@ void BoardSiv3D::GetXYNaruNarazuChoice(float& y, float& x) const
 		x = BOARD_SIZE + static_cast<float>(leftX - Mouse::Pos().x) / mKomaTextureWidth;
 	}
 
-	y = (Mouse::Pos().y - topY) / mKomaTextureHeight;
+	y = static_cast<float>( (Mouse::Pos().y - topY) / mKomaTextureHeight );
 }
 
 void BoardSiv3D::Update()
@@ -283,7 +283,10 @@ void BoardSiv3D::Update()
 		case E_GRABBED:
 		{
 			GridPos gp;
-			if (GetGridPosFromMouse(gp) && gp != GetMoveFromPos())
+			if (GetGridPosFromMouse(gp) &&
+				gp != GetMoveFromPos() &&   // 移動先移動元と同じではダメ
+				GetMasu(gp).sengo != GetTeban()
+				)
 			{
 				// TODO : 合法手のチェック
 				// 自分の駒のあるところには動かせない。
@@ -438,8 +441,8 @@ bool BoardSiv3D::IsNaruChoice() const
 	float y, x;
 	GetXYNaruNarazuChoice(y, x);
 
-	float cy = GetMoveToPos().y;
-	float cx = GetMoveToPos().x;
+	float		cy = static_cast<float>(GetMoveToPos().y);
+	const float	cx = static_cast<float>(GetMoveToPos().x);
 	NariOffsetY(cy);
 
 	return (INRANGE(x, cx - 0.5f, cx + 0.5f) && INRANGE(y, cy, cy + 1.0f));
@@ -450,8 +453,8 @@ bool BoardSiv3D::IsNarazuChoice() const
 	float y, x;
 	GetXYNaruNarazuChoice(y, x);
 
-	float cy = GetMoveToPos().y;
-	float cx = GetMoveToPos().x;
+	float		cy = static_cast<float>(GetMoveToPos().y);
+	const float	cx = static_cast<float>(GetMoveToPos().x);
 	NariOffsetY(cy);
 
 	return (INRANGE(x, cx + 0.5f, cx + 1.5f) && INRANGE(y, cy, cy + 1.0f));
