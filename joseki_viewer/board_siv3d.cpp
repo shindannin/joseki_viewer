@@ -1,6 +1,6 @@
 #include "board_siv3d.h"
 
-#include <assert.h>
+#include <cassert>
 
 
 
@@ -85,8 +85,8 @@ void BoardSiv3D::Draw()
 		{
 			for (int k = 0; k < NUM_NARAZU_KOMA_TYPE; ++k)
 			{
-				int numKoma = mMochigoma[s][k];
-				if (mInputState == E_HARU && s == mTeban && mHaruKomaType == k)
+				int numKoma = GetNumMochigoma(s, k);
+				if (mInputState == E_HARU && s == GetTeban() && GetHaruKomaType() == k)
 				{
 					numKoma--;
 				}
@@ -104,7 +104,7 @@ void BoardSiv3D::Draw()
 	//----- 手番 -----
 	{
 		wstring name[2] = { L"先手番", L"後手番" };
-		mFont(name[mTeban]).draw(leftX + tebanOffestX * mKomaTextureWidth, topY);
+		mFont(name[GetTeban()]).draw(leftX + tebanOffestX * mKomaTextureWidth, topY);
 	}
 
 	//----- 盤面 -----
@@ -121,9 +121,9 @@ void BoardSiv3D::Draw()
 				}
 			}
 
-			if (mGrid[y][x].type != E_EMPTY)
+			if (GetMasu(y,x).type != E_EMPTY)
 			{
-				DrawKoma(mGrid[y][x], y, x);
+				DrawKoma(GetMasu(y,x), y, x);
 			}
 		}
 	}
@@ -133,18 +133,18 @@ void BoardSiv3D::Draw()
 	// TODO : ここ、もうちょっとリファクタリングできそう。
 	if (mInputState == E_GRABBED || mInputState == E_CHOICE)
 	{
-		const Masu& masu = mGrid[GetMoveFromPos().y][GetMoveFromPos().x];
+		const Masu& masu = GetMasu(GetMoveFromPos());
 		mTexture[masu.sengo][masu.type].draw(Mouse::Pos().x - mKomaTextureWidth / 2, Mouse::Pos().y - mKomaTextureHeight / 2);
 	}
 	else if (mInputState == E_HARU)
 	{
-		mTexture[mTeban][mHaruKomaType].draw(Mouse::Pos().x - mKomaTextureWidth / 2, Mouse::Pos().y - mKomaTextureHeight / 2);
+		mTexture[GetTeban()][GetHaruKomaType()].draw(Mouse::Pos().x - mKomaTextureWidth / 2, Mouse::Pos().y - mKomaTextureHeight / 2);
 	}
 
 	// 成り選択画面
 	if (mInputState == E_CHOICE)
 	{
-		const Masu& grabbed = mGrid[GetMoveFromPos().y][GetMoveFromPos().x];
+		const Masu& grabbed = GetMasu(GetMoveFromPos());
 		DrawKoma(grabbed.sengo, grabbed.type, GetMoveToPos().y, GetMoveToPos().x, 0, true);
 	}
 
@@ -262,15 +262,20 @@ void BoardSiv3D::Update()
 			if (GetGridPosFromMouse(gp))
 			{
 				// 自分の駒だけ！
-				if (mGrid[gp.y][gp.x].sengo == mTeban && mGrid[gp.y][gp.x].type != E_EMPTY)
+				if (GetMasu(gp).sengo == GetTeban() && GetMasu(gp).type != E_EMPTY)
 				{
 					SetMoveFromPos(gp);
 					mInputState = E_GRABBED;
 				}
 			}
-			else if (GetHarukomaType(mHaruKomaType))
+			else
 			{
-				mInputState = E_HARU;
+				EKomaType k;
+				if (CalcHarukomaType(k))
+				{
+					SetHaruKomaType(k);
+					mInputState = E_HARU;
+				}
 			}
 		}
 		break;
@@ -286,7 +291,7 @@ void BoardSiv3D::Update()
 
 				// 成りのチェック
 				SetMoveToPos(gp);
-				if (IsNareru(GetMoveFromPos(), gp, mTeban))
+				if (IsNareru(GetMoveFromPos(), gp, GetTeban()))
 				{
 					// 成り選択画面へ
 					mInputState = E_CHOICE;
@@ -306,18 +311,11 @@ void BoardSiv3D::Update()
 		case E_HARU:
 		{
 			GridPos gp;
-			if (GetGridPosFromMouse(gp) && mGrid[gp.y][gp.x].type == E_EMPTY)
+			if (GetGridPosFromMouse(gp) && GetMasu(gp).type == E_EMPTY)
 			{
 				SetMoveToPos(gp);
-
-				mMochigoma[mTeban][mHaruKomaType]--;
-
-				// TODO:もうちょっとリファクタリング
-				mGrid[GetMoveToPos().y][GetMoveToPos().x].sengo = mTeban;
-				mGrid[GetMoveToPos().y][GetMoveToPos().x].type = mHaruKomaType;
-
+				DecideMove(false);
 				mInputState = E_IDLE;
-				mTeban = static_cast<ESengo>(1 - mTeban);
 			}
 		}
 		break;
@@ -346,7 +344,9 @@ void BoardSiv3D::Update()
 		case E_GRABBED:
 		case E_CHOICE:
 			mInputState = E_IDLE;
-			mHaruKomaType = E_EMPTY;
+			SetMoveFromPos(GridPos());
+			SetMoveToPos(GridPos());
+			SetHaruKomaType(E_EMPTY);
 			break;
 
 		default:
@@ -413,16 +413,16 @@ void BoardSiv3D::GetMochigomaPos(int s, int k, int& y, int& x) const
 }
 
 
-bool BoardSiv3D::GetHarukomaType(EKomaType& harukomaType) const
+bool BoardSiv3D::CalcHarukomaType(EKomaType& harukomaType) const
 {
 	int y, x;
 	GetXYNaruNarazuChoice(y, x);
 	for (int k = 0; k < NUM_NARAZU_KOMA_TYPE; ++k)
 	{
-		if (mMochigoma[mTeban][k] >= 1)
+		if (GetNumMochigoma(GetTeban(), k) >= 1)
 		{
 			int my, mx;
-			GetMochigomaPos(mTeban, k, my, mx);
+			GetMochigomaPos(GetTeban(), k, my, mx);
 			if (my == y && mx == x)
 			{
 				harukomaType = static_cast<EKomaType>(k);

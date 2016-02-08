@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <cassert>
 
 using namespace std;
 
@@ -107,11 +108,35 @@ public:
 	void SetSFEN(const string& sfen);
 	void Split1(const string& str, vector<string>& out, const char splitter = ' ') const;
 
+	// setter, getter
 	void SetMoveFromPos(const GridPos& gp) { mMoveFromPos = gp; }
 	const GridPos& GetMoveFromPos() const { return mMoveFromPos; }
 
 	void SetMoveToPos(const GridPos& gp) { mMoveToPos = gp; }
 	const GridPos& GetMoveToPos() const { return mMoveToPos; }
+
+	void SetHaruKomaType(EKomaType haruKomaType ) { mHaruKomaType = haruKomaType; }
+	EKomaType GetHaruKomaType() const { return mHaruKomaType; }
+
+	const Masu& GetMasu(const GridPos& gp) const
+	{
+		return GetMasu(gp.y, gp.x);
+	}
+
+	const Masu& GetMasu(int y, int x) const 
+	{
+		assert(INRANGE(y, 0, BOARD_SIZE - 1));
+		assert(INRANGE(x, 0, BOARD_SIZE - 1));
+		return mGrid[y][x];
+	}
+
+	int GetNumMochigoma(int teban, int komaType) const
+	{
+		assert(INRANGE(teban, 0, NUM_SEN_GO-1) );
+		assert(INRANGE(komaType, 0, NUM_NARAZU_KOMA_TYPE-1) );
+		return mMochigoma[teban][komaType];
+	}
+	ESengo GetTeban() const { return mTeban; }
 
 protected:
 
@@ -119,7 +144,6 @@ protected:
 	// ãÛï∂éöóÒÇ†ÇËÇÃÇ∆Ç´Ç‡çló∂Ç∑ÇÈÇ±Ç∆ÅB
 
 
-	EKomaType mHaruKomaType = E_EMPTY;
 
 	const vector <Koma> mKoma =
 	{
@@ -140,13 +164,14 @@ protected:
 		{ { "+P", "+p" }, E_EMPTY, E_FU },
 	};
 
-	vector < vector <Masu> > mGrid;
-	vector <int> mMochigoma[NUM_SEN_GO];
-	ESengo mTeban;
-	vector <Move> mMoves;
 
 private:
 	GridPos mMoveFromPos;
 	GridPos mMoveToPos;
+	EKomaType mHaruKomaType = E_EMPTY;
 
+	vector < vector <Masu> > mGrid;
+	vector <int> mMochigoma[NUM_SEN_GO];
+	ESengo mTeban;
+	vector <Move> mMoves;
 };

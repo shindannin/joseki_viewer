@@ -1,4 +1,4 @@
-#include  <assert.h>
+#include  <cassert>
 
 #include "board.h"
 
@@ -64,31 +64,47 @@ bool Board::IsNareru(const GridPos& from, const GridPos& to, ESengo teban) const
 	return true;
 }
 
-
-
-
 void Board::DecideMove(bool isNaru)
 {
-	// ˆÚ“®æ‚É‹î‚ª‚ ‚éê‡‚Íæ‚é
-	if (mGrid[mMoveToPos.y][mMoveToPos.x].type != E_EMPTY)
+	if (mHaruKomaType != E_EMPTY)
 	{
-		const int s = 1 - mGrid[mMoveToPos.y][mMoveToPos.x].sengo;
-		const int k = mKoma[mGrid[mMoveToPos.y][mMoveToPos.x].type].motogoma;
-		mMochigoma[s][k]++;
+		// ‹î‚ğ‚Í‚é
+		mMochigoma[mTeban][GetHaruKomaType()]--;
+		mGrid[mMoveToPos.y][mMoveToPos.x].sengo = mTeban;
+		mGrid[mMoveToPos.y][mMoveToPos.x].type = mHaruKomaType;
 	}
-
-	// ˆÚ“®‚·‚é
+	else
 	{
-		mGrid[mMoveToPos.y][mMoveToPos.x] = mGrid[mMoveFromPos.y][mMoveFromPos.x];
-		if (isNaru)
+		// ˆÚ“®æ‚É‹î‚ª‚ ‚éê‡‚Íæ‚é
+		if (mGrid[mMoveToPos.y][mMoveToPos.x].type != E_EMPTY)
 		{
-			mGrid[mMoveToPos.y][mMoveToPos.x].type = mKoma[mGrid[mMoveToPos.y][mMoveToPos.x].type].narigoma;
+			const int s = 1 - mGrid[mMoveToPos.y][mMoveToPos.x].sengo;
+			const int k = mKoma[mGrid[mMoveToPos.y][mMoveToPos.x].type].motogoma;
+			mMochigoma[s][k]++;
 		}
 
-		mGrid[mMoveFromPos.y][mMoveFromPos.x].type = E_EMPTY;
+		// ˆÚ“®‚·‚é
+		{
+			mGrid[mMoveToPos.y][mMoveToPos.x] = mGrid[mMoveFromPos.y][mMoveFromPos.x];
+			if (isNaru)
+			{
+				mGrid[mMoveToPos.y][mMoveToPos.x].type = mKoma[mGrid[mMoveToPos.y][mMoveToPos.x].type].narigoma;
+			}
+
+			mGrid[mMoveFromPos.y][mMoveFromPos.x].type = E_EMPTY;
+		}
 	}
 
-	mTeban = static_cast<ESengo>(1 - mTeban);
+
+	// è”Ô‚ÌŒğ‘ã
+	if (mTeban == E_SEN)
+	{
+		mTeban = E_GO;
+	}
+	else
+	{
+		mTeban = E_SEN;
+	}
 }
 
 

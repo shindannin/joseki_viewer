@@ -24,7 +24,7 @@ public:
 	void GetXYNaruNarazuChoice(float& y, float& x) const;
 	template <class T> void NariOffsetY(T& y) const;
 	void GetMochigomaPos(int s, int k, int& y, int& x) const;
-	bool GetHarukomaType(EKomaType& harukomaType) const;
+	bool CalcHarukomaType(EKomaType& harukomaType) const;
 	bool IsNaruChoice() const;
 	bool IsNarazuChoice() const;
 	int GetGridLeftX() const;

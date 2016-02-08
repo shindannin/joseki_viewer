@@ -38,7 +38,7 @@
 
 #include <vector>
 #include <string>
-#include <assert.h>
+#include <cassert>
 #include <ctype.h>
 
 #include <windows.h> 
