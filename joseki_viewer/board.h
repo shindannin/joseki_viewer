@@ -113,11 +113,12 @@ class Board
 public:
 	Board();
 	virtual ~Board() {};
-	virtual void Draw() = 0;
-	virtual void Update() = 0;
+	virtual void Draw() {};
+	virtual void Update() {};
 
 	void DecideMove(bool isNaru);
 	void SetSFEN(const string& sfen);
+	string GetSFEN() const;
 	void InitNextMove() { mNextMove.Init(); }
 	void Split1(const string& str, vector<string>& out, const char splitter = ' ') const;
 

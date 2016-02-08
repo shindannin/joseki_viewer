@@ -116,8 +116,7 @@ void Board::SetSFEN(const string& sfen)
 	vector <string> splitted;
 	Split1(sfen, splitted);
 
-	// 盤面の設定
-
+	// 盤面
 	{
 		const string& banmen = splitted[0];
 
@@ -162,7 +161,7 @@ void Board::SetSFEN(const string& sfen)
 		}
 	}
 
-	// 手番の設定
+	// 手番
 	// 次の手番については、先手番ならb、後手番ならwと表記します。（Black、Whiteの頭文字）
 	mTeban = E_SEN;
 	if (splitted[1] == "b")
@@ -178,7 +177,7 @@ void Board::SetSFEN(const string& sfen)
 		assert(0);
 	}
 
-	// 持ち駒の設定
+	// 持ち駒
 	{
 		mMochigoma = vector < vector <int> > (NUM_SEN_GO, vector <int> (NUM_NARAZU_KOMA_TYPE) );
 
@@ -227,6 +226,103 @@ void Board::SetSFEN(const string& sfen)
 
 	// 履歴のクリア
 	mMoves.clear();
+}
+
+string Board::GetSFEN() const
+{
+	string ret;
+
+	// "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
+
+	// 盤面
+	for (int y = 0; y < BOARD_SIZE; ++y)
+	{
+		int numEmpties = 0;
+
+		for (int x = 0; x < BOARD_SIZE; ++x)
+		{
+			const Masu& masu = mGrid[y][BOARD_SIZE-1-x];
+			if (masu.type == E_EMPTY)
+			{
+				numEmpties++;
+			}
+			else
+			{
+				if (numEmpties >= 1)
+				{
+					ret += string(1, static_cast<char>('0' + numEmpties));
+					numEmpties = 0;
+				}
+
+				ret += mKoma[masu.type].notation[masu.sengo];
+			}
+		}
+
+		if (numEmpties >= 1)
+		{
+			ret += string(1, static_cast<char>('0' + numEmpties));
+		}
+
+		if (y < BOARD_SIZE - 1)
+		{
+			ret += "/";
+		}
+	}
+
+	ret += " ";
+
+	// 手番
+	if (mTeban==E_SEN)
+	{
+		ret += "b";
+	}
+	else if (mTeban == E_GO)
+	{
+		ret += "w";
+	}
+	else
+	{
+		assert(0);
+	}
+
+	ret += " ";
+
+	// 持ち駒
+	{
+		string str;
+
+		// 持ち駒については、先手後手のそれぞれの持ち駒の種類と、その枚数を表記します。
+		// 枚数は、２枚以上であれば、駒の種類の前にその数字を表記します。
+		// 先手側が銀１枚歩２枚、後手側が角１枚歩３枚であれば、S2Pb3pと表記されます。
+		// どちらも持ち駒がないときは - （半角ハイフン）を表記します。
+
+		for (int s = 0; s < NUM_SEN_GO; ++s)
+		{
+			for (int k = 0; k < NUM_NARAZU_KOMA_TYPE; ++k)
+			{
+				if (mMochigoma[s][k] >= 2)
+				{
+					str += string(1, static_cast<char>('0' + mMochigoma[s][k]));
+				}
+
+				if (mMochigoma[s][k] >= 1)
+				{
+					str += mKoma[k].notation[s];
+				}
+			}
+		}
+
+		if (str == "")
+		{
+			str = "-";
+		}
+
+		ret += str;
+	}
+
+	ret += " 1";
+
+	return ret;
 }
 
 void Board::Split1(const string& str, vector<string>& out, const char splitter) const
