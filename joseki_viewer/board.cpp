@@ -66,32 +66,32 @@ bool Board::IsNareru(const GridPos& from, const GridPos& to, ESengo teban) const
 
 void Board::DecideMove(bool isNaru)
 {
-	if (mHaruKomaType != E_EMPTY)
+	if (mNextMove.haruKomaType != E_EMPTY)
 	{
 		// ãÓÇÇÕÇÈ
 		mMochigoma[mTeban][GetHaruKomaType()]--;
-		mGrid[mMoveToPos.y][mMoveToPos.x].sengo = mTeban;
-		mGrid[mMoveToPos.y][mMoveToPos.x].type = mHaruKomaType;
+		mGrid[mNextMove.to.y][mNextMove.to.x].sengo = mTeban;
+		mGrid[mNextMove.to.y][mNextMove.to.x].type = mNextMove.haruKomaType;
 	}
 	else
 	{
 		// à⁄ìÆêÊÇ…ãÓÇ™Ç†ÇÈèÍçáÇÕéÊÇÈ
-		if (mGrid[mMoveToPos.y][mMoveToPos.x].type != E_EMPTY)
+		if (mGrid[mNextMove.to.y][mNextMove.to.x].type != E_EMPTY)
 		{
-			const int s = 1 - mGrid[mMoveToPos.y][mMoveToPos.x].sengo;
-			const int k = mKoma[mGrid[mMoveToPos.y][mMoveToPos.x].type].motogoma;
+			const int s = 1 - mGrid[mNextMove.to.y][mNextMove.to.x].sengo;
+			const int k = mKoma[mGrid[mNextMove.to.y][mNextMove.to.x].type].motogoma;
 			mMochigoma[s][k]++;
 		}
 
 		// à⁄ìÆÇ∑ÇÈ
 		{
-			mGrid[mMoveToPos.y][mMoveToPos.x] = mGrid[mMoveFromPos.y][mMoveFromPos.x];
+			mGrid[mNextMove.to.y][mNextMove.to.x] = mGrid[mNextMove.from.y][mNextMove.from.x];
 			if (isNaru)
 			{
-				mGrid[mMoveToPos.y][mMoveToPos.x].type = mKoma[mGrid[mMoveToPos.y][mMoveToPos.x].type].narigoma;
+				mGrid[mNextMove.to.y][mNextMove.to.x].type = mKoma[mGrid[mNextMove.to.y][mNextMove.to.x].type].narigoma;
 			}
 
-			mGrid[mMoveFromPos.y][mMoveFromPos.x].type = E_EMPTY;
+			mGrid[mNextMove.from.y][mNextMove.from.x].type = E_EMPTY;
 		}
 	}
 
@@ -105,6 +105,9 @@ void Board::DecideMove(bool isNaru)
 	{
 		mTeban = E_SEN;
 	}
+
+	mMoves.push_back(mNextMove);
+	mNextMove.Init();
 }
 
 
@@ -177,10 +180,7 @@ void Board::SetSFEN(const string& sfen)
 
 	// éùÇøãÓÇÃê›íË
 	{
-		for (int s = 0; s < NUM_SEN_GO; ++s)
-		{
-			mMochigoma[s] = vector <int>(NUM_NARAZU_KOMA_TYPE);
-		}
+		mMochigoma = vector < vector <int> > (NUM_SEN_GO, vector <int> (NUM_NARAZU_KOMA_TYPE) );
 
 		const string& line = splitted[2];
 
@@ -224,6 +224,9 @@ void Board::SetSFEN(const string& sfen)
 			}
 		}
 	}
+
+	// óöóÇÃÉNÉäÉA
+	mMoves.clear();
 }
 
 void Board::Split1(const string& str, vector<string>& out, const char splitter) const

@@ -89,6 +89,22 @@ struct Move
 	GridPos from;
 	GridPos to;
 	bool naru;
+	EKomaType haruKomaType;
+
+	Move()
+	{
+		Init();
+	}
+
+	void Init()
+	{
+		from.y = 0;
+		from.x = 0;
+		to.y = 0;
+		to.x = 0;
+		naru = false;
+		haruKomaType = E_EMPTY;
+	}
 };
 
 
@@ -100,23 +116,20 @@ public:
 	virtual void Draw() = 0;
 	virtual void Update() = 0;
 
-	bool IsTekijin(int y, ESengo teban) const;
-	bool IsBanjyo(const GridPos& gp) const;
-	bool IsBanjyo(int y, int x) const;
-	bool IsNareru(const GridPos& from, const GridPos& to, ESengo teban) const;
 	void DecideMove(bool isNaru);
 	void SetSFEN(const string& sfen);
+	void InitNextMove() { mNextMove.Init(); }
 	void Split1(const string& str, vector<string>& out, const char splitter = ' ') const;
 
 	// setter, getter
-	void SetMoveFromPos(const GridPos& gp) { mMoveFromPos = gp; }
-	const GridPos& GetMoveFromPos() const { return mMoveFromPos; }
+	void SetMoveFromPos(const GridPos& gp) { mNextMove.from = gp; }
+	const GridPos& GetMoveFromPos() const { return mNextMove.from; }
 
-	void SetMoveToPos(const GridPos& gp) { mMoveToPos = gp; }
-	const GridPos& GetMoveToPos() const { return mMoveToPos; }
+	void SetMoveToPos(const GridPos& gp) { mNextMove.to = gp; }
+	const GridPos& GetMoveToPos() const { return mNextMove.to; }
 
-	void SetHaruKomaType(EKomaType haruKomaType ) { mHaruKomaType = haruKomaType; }
-	EKomaType GetHaruKomaType() const { return mHaruKomaType; }
+	void SetHaruKomaType(EKomaType haruKomaType ) { mNextMove.haruKomaType = haruKomaType; }
+	EKomaType GetHaruKomaType() const { return mNextMove.haruKomaType; }
 
 	const Masu& GetMasu(const GridPos& gp) const
 	{
@@ -138,12 +151,9 @@ public:
 	}
 	ESengo GetTeban() const { return mTeban; }
 
+
 protected:
-
-	// ï∂éöóÒï™äÑ
-	// ãÛï∂éöóÒÇ†ÇËÇÃÇ∆Ç´Ç‡çló∂Ç∑ÇÈÇ±Ç∆ÅB
-
-
+	bool IsNareru(const GridPos& from, const GridPos& to, ESengo teban) const;
 
 	const vector <Koma> mKoma =
 	{
@@ -164,14 +174,15 @@ protected:
 		{ { "+P", "+p" }, E_EMPTY, E_FU },
 	};
 
-
 private:
-	GridPos mMoveFromPos;
-	GridPos mMoveToPos;
-	EKomaType mHaruKomaType = E_EMPTY;
+	bool IsTekijin(int y, ESengo teban) const;
+	bool IsBanjyo(const GridPos& gp) const;
+	bool IsBanjyo(int y, int x) const;
 
 	vector < vector <Masu> > mGrid;
-	vector <int> mMochigoma[NUM_SEN_GO];
+	vector < vector <int> > mMochigoma;
 	ESengo mTeban;
+
+	Move mNextMove;
 	vector <Move> mMoves;
 };

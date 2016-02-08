@@ -343,10 +343,8 @@ void BoardSiv3D::Update()
 		case E_HARU:
 		case E_GRABBED:
 		case E_CHOICE:
+			InitNextMove();
 			mInputState = E_IDLE;
-			SetMoveFromPos(GridPos());
-			SetMoveToPos(GridPos());
-			SetHaruKomaType(E_EMPTY);
 			break;
 
 		default:
