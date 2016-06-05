@@ -46,7 +46,8 @@ namespace s3d
 				si.wShowWindow = SW_HIDE;
 			}
 
-			m_connected = !!::CreateProcessW(path.c_str(), L"", nullptr, nullptr, TRUE, CREATE_NEW_CONSOLE, nullptr, L"C:/Users/NobuMiu/Documents/shogi/apery_wcsc26/bin/", &si, &m_pi);
+			FilePath currentPath = path.substr(0, path.lastIndexOf('/')+1);
+			m_connected = !!::CreateProcessW(path.c_str(), L"", nullptr, nullptr, TRUE, CREATE_NEW_CONSOLE, nullptr, currentPath.c_str(), &si, &m_pi);
 		}
 
 		~Server()
