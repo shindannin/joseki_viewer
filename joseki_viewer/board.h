@@ -15,6 +15,8 @@ enum ESengo
 	E_SEN,
 	E_GO,
 	NUM_SEN_GO,
+
+	E_NO_SENGO = -1,
 };
 
 enum EKomaType
@@ -50,7 +52,7 @@ enum EInputState
 
 struct Masu
 {
-	Masu() : type(E_EMPTY), sengo(E_SEN) {}
+	Masu() : type(E_EMPTY), sengo(E_NO_SENGO) {}
 	EKomaType type;
 	ESengo sengo;
 };
@@ -115,6 +117,7 @@ public:
 	virtual ~Board() {};
 	virtual void Draw() {};
 	virtual void Update() {};
+	virtual int CalcBestMoveAndScore() { return 0; }
 
 	void DecideMove(bool isNaru);
 	void SetSFEN(const string& sfen);
@@ -152,6 +155,7 @@ public:
 	}
 	ESengo GetTeban() const { return mTeban; }
 
+	int mScore;
 
 protected:
 	bool IsNareru(const GridPos& from, const GridPos& to, ESengo teban) const;

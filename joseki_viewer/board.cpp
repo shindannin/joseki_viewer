@@ -17,6 +17,7 @@
 Board::Board()
 {
 	SetSFEN("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
+	mScore = 0;
 }
 
 bool Board::IsTekijin(int y, ESengo teban) const
@@ -92,6 +93,7 @@ void Board::DecideMove(bool isNaru)
 			}
 
 			mGrid[mNextMove.from.y][mNextMove.from.x].type = E_EMPTY;
+			mGrid[mNextMove.from.y][mNextMove.from.x].sengo = E_NO_SENGO;
 		}
 	}
 
@@ -108,6 +110,7 @@ void Board::DecideMove(bool isNaru)
 
 	mMoves.push_back(mNextMove);
 	mNextMove.Init();
+//	mScore = GetScore();
 }
 
 

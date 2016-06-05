@@ -1,7 +1,9 @@
 #include "board_siv3d.h"
 
-#include <cassert>
 
+#include <cassert>
+#include <algorithm>
+#include <numeric>
 
 
 
@@ -34,8 +36,34 @@ BoardSiv3D::BoardSiv3D()
 
 	mInputState = E_IDLE;
 
-	SetOffset(100, 0);
+	SetOffset(100, 200);
+
+	mServer = nullptr;
+
+	///////////////////////////////////
+	//
+	// クライアントを起動
+	//
+	const auto path = Dialog::GetOpen({ { L"実行ファイル (*.exe)", L"*.exe" } });
+
+	if (path)
+	{
+		mServer = new Server(path.value(), false);
+	}
 }
+
+BoardSiv3D::~BoardSiv3D()
+{
+	if (mServer != nullptr)
+	{
+		mServer->write("quit\n");
+
+		delete mServer;
+		mServer = nullptr;
+	}
+
+}
+
 
 int BoardSiv3D::GetGridLeftX() const
 {
@@ -105,6 +133,8 @@ void BoardSiv3D::Draw()
 	{
 		wstring name[2] = { L"先手番", L"後手番" };
 		mFont(name[GetTeban()]).draw(leftX + tebanOffestX * mKomaTextureWidth, topY);
+
+		mFont(mScore).draw(leftX + tebanOffestX * mKomaTextureWidth, topY + 30);
 	}
 
 	//----- 盤面 -----
@@ -249,9 +279,100 @@ void BoardSiv3D::GetXYNaruNarazuChoice(float& y, float& x) const
 	y = static_cast<float>( (Mouse::Pos().y - topY) / mKomaTextureHeight );
 }
 
+void BoardSiv3D::InitServer()
+{
+	if (mServer)
+	{
+		if (mServer->write("usi\n"))
+		{
+			std::string readStr;
+
+			System::Sleep(500);
+			if (mServer->read(readStr))
+			{
+				const vector <string> options = {
+					"isready\n",
+				};
+
+				string allOptions = accumulate(options.begin(), options.end(), string() );
+
+				if (mServer->write(allOptions))
+				{
+					System::Sleep(500);
+					if (mServer->read(readStr))
+					{
+						std::wstring wsTmp(readStr.begin(), readStr.end());
+						Print(wsTmp);
+						if (mServer->write("usinewgame\n"))
+						{
+						}
+					}
+				}
+			}
+		}
+	}
+
+}
+
+int BoardSiv3D::CalcBestMoveAndScore()
+{
+	string writeStr;
+	writeStr += "position sfen " + GetSFEN()+ "\n";
+
+	{
+		std::wstring wsTmp(writeStr.begin(), writeStr.end());
+		Print(wsTmp);
+	}
+
+	if (mServer->write(writeStr))
+	{
+		writeStr = "go btime 0 wtime 0 byoyomi 4000\n";
+		mServer->write(writeStr);
+			
+		System::Sleep(4000);
+
+		
+		string readStr;
+		if (mServer->read(readStr))
+		{
+			vector <string> vs;
+			Split1(readStr, vs, '\n');
+
+			for (int i=SZ(vs)-1; i>=0; --i)
+			{
+				const string& lastInfo = vs[i];
+				vector <string> tmp;
+				Split1(lastInfo, tmp, ' ');
+				for (int i = 0; i < SZ(tmp); ++i)
+				{
+					if (tmp[i] == "score")
+					{
+						mScore = stoi(tmp[i + 2]);
+						std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
+						Print(wsTmp);
+						goto NUKE;
+					}
+				}
+			}
+		}
+
+	NUKE:;
+	}
+
+	return 0;
+}
+
 void BoardSiv3D::Update()
 {
-	if (Input::MouseL.clicked)
+	if (Input::KeyA.released)
+	{
+		if(mServer==nullptr)
+		{
+			InitServer();
+		}
+		CalcBestMoveAndScore();
+	}
+	else if (Input::MouseL.clicked)
 	{
 		switch (mInputState)
 		{
@@ -285,11 +406,11 @@ void BoardSiv3D::Update()
 			GridPos gp;
 			if (GetGridPosFromMouse(gp) &&
 				gp != GetMoveFromPos() &&   // 移動先移動元と同じではダメ
-				GetMasu(gp).sengo != GetTeban()
+				GetMasu(gp).sengo != GetTeban()	// 自分の駒のあるところには動かせない。
 				)
 			{
 				// TODO : 合法手のチェック
-				// 自分の駒のあるところには動かせない。
+				
 
 
 				// 成りのチェック
