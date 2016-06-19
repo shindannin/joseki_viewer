@@ -46,7 +46,7 @@ enum EInputState
 {
 	E_IDLE,
 	E_GRABBED,
-	E_HARU,
+	E_UTSU,
 	E_CHOICE,
 };
 
@@ -73,6 +73,21 @@ struct GridPos
 	GridPos() : x(0), y(0) {}
 	GridPos(int ay, int ax) : x(ax), y(ay) {}
 
+	void Set(const string& s) 
+	{
+		// http://www.geocities.jp/shogidokoro/usi.html より
+		// 次に、指し手の表記について解説します。
+		// 筋に関しては１から９までの数字で表記され、
+		// 段に関してはaからiまでのアルファベット（１段目がa、２段目がb、・・・、９段目がi）というように表記されます。
+		// 位置の表記は、この２つを組み合わせます。５一なら5a、１九なら1iとなります。
+		assert(SZ(s) == 2);
+		x = s[0] - '1';
+		y = s[1] - 'a';
+
+		assert(INRANGE(x, 0, BOARD_SIZE - 1));
+		assert(INRANGE(y, 0, BOARD_SIZE - 1));
+	}
+
 	bool operator==(const GridPos & n) const
 	{
 		return this->x == n.x && this->y == n.y;
@@ -91,7 +106,7 @@ struct Move
 	GridPos from;
 	GridPos to;
 	bool naru;
-	EKomaType haruKomaType;
+	EKomaType utsuKomaType;
 
 	Move()
 	{
@@ -105,7 +120,7 @@ struct Move
 		to.y = 0;
 		to.x = 0;
 		naru = false;
-		haruKomaType = E_EMPTY;
+		utsuKomaType = E_EMPTY;
 	}
 };
 
@@ -119,11 +134,22 @@ public:
 	virtual void Update() {};
 	virtual int CalcBestMoveAndScore() { return 0; }
 
-	void DecideMove(bool isNaru);
-	void SetSFEN(const string& sfen);
-	string GetSFEN() const;
+	void MoveByTejun(const string& tejun);
+	void MoveByTe(const string& te);
+
+	void DecideMove();
+	void SetState(const string& state);
+
+	string GetState() const;
+
+	string GetTeFromPSN(const string& tePSN) const;
+	string GetTejunFromPSN(const string& tejunPSN) const;
+	wstring GetTejunJap(const string& sfen, const string& yomisuji) const;
+
+
 	void InitNextMove() { mNextMove.Init(); }
 	void Split1(const string& str, vector<string>& out, const char splitter = ' ') const;
+	void RemoveCharsFromString(string &str, char* charsToRemove) const;
 
 	// setter, getter
 	void SetMoveFromPos(const GridPos& gp) { mNextMove.from = gp; }
@@ -132,8 +158,10 @@ public:
 	void SetMoveToPos(const GridPos& gp) { mNextMove.to = gp; }
 	const GridPos& GetMoveToPos() const { return mNextMove.to; }
 
-	void SetHaruKomaType(EKomaType haruKomaType ) { mNextMove.haruKomaType = haruKomaType; }
-	EKomaType GetHaruKomaType() const { return mNextMove.haruKomaType; }
+	void SetUtsuKomaType(EKomaType utsuKomaType ) { mNextMove.utsuKomaType = utsuKomaType; }
+	EKomaType GetUtsuKomaType() const { return mNextMove.utsuKomaType; }
+
+	void SetNaru(bool bNaru) { mNextMove.naru = bNaru; }
 
 	const Masu& GetMasu(const GridPos& gp) const
 	{
@@ -156,6 +184,7 @@ public:
 	ESengo GetTeban() const { return mTeban; }
 
 	int mScore;
+	vector <string> mYomisuji;
 
 protected:
 	bool IsNareru(const GridPos& from, const GridPos& to, ESengo teban) const;

@@ -114,7 +114,7 @@ void BoardSiv3D::Draw()
 			for (int k = 0; k < NUM_NARAZU_KOMA_TYPE; ++k)
 			{
 				int numKoma = GetNumMochigoma(s, k);
-				if (mInputState == E_HARU && s == GetTeban() && GetHaruKomaType() == k)
+				if (mInputState == E_UTSU && s == GetTeban() && GetUtsuKomaType() == k)
 				{
 					numKoma--;
 				}
@@ -166,9 +166,9 @@ void BoardSiv3D::Draw()
 		const Masu& masu = GetMasu(GetMoveFromPos());
 		mTexture[masu.sengo][masu.type].draw(Mouse::Pos().x - mKomaTextureWidth / 2, Mouse::Pos().y - mKomaTextureHeight / 2);
 	}
-	else if (mInputState == E_HARU)
+	else if (mInputState == E_UTSU)
 	{
-		mTexture[GetTeban()][GetHaruKomaType()].draw(Mouse::Pos().x - mKomaTextureWidth / 2, Mouse::Pos().y - mKomaTextureHeight / 2);
+		mTexture[GetTeban()][GetUtsuKomaType()].draw(Mouse::Pos().x - mKomaTextureWidth / 2, Mouse::Pos().y - mKomaTextureHeight / 2);
 	}
 
 	// ¬‚è‘I‘ð‰æ–Ê
@@ -317,7 +317,7 @@ void BoardSiv3D::InitServer()
 int BoardSiv3D::CalcBestMoveAndScore()
 {
 	string writeStr;
-	writeStr += "position sfen " + GetSFEN()+ "\n";
+	writeStr += "position sfen " + GetState()+ "\n";
 
 	{
 		std::wstring wsTmp(writeStr.begin(), writeStr.end());
@@ -343,11 +343,12 @@ int BoardSiv3D::CalcBestMoveAndScore()
 				const string& lastInfo = vs[i];
 				vector <string> tmp;
 				Split1(lastInfo, tmp, ' ');
-				for (int i = 0; i < SZ(tmp); ++i)
+
+				for (int k = 0; k < SZ(tmp); ++k)
 				{
-					if (tmp[i] == "score")
+					if (tmp[k] == "score")
 					{
-						mScore = stoi(tmp[i + 2]);
+						mScore = stoi(tmp[k + 2]);
 						std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
 						Print(wsTmp);
 						goto NUKE;
@@ -392,10 +393,10 @@ void BoardSiv3D::Update()
 			else
 			{
 				EKomaType k;
-				if (CalcHarukomaType(k))
+				if (CalcUtsuKomaType(k))
 				{
-					SetHaruKomaType(k);
-					mInputState = E_HARU;
+					SetUtsuKomaType(k);
+					mInputState = E_UTSU;
 				}
 			}
 		}
@@ -422,7 +423,7 @@ void BoardSiv3D::Update()
 				}
 				else
 				{
-					DecideMove(false);
+					DecideMove();
 					mInputState = E_IDLE;
 				}
 			}
@@ -432,13 +433,13 @@ void BoardSiv3D::Update()
 		}
 		break;
 
-		case E_HARU:
+		case E_UTSU:
 		{
 			GridPos gp;
 			if (GetGridPosFromMouse(gp) && GetMasu(gp).type == E_EMPTY)
 			{
 				SetMoveToPos(gp);
-				DecideMove(false);
+				DecideMove();
 				mInputState = E_IDLE;
 			}
 		}
@@ -448,7 +449,11 @@ void BoardSiv3D::Update()
 			// ¬‚è¬‚ç‚¸‚ð‘I‘ð‚·‚é
 			if (IsNaruChoice() || IsNarazuChoice())
 			{
-				DecideMove(IsNaruChoice());
+				if (IsNaruChoice())
+				{
+					SetNaru(true);
+				}
+				DecideMove();
 				mInputState = E_IDLE;
 			}
 			break;
@@ -464,7 +469,7 @@ void BoardSiv3D::Update()
 		case E_IDLE:
 			break;
 
-		case E_HARU:
+		case E_UTSU:
 		case E_GRABBED:
 		case E_CHOICE:
 			InitNextMove();
@@ -501,7 +506,7 @@ void BoardSiv3D::Update()
 						const int ed = k;
 						const int len = ed - st;
 
-						SetSFEN(line.substr(st, len));
+						SetState(line.substr(st, len));
 						break;
 					}
 				}
@@ -535,7 +540,7 @@ void BoardSiv3D::GetMochigomaPos(int s, int k, int& y, int& x) const
 }
 
 
-bool BoardSiv3D::CalcHarukomaType(EKomaType& harukomaType) const
+bool BoardSiv3D::CalcUtsuKomaType(EKomaType& utsuKomaType) const
 {
 	int y, x;
 	GetXYNaruNarazuChoice(y, x);
@@ -547,7 +552,7 @@ bool BoardSiv3D::CalcHarukomaType(EKomaType& harukomaType) const
 			GetMochigomaPos(GetTeban(), k, my, mx);
 			if (my == y && mx == x)
 			{
-				harukomaType = static_cast<EKomaType>(k);
+				utsuKomaType = static_cast<EKomaType>(k);
 				return true;
 			}
 		}

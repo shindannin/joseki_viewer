@@ -1,4 +1,5 @@
-#include  <cassert>
+#include <cassert>
+#include <algorithm>
 
 #include "board.h"
 
@@ -16,7 +17,7 @@
 
 Board::Board()
 {
-	SetSFEN("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
+	SetState("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 	mScore = 0;
 }
 
@@ -65,14 +66,14 @@ bool Board::IsNareru(const GridPos& from, const GridPos& to, ESengo teban) const
 	return true;
 }
 
-void Board::DecideMove(bool isNaru)
+void Board::DecideMove()
 {
-	if (mNextMove.haruKomaType != E_EMPTY)
+	if (mNextMove.utsuKomaType != E_EMPTY)
 	{
 		// 駒をはる
-		mMochigoma[mTeban][GetHaruKomaType()]--;
+		mMochigoma[mTeban][GetUtsuKomaType()]--;
 		mGrid[mNextMove.to.y][mNextMove.to.x].sengo = mTeban;
-		mGrid[mNextMove.to.y][mNextMove.to.x].type = mNextMove.haruKomaType;
+		mGrid[mNextMove.to.y][mNextMove.to.x].type = mNextMove.utsuKomaType;
 	}
 	else
 	{
@@ -87,7 +88,7 @@ void Board::DecideMove(bool isNaru)
 		// 移動する
 		{
 			mGrid[mNextMove.to.y][mNextMove.to.x] = mGrid[mNextMove.from.y][mNextMove.from.x];
-			if (isNaru)
+			if (mNextMove.naru)
 			{
 				mGrid[mNextMove.to.y][mNextMove.to.x].type = mKoma[mGrid[mNextMove.to.y][mNextMove.to.x].type].narigoma;
 			}
@@ -113,11 +114,128 @@ void Board::DecideMove(bool isNaru)
 //	mScore = GetScore();
 }
 
+// PSN形式の手を、SFEN形式の手に変換。
+// PSN形式は、先頭に駒の表記と、駒をとる取らない"-x"がついている。
 
-void Board::SetSFEN(const string& sfen)
+string Board::GetTeFromPSN(const string& tePSN) const
+{
+	// 駒を打ったときの、表記法は一緒。、
+	if (tePSN.find('*') != string::npos)
+	{
+		return tePSN;
+	}
+
+	// 駒を移動するとき
+	string ret(tePSN);
+	RemoveCharsFromString(ret, "-x");
+
+
+	for (int i = 0; i < SZ(ret); ++i)
+	{
+		if (INRANGE(ret[i], '1', '9'))
+		{
+			ret = ret.substr(i);
+			break;
+		}
+	}
+	return ret;
+}
+
+string Board::GetTejunFromPSN(const string& tejunPSN) const
+{
+	vector <string> vs;
+	Split1(tejunPSN, vs);
+
+	string ret;
+	for (const string& tePSN : vs)
+	{
+		ret += GetTeFromPSN(tePSN);
+		ret += " ";
+	}
+	ret.pop_back();
+	return ret;
+}
+
+void Board::MoveByTejun(const string& tejun)
+{
+	vector <string> vs;
+	Split1(tejun, vs);
+	for (const string& te : vs)
+	{
+		MoveByTe(te);
+	}
+}
+
+void Board::MoveByTe(const string& te)
+{
+	InitNextMove();
+
+	// http://www.geocities.jp/shogidokoro/usi.html より
+	// 次に、指し手の表記について解説します。
+	// 筋に関しては１から９までの数字で表記され、
+	// 段に関してはaからiまでのアルファベット（１段目がa、２段目がb、・・・、９段目がi）というように表記されます。
+	// 位置の表記は、この２つを組み合わせます。５一なら5a、１九なら1iとなります。
+	// そして、指し手に関しては、駒の移動元の位置と移動先の位置を並べて書きます。
+	// ７七の駒が７六に移動したのであれば、7g7fと表記します。（駒の種類を表記する必要はありません。）
+	// 
+	// 駒が成るときは、最後に + を追加します。８八の駒が２二に移動して成るなら8h2b + と表記します。
+	// 持ち駒を打つときは、最初に駒の種類を大文字で書き、それに*を追加し、さらに打った場所を追加します。金を５二に打つ場合はG * 5bとなります
+
+
+	if (te.find('*') == string::npos)
+	{
+		// 通常の移動
+		assert(INRANGE(SZ(te), 4, 5));
+		mNextMove.from.Set(te.substr(0, 2));
+		mNextMove.to.Set(te.substr(2, 2));
+		if (SZ(te)==5 && te[4]=='+')
+		{
+			mNextMove.naru = true;
+		}
+	}
+	else
+	{
+		// 持ち駒を打つとき
+		assert(SZ(te)==4);
+
+		bool isFound = false;
+		for (int k = 0; k < NUM_NARAZU_KOMA_TYPE; ++k)
+		{
+			if (mKoma[k].notation[0] == string(1,te[0]))
+			{
+				mNextMove.utsuKomaType = static_cast<EKomaType>(k);
+				isFound = true;
+				break;
+			}
+		}
+		assert(isFound);
+
+		mNextMove.to.Set(te.substr(2, 2));
+	}
+
+	DecideMove();
+}
+
+wstring Board::GetTejunJap(const string& state, const string& tejun) const
+{
+	Board* board = new Board;
+
+	board->SetState(state);
+
+	vector <string> yomi;
+	Split1(tejun, yomi);
+
+
+
+	delete board;
+
+	return L"▲１一玉"; // てきと～
+}
+
+void Board::SetState(const string& state)
 {
 	vector <string> splitted;
-	Split1(sfen, splitted);
+	Split1(state, splitted);
 
 	// 盤面
 	{
@@ -231,7 +349,7 @@ void Board::SetSFEN(const string& sfen)
 	mMoves.clear();
 }
 
-string Board::GetSFEN() const
+string Board::GetState() const
 {
 	string ret;
 
@@ -344,4 +462,11 @@ void Board::Split1(const string& str, vector<string>& out, const char splitter) 
 		}
 		st = next + 1;
 	} while (next != string::npos);
+}
+
+void Board::RemoveCharsFromString(string &str, char* charsToRemove) const
+{
+	for (unsigned int i = 0; i < strlen(charsToRemove); ++i) {
+		str.erase(remove(str.begin(), str.end(), charsToRemove[i]), str.end());
+	}
 }
