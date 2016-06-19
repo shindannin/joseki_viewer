@@ -125,7 +125,6 @@ namespace unit_test
 			delete board;
 		}
 
-		// ŽÀ‘•‚¹‚æI  state + tejun -> 
 		TEST_METHOD(TestTejunJap)
 		{
 			Board* board = new Board();
@@ -140,24 +139,48 @@ namespace unit_test
 			const vector <TejunJapCase> cases =
 			{
 				{
-					"l4g3/1r2gsk1l/2npsp1p1/p1p1p1p2/1p1P1S1np/P1P6/1PN1PPPPP/L2R2GSL/6GNK w Bb 1",
-					"B*4f 8b8c 5f4e 4b3c 4e3f 2c2d 5g5f B*9i 6h6g 9i8h+ 2g2f 8h7h 6g6h 7h7g 2f2e 2d2e N*4e N*2f 3f2e 5c4d 4e3c+ 4d3c 3h2g 7g6h 4f6h R*6g",
-					L"£‚S˜ZŠp‘Å¢‚WŽO”ò(82)£‚SŒÜ‹â(56)¢‚RŽO‹â(42)£‚R˜Z‹â(45)¢‚QŽl•à(23)£‚T˜Z•à(57)¢‚X‹ãŠp‘Å£‚UŽµ”ò(68)¢‚W”ªŠp¬(99)£‚Q˜Z•à(27)¢‚V”ª”n(88)£‚U”ª”ò(67)¢‚VŽµ”n(78)£‚QŒÜ•à(26)¢“¯•à(24)£‚SŒÜŒj‘Å¢‚Q˜ZŒj‘Å£‚QŒÜ‹â(36)¢‚SŽl‹â(53)£‚RŽOŒj¬(45)¢“¯‹â(44)£‚QŽµ‹à(38)¢‚U”ª”n(77)£“¯Šp(46)¢‚UŽµ”ò‘Å",
+					"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",
+					"7g7f",
+					L"£‚V˜Z•à(77)",
+				},
+			
+				{
+					"+B2gkg2l/2s3r2/ppnp1p1pb/2R3p1p/3P5/6s1P/PP1SPPNP1/4GGK2/LN4S1L b NLP3p 1",
+					"L*4f 4a4b N*5e 1c4f 4g4f 3d3e P*3c 3b3c B*2b 3f3g+ 3h3g 3e3f 3g4g 3c3e 9a7c 7b7c 7d7c+ B*9a",
+					L"£‚S˜Z‘Å¢‚S“ñ‹à(41)£‚TŒÜŒj‘Å¢‚S˜ZŠp(13)£“¯•à(47)¢‚RŒÜ•à(34)£‚RŽO•à‘Å¢“¯”ò(32)£‚Q“ñŠp‘Å¢‚RŽµ‹â¬(36)£“¯‹Ê(38)¢‚R˜Z•à(35)£‚SŽµ‹Ê(37)¢‚RŒÜ”ò(33)£‚VŽO”n(91)¢“¯‹â(72)£“¯”ò¬(74)¢‚XˆêŠp‘Å",
+				},
+
+
+				{
+					"+B7l/2s1+R2k1/pp1p2Ppb/6p1p/3n5/8P/PP1SPPGP1/4G1K2/LN4S1L w RGSNPgnl4p 1",
+					"2b3c N*2e 3c2d S*3c 2d2e G*2f",
+					L"¢‚RŽO‹Ê(22)£‚QŒÜŒj‘Å¢‚QŽl‹Ê(33)£‚RŽO‹â‘Å¢‚QŒÜ‹Ê(24)£‚Q˜Z‹à‘Å",
 				},
 
 				{
-					"l4g1nl/1r2gsk2/p1npspbp1/2p1p1p2/1p6p/2PP5/PPBSPPPPP/3R1G1SL/LN4GNK b - 1",
-					"4c4d 6f6e 4d4e 6g6f 3b2b 5g5f 4a3b 5f5e 5d5e 6f5e P*5d 6e6d 8b6b 6d6c+ 5b6c P*6d 6c6d 5e6d 5c6d 7g3c+ 4b3c B*7a",
-					L"¢‚SŽl•à(43)£‚UŒÜ•à(66)¢‚SŒÜ•à(44)£‚U˜Z‹â(67)¢‚Q“ñ‹Ê(32)£‚T˜Z•à(57)¢‚R“ñ‹à(41)£‚TŒÜ•à(56)¢“¯•à(54)£“¯‹â(66)¢‚TŽl•à‘Å£‚UŽl•à(65)¢‚U“ñ”ò(82)£‚UŽO•à¬(64)¢“¯‹à(52)£‚UŽl•à‘Å¢“¯‹à(63)£“¯‹â(55)¢“¯‹â(53)£‚RŽOŠp¬(77)¢“¯‹â(42)£‚VˆêŠp‘Å",
+					"ln6l/1skgg2B1/pppppp2p/5s3/P1r6/5P3/1PPPP+BPPP/1S2G1KS1/LNG4NL b Nr2p 1",
+					"2b1a+ 7e7d 5h4h 7d6d 1a1b 4d5e 3g3f P*3d 7i6h 6d4d 2h3g 4d6d 5g5f R*5i 5f5e 5i8i+ S*7i N*2e 3g2f",
+					L"£‚PˆêŠp¬(22)¢‚VŽl”ò(75)£‚S”ª‹à(58)¢‚UŽl”ò(74)£‚P“ñ”n(11)¢‚TŒÜ‹â(44)£‚R˜Z•à(37)¢‚RŽl•à‘Å£‚U”ª‹à(79)¢‚SŽl”ò(64)£‚RŽµ‹â(28)¢‚UŽl”ò(44)£‚T˜Z•à(57)¢‚T‹ã”ò‘Å£‚TŒÜ•à(56)¢‚W‹ã”ò¬(59)£‚V‹ã‹â‘Å¢‚QŒÜŒj‘Å£‚Q˜Z‹â(37)",
 				},
 
-				// TODO ‚à‚Á‚Æ’Ç‰Á‚¹‚æI
+				{
+					"9/4+S4/1+S1+P+S+P1+Pp/4P1p2/p8/2+B3P2/PP1G3+n1/LSG1+p+lg2/KNP3k2 w GNL5P2rbnlp 1",
+					"R*1f 7f7g P*6h 7h6h 5h6h 7g6h N*7e 6g7g L*8a L*8f 1f1h+ 2c1c 8a8c 8f8c+",
+					L"¢‚P˜Z”ò‘Å£‚VŽµ”n(76)¢‚U”ª•à‘Å£“¯‹à(78)¢“¯‚Æ(58)£“¯”n(77)¢‚VŒÜŒj‘Å£‚VŽµ‹à(67)¢‚Wˆê‘Å£‚W˜Z‘Å¢‚P”ª”ò¬(16)£‚PŽO‚Æ(23)¢‚WŽO(81)£“¯¬(86)",
+				},
+
+				{
+					"ln1g3+B1/1ks1g4/1pppp2pp/p5p2/7P1/2P4R1/PP+BPP1P1P/LSG2+p3/KNG3+rNL w SNLsp 1",
+					"4h5h 2a6e 5h6i 7i6i 3i6i 6e5f 6i5h L*8f G*4g 7h6h 5h4i N*7e S*7d 2e2d 4g5h 6h5h 4i5h G*5i",
+					L"¢‚T”ª‚Æ(48)£‚UŒÜ”n(21)¢‚U‹ã‚Æ(58)£“¯‹à(79)¢“¯—´(39)£‚T˜Z”n(65)¢‚T”ª—´(69)£‚W˜Z‘Å¢‚SŽµ‹à‘Å£‚U”ª‹à(78)¢‚S‹ã—´(58)£‚VŒÜŒj‘Å¢‚VŽl‹â‘Å£‚QŽl•à(25)¢‚T”ª‹à(47)£“¯‹à(68)¢“¯—´(49)£‚T‹ã‹à‘Å",
+				},
 			};
 
 
 			for (const auto& a : cases)
 			{
-				const wstring ret = board->GetTejunJap(a.state, a.tejun);
+				board->SetState(a.state);
+				const wstring ret = board->MoveByTejun(a.tejun);
 				Assert::AreEqual(ret, a.tejunJap);
 			}
 

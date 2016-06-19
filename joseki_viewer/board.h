@@ -63,6 +63,7 @@ const int BOARD_SIZE = 9;
 struct Koma
 {
 	string notation[NUM_SEN_GO];
+	wstring jap[NUM_SEN_GO];
 	EKomaType narigoma;
 	EKomaType motogoma;
 };
@@ -134,17 +135,16 @@ public:
 	virtual void Update() {};
 	virtual int CalcBestMoveAndScore() { return 0; }
 
-	void MoveByTejun(const string& tejun);
-	void MoveByTe(const string& te);
+	wstring MoveByTejun(const string& tejun);
+	wstring MoveByTe(const string& te);
 
-	void DecideMove();
+	wstring DecideMove();
 	void SetState(const string& state);
 
 	string GetState() const;
 
 	string GetTeFromPSN(const string& tePSN) const;
 	string GetTejunFromPSN(const string& tejunPSN) const;
-	wstring GetTejunJap(const string& sfen, const string& yomisuji) const;
 
 
 	void InitNextMove() { mNextMove.Init(); }
@@ -191,22 +191,30 @@ protected:
 
 	const vector <Koma> mKoma =
 	{
-		{ { "K", "k" }, E_EMPTY, E_OU },
-		{ { "R", "r" }, E_RYU  , E_HI },
-		{ { "B", "b" }, E_UMA, E_KAKU },
-		{ { "G", "g" }, E_EMPTY, E_KIN },
-		{ { "S", "s" }, E_NGIN, E_GIN },
-		{ { "N", "n" }, E_NKEI, E_KEI },
-		{ { "L", "l" }, E_NKYO, E_KYO },
-		{ { "P", "p" }, E_TO, E_FU },
+		{ { "K", "k" },{ L"ã ", L"ã " }, E_EMPTY, E_OU }, // ëºÇÃÉ\ÉtÉgÇ…Ç†ÇÌÇπÇƒóºï˚ã Ç…ÇµÇƒÇ‹Ç∑
+		{ { "R", "r" },{ L"îÚ", L"îÚ" }, E_RYU  , E_HI },
+		{ { "B", "b" },{ L"äp", L"äp" }, E_UMA, E_KAKU },
+		{ { "G", "g" },{ L"ã‡", L"ã‡" }, E_EMPTY, E_KIN },
+		{ { "S", "s" },{ L"ã‚", L"ã‚" }, E_NGIN, E_GIN },
+		{ { "N", "n" },{ L"åj", L"åj" }, E_NKEI, E_KEI },
+		{ { "L", "l" },{ L"çÅ", L"çÅ" }, E_NKYO, E_KYO },
+		{ { "P", "p" },{ L"ï‡", L"ï‡" }, E_TO, E_FU },
 
-		{ { "+R", "+r" }, E_EMPTY, E_HI },
-		{ { "+B", "+b" }, E_EMPTY, E_KAKU },
-		{ { "+S", "+s" }, E_EMPTY, E_GIN },
-		{ { "+N", "+n" }, E_EMPTY, E_KEI },
-		{ { "+L", "+l" }, E_EMPTY, E_KYO },
-		{ { "+P", "+p" }, E_EMPTY, E_FU },
+		{ { "+R", "+r" },{ L"ó¥", L"ó¥" }, E_EMPTY, E_HI },
+		{ { "+B", "+b" },{ L"în", L"în" }, E_EMPTY, E_KAKU },
+		{ { "+S", "+s" },{ L"ê¨ã‚", L"ê¨ã‚" }, E_EMPTY, E_GIN },
+		{ { "+N", "+n" },{ L"ê¨åj", L"ê¨åj" }, E_EMPTY, E_KEI },
+		{ { "+L", "+l" },{ L"ê¨çÅ", L"ê¨çÅ" },  E_EMPTY, E_KYO },
+		{ { "+P", "+p" },{ L"Ç∆", L"Ç∆" }, E_EMPTY, E_FU },
 	};
+
+	const wstring mKomaMark[NUM_SEN_GO] = { L"Å£", L"Å¢" };
+	const wstring mJapX[BOARD_SIZE] = { L"ÇP", L"ÇQ", L"ÇR", L"ÇS", L"ÇT", L"ÇU", L"ÇV", L"ÇW", L"ÇX" };
+	const wstring mJapY[BOARD_SIZE] = { L"àÍ", L"ìÒ", L"éO", L"él", L"å‹", L"òZ", L"éµ", L"î™", L"ã„" };
+	const wstring mJapSemiNumber[BOARD_SIZE] = { L"1", L"2", L"3", L"4", L"5", L"6", L"7", L"8", L"9" };
+	const wstring mJapDou  = { L"ìØ" };
+	const wstring mJapUtsu = { L"ë≈" };
+	const wstring mJapNaru = { L"ê¨" };
 
 private:
 	bool IsTekijin(int y, ESengo teban) const;

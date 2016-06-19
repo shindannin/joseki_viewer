@@ -66,12 +66,48 @@ bool Board::IsNareru(const GridPos& from, const GridPos& to, ESengo teban) const
 	return true;
 }
 
-void Board::DecideMove()
+wstring Board::DecideMove()
 {
+	// 指し手の日本語名の作成
+	wstring teJap;
+
+	// ▲△
+	teJap += mKomaMark[mTeban];
+
+	if (SZ(mMoves)>=1 && mNextMove.to == mMoves.back().to)
+	{
+		// 前の手と一緒→同
+		teJap += mJapDou;
+	}
+	else
+	{
+		// マスの表記（７六とか）
+		teJap += mJapX[mNextMove.to.x] + mJapY[mNextMove.to.y];
+	}
+
+	if (mNextMove.utsuKomaType != E_EMPTY) // // 駒を打つ
+	{
+		teJap += mKoma[mNextMove.utsuKomaType].jap[mTeban] + mJapUtsu;
+	}
+	else // 移動する
+	{
+		teJap += mKoma[mGrid[mNextMove.from.y][mNextMove.from.x].type].jap[mTeban];
+
+		// 成る
+		if (mNextMove.naru)
+		{
+			teJap += mJapNaru;
+		}
+
+		// 駒の移動元
+		teJap += L"(" + mJapSemiNumber[mNextMove.from.x] + mJapSemiNumber[mNextMove.from.y] + L")";
+	}
+
+
 	if (mNextMove.utsuKomaType != E_EMPTY)
 	{
-		// 駒をはる
-		mMochigoma[mTeban][GetUtsuKomaType()]--;
+		// 駒を打つ
+		mMochigoma[mTeban][mNextMove.utsuKomaType]--;
 		mGrid[mNextMove.to.y][mNextMove.to.x].sengo = mTeban;
 		mGrid[mNextMove.to.y][mNextMove.to.x].type = mNextMove.utsuKomaType;
 	}
@@ -99,6 +135,7 @@ void Board::DecideMove()
 	}
 
 
+
 	// 手番の交代
 	if (mTeban == E_SEN)
 	{
@@ -111,7 +148,8 @@ void Board::DecideMove()
 
 	mMoves.push_back(mNextMove);
 	mNextMove.Init();
-//	mScore = GetScore();
+
+	return teJap;
 }
 
 // PSN形式の手を、SFEN形式の手に変換。
@@ -156,17 +194,20 @@ string Board::GetTejunFromPSN(const string& tejunPSN) const
 	return ret;
 }
 
-void Board::MoveByTejun(const string& tejun)
+wstring Board::MoveByTejun(const string& tejun)
 {
+	wstring tejunJap;
 	vector <string> vs;
 	Split1(tejun, vs);
 	for (const string& te : vs)
 	{
-		MoveByTe(te);
+		tejunJap += MoveByTe(te);
 	}
+
+	return tejunJap;
 }
 
-void Board::MoveByTe(const string& te)
+wstring Board::MoveByTe(const string& te)
 {
 	InitNextMove();
 
@@ -213,23 +254,7 @@ void Board::MoveByTe(const string& te)
 		mNextMove.to.Set(te.substr(2, 2));
 	}
 
-	DecideMove();
-}
-
-wstring Board::GetTejunJap(const string& state, const string& tejun) const
-{
-	Board* board = new Board;
-
-	board->SetState(state);
-
-	vector <string> yomi;
-	Split1(tejun, yomi);
-
-
-
-	delete board;
-
-	return L"▲１一玉"; // てきと～
+	return DecideMove();
 }
 
 void Board::SetState(const string& state)
