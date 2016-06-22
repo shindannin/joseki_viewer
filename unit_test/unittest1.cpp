@@ -143,7 +143,7 @@ namespace unit_test
 					"7g7f",
 					L"£‚V˜Z•à(77)",
 				},
-			
+
 				{
 					"+B2gkg2l/2s3r2/ppnp1p1pb/2R3p1p/3P5/6s1P/PP1SPPNP1/4GGK2/LN4S1L b NLP3p 1",
 					"L*4f 4a4b N*5e 1c4f 4g4f 3d3e P*3c 3b3c B*2b 3f3g+ 3h3g 3e3f 3g4g 3c3e 9a7c 7b7c 7d7c+ B*9a",
@@ -187,8 +187,6 @@ namespace unit_test
 			delete board;
 		}
 
-
-
 		TEST_METHOD(TestState)
 		{
 			Board* board = new Board();
@@ -209,6 +207,18 @@ namespace unit_test
 				Assert::AreEqual(ret, state[i]);
 			}
 
+			delete board;
+		}
+
+		TEST_METHOD(TestTreeAddLink)
+		{
+			Board* board = new Board();
+			Tree* tree = new Tree(board);
+
+			tree->AddLink("7g7f");
+
+
+			delete tree;
 			delete board;
 		}
 	};

@@ -46,73 +46,15 @@
 #include "board_siv3d.h"
 
 
-
 using namespace std;
 using namespace s3d;
 
-
 void Main()
 {
-
-/*
-	///////////////////////////////////
-	//
-	// クライアントを起動
-	//
-	const auto path = Dialog::GetOpen({ { L"実行ファイル (*.exe)", L"*.exe" } });
-
-	if (!path)
-	{
-		return;
-	}
-
-	Server server(path.value(), false);
-
-	if (!server)
-	{
-		return;
-	}
-	//
-	///////////////////////////////////
-
-	while (System::Update())
-	{
-		if (Input::KeyA.clicked)
-		{
-			Print(L"usi");
-
-			server.write("usi\n");
-		}
-
-		if (server.available())
-		{
-			std::string str;
-
-			server.read(str);
-
-			std::wstring wsTmp(str.begin(), str.end());
-			Print(wsTmp);
-		}
-	}
-
-	server.write("quit\n");
-*/
-
-
-
 	// ウィンドウサイズを 幅 300, 高さ 400 にする
 	Window::Resize(640, 480+200);
-
 	const Font font(30);
 
-
-	// ID: 0 の Web カメラを起動
-	/*
-	if (!Webcam::Start(0))
-	{
-		return;	// 失敗したら終了
-		}
-	*/
 
 	// 空の動的テクスチャ
 	DynamicTexture texture;
@@ -131,39 +73,6 @@ void Main()
 		{
 			System::Exit();
 		}
-
-/*
-		// カメラが新しい画像を撮影したら
-		if (Webcam::HasNewFrame())
-		{
-
-			// 盤の位置を指定する
-			// 盤の画像を9*9のに切り出し、正しい形に修正する
-			// 切り取った画像からSURF値
-
-			// 正しい盤面（GroundTruth）の入力ツールを作る。
-			// ランダムフォレストで学習させる
-
-			// 動的テクスチャをカメラの画像で更新
-			Webcam::GetFrame(texture);
-			Webcam::GetFrame(img);
-
-			// 切り取った画像→OpenCV
-
-			// OpenCV→画像
-
-
-			// 画像→OpenCV
-
-
- 			// (3)initialize SURF class
-		}
-
-		if (texture)
-		{
-			texture.draw();	// テクスチャを描く
-		}
-*/
 
 	}
 	
