@@ -363,8 +363,18 @@ int BoardSiv3D::CalcBestMoveAndScore()
 	return 0;
 }
 
-void BoardSiv3D::Update()
+void BoardSiv3D::UpdateDecided(string& te, wstring& teJap, bool& isMoved)
 {
+	te = GetTeFromMove(GetNextMove());
+	teJap = DecideMove();
+	isMoved = true;
+	mInputState = E_IDLE;
+}
+
+bool BoardSiv3D::Update(string& te, wstring& teJap)
+{
+	bool isMoved = false;
+
 	if (Input::KeyA.released)
 	{
 		if(mServer==nullptr)
@@ -423,8 +433,7 @@ void BoardSiv3D::Update()
 				}
 				else
 				{
-					DecideMove();
-					mInputState = E_IDLE;
+					UpdateDecided(te, teJap, isMoved);
 				}
 			}
 
@@ -439,8 +448,8 @@ void BoardSiv3D::Update()
 			if (GetGridPosFromMouse(gp) && GetMasu(gp).type == E_EMPTY)
 			{
 				SetMoveToPos(gp);
-				DecideMove();
-				mInputState = E_IDLE;
+
+				UpdateDecided(te, teJap, isMoved);
 			}
 		}
 		break;
@@ -453,8 +462,8 @@ void BoardSiv3D::Update()
 				{
 					SetNaru(true);
 				}
-				DecideMove();
-				mInputState = E_IDLE;
+
+				UpdateDecided(te, teJap, isMoved);
 			}
 			break;
 
@@ -514,6 +523,8 @@ void BoardSiv3D::Update()
 			}
 		}
 	}
+
+	return isMoved;
 }
 
 template <class T>

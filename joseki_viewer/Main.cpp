@@ -61,13 +61,14 @@ void Main()
 	Image img;
 
 	Board* board = new BoardSiv3D();
+	Tree* tree = new Tree(board);
 
 	while (System::Update())
 	{
 		Circle(Mouse::Pos(), 50).draw({ 255, 0, 0, 127 });
 
-		board->Update();
-		board->Draw();
+		tree->Update();
+		tree->Draw();
 
 		if (Input::KeyEscape.clicked)
 		{
@@ -76,6 +77,7 @@ void Main()
 
 	}
 	
+	delete tree;
 	delete board;
 }
 

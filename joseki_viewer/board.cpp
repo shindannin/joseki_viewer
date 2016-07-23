@@ -1,3 +1,9 @@
+// 次にやること！
+
+// bool Update()にかえて、手を打ったら(string& te, wstring& teJap)を返すようにする。
+// linkにそれを入れる
+
+
 #include <cassert>
 #include <algorithm>
 
@@ -194,6 +200,82 @@ string Board::GetTejunFromPSN(const string& tejunPSN) const
 	return ret;
 }
 
+string Board::GetTeFromMove(const Move& mv) const
+{
+	string te;
+
+	if (mv.utsuKomaType == E_EMPTY)
+	{
+		// 通常の移動
+		te += mv.from.Get();
+		te += mv.to.Get();
+		if (mv.naru)
+		{
+			te += "+";
+		}
+		assert(INRANGE(SZ(te), 4, 5));
+	}
+	else
+	{
+		// 持ち駒を打つとき
+		te += mKoma[mv.utsuKomaType].notation[0];
+		te += "*";
+		te += mv.to.Get();
+		assert(SZ(te) == 4);
+	}
+
+	return te;
+}
+
+Move Board::GetMoveFromTe(const string& te) const
+{
+	// http://www.geocities.jp/shogidokoro/usi.html より
+	// 次に、指し手の表記について解説します。
+	// 筋に関しては１から９までの数字で表記され、
+	// 段に関してはaからiまでのアルファベット（１段目がa、２段目がb、・・・、９段目がi）というように表記されます。
+	// 位置の表記は、この２つを組み合わせます。５一なら5a、１九なら1iとなります。
+	// そして、指し手に関しては、駒の移動元の位置と移動先の位置を並べて書きます。
+	// ７七の駒が７六に移動したのであれば、7g7fと表記します。（駒の種類を表記する必要はありません。）
+	// 
+	// 駒が成るときは、最後に + を追加します。８八の駒が２二に移動して成るなら8h2b + と表記します。
+	// 持ち駒を打つときは、最初に駒の種類を大文字で書き、それに*を追加し、さらに打った場所を追加します。金を５二に打つ場合はG * 5bとなります
+
+	Move mv;
+
+	if (te.find('*') == string::npos)
+	{
+		// 通常の移動
+		assert(INRANGE(SZ(te), 4, 5));
+		mv.from.Set(te.substr(0, 2));
+		mv.to.Set(te.substr(2, 2));
+		if (SZ(te) == 5 && te[4] == '+')
+		{
+			mv.naru = true;
+		}
+	}
+	else
+	{
+		// 持ち駒を打つとき
+		assert(SZ(te) == 4);
+
+		bool isFound = false;
+		for (int k = 0; k < NUM_NARAZU_KOMA_TYPE; ++k)
+		{
+			if (mKoma[k].notation[0] == string(1, te[0]))
+			{
+				mv.utsuKomaType = static_cast<EKomaType>(k);
+				isFound = true;
+				break;
+			}
+		}
+		assert(isFound);
+
+		mv.to.Set(te.substr(2, 2));
+	}
+
+	return mv;
+}
+
 wstring Board::MoveByTejun(const string& tejun)
 {
 	wstring tejunJap;
@@ -209,51 +291,7 @@ wstring Board::MoveByTejun(const string& tejun)
 
 wstring Board::MoveByTe(const string& te)
 {
-	InitNextMove();
-
-	// http://www.geocities.jp/shogidokoro/usi.html より
-	// 次に、指し手の表記について解説します。
-	// 筋に関しては１から９までの数字で表記され、
-	// 段に関してはaからiまでのアルファベット（１段目がa、２段目がb、・・・、９段目がi）というように表記されます。
-	// 位置の表記は、この２つを組み合わせます。５一なら5a、１九なら1iとなります。
-	// そして、指し手に関しては、駒の移動元の位置と移動先の位置を並べて書きます。
-	// ７七の駒が７六に移動したのであれば、7g7fと表記します。（駒の種類を表記する必要はありません。）
-	// 
-	// 駒が成るときは、最後に + を追加します。８八の駒が２二に移動して成るなら8h2b + と表記します。
-	// 持ち駒を打つときは、最初に駒の種類を大文字で書き、それに*を追加し、さらに打った場所を追加します。金を５二に打つ場合はG * 5bとなります
-
-
-	if (te.find('*') == string::npos)
-	{
-		// 通常の移動
-		assert(INRANGE(SZ(te), 4, 5));
-		mNextMove.from.Set(te.substr(0, 2));
-		mNextMove.to.Set(te.substr(2, 2));
-		if (SZ(te)==5 && te[4]=='+')
-		{
-			mNextMove.naru = true;
-		}
-	}
-	else
-	{
-		// 持ち駒を打つとき
-		assert(SZ(te)==4);
-
-		bool isFound = false;
-		for (int k = 0; k < NUM_NARAZU_KOMA_TYPE; ++k)
-		{
-			if (mKoma[k].notation[0] == string(1,te[0]))
-			{
-				mNextMove.utsuKomaType = static_cast<EKomaType>(k);
-				isFound = true;
-				break;
-			}
-		}
-		assert(isFound);
-
-		mNextMove.to.Set(te.substr(2, 2));
-	}
-
+	mNextMove = GetMoveFromTe(te);
 	return DecideMove();
 }
 

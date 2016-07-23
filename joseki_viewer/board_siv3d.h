@@ -131,7 +131,7 @@ public:
 	BoardSiv3D();
 	virtual ~BoardSiv3D() override;
 	virtual void Draw() override;
-	virtual void Update() override;
+	virtual bool Update(string& te, wstring& teJap) override;
 	virtual int CalcBestMoveAndScore() override;
 
 	void DrawCursor(const GridPos& gp, const Color& color) const;
@@ -150,6 +150,7 @@ public:
 	int GetGridTopY() const;
 
 private:
+	void UpdateDecided(string& te, wstring& teJap, bool& isMoved);
 
 	const wstring mFileName[NUM_KOMA_TYPE][NUM_SEN_GO] =
 	{

@@ -89,6 +89,15 @@ struct GridPos
 		assert(INRANGE(y, 0, BOARD_SIZE - 1));
 	}
 
+	string Get() const
+	{
+		string ret;
+		ret += string(1, static_cast<char>(x + '1'));
+		ret += string(1, static_cast<char>(y + 'a'));
+		assert(SZ(ret) == 2);
+		return ret;
+	}
+
 	bool operator==(const GridPos & n) const
 	{
 		return this->x == n.x && this->y == n.y;
@@ -132,19 +141,22 @@ public:
 	Board();
 	virtual ~Board() {};
 	virtual void Draw() {};
-	virtual void Update() {};
+	virtual bool Update(string& /* te */, wstring& /* teJap */) { return false; };
 	virtual int CalcBestMoveAndScore() { return 0; }
 
 	wstring MoveByTejun(const string& tejun);
 	wstring MoveByTe(const string& te);
 
 	wstring DecideMove();
+
 	void SetState(const string& state);
 
 	string GetState() const;
 
 	string GetTeFromPSN(const string& tePSN) const;
 	string GetTejunFromPSN(const string& tejunPSN) const;
+	string GetTeFromMove(const Move& mv) const;
+	Move GetMoveFromTe(const string& te) const;
 
 
 	void InitNextMove() { mNextMove.Init(); }
@@ -162,6 +174,9 @@ public:
 	EKomaType GetUtsuKomaType() const { return mNextMove.utsuKomaType; }
 
 	void SetNaru(bool bNaru) { mNextMove.naru = bNaru; }
+
+	const Move& GetNextMove() const { return mNextMove; }
+
 
 	const Masu& GetMasu(const GridPos& gp) const
 	{
@@ -241,8 +256,12 @@ private:
 
 struct Link
 {
+	// セーブする
 	int		nodeID;
 	string	te;
+
+	// セーブしない
+	wstring teJap;
 };
 
 class Node
@@ -261,12 +280,13 @@ public:
 	}
 
 
-	void AddLink(int newNodeID, const string& te)
+	void AddLink(int newNodeID, const string& te, const wstring& teJap)
 	{
 		Link link;
 
 		link.nodeID = newNodeID;
 		link.te = te;
+		link.teJap = teJap;
 
 		mLinks.push_back(link);
 	}
@@ -319,13 +339,17 @@ public:
 
 	void Update()
 	{
-		mBoard->Update();
+		string	te;
+		wstring	teJap;
+		if (mBoard->Update(te, teJap))
+		{
+			AddLink(te, teJap);
+		}
 	};
 
-	void AddLink(const string& te)
+	void AddLink(const string& te, const wstring& teJap)
 	{
-		Node& currentNode = mNodes[mNodeID];
-		int nextNodeID = currentNode.HasLink(te);
+		int nextNodeID = mNodes[mNodeID].HasLink(te);
 		if (nextNodeID==NG)
 		{
 			// リンクがないときは、リンクも次のノードも足して、
@@ -335,15 +359,14 @@ public:
 //			mBoard->SetState(currentNode.mState); // 不要なはず
 			// 手をすすめる
 
-			// 手と日本語の手を取得したい。
-
 			nextNode.mState = mBoard->GetState();
 			nextNode.mScore = mBoard->CalcBestMoveAndScore();
 			nextNode.mParentNodeID = mNodeID;
 
+
 			mNodes.push_back(nextNode);
 			nextNodeID = SZ(mNodes) - 1;
-			currentNode.AddLink(nextNodeID, te);
+			mNodes[mNodeID].AddLink(nextNodeID, te, teJap);
 			mNodeID = nextNodeID;
 
 			// 全ノードの表示座標を再計算
