@@ -41,9 +41,8 @@
 #include <cassert>
 #include <ctype.h>
 
-
-#include "board.h"
 #include "board_siv3d.h"
+#include "tree_siv3d.h"
 
 
 using namespace std;
