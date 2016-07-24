@@ -84,7 +84,7 @@ void Tree::AddLink(const string& te, const wstring* pTeJap)
 		mNodes[mSelectedNodeID].AddLink(nextNodeID, te, pTeJap);
 		mSelectedNodeID = nextNodeID;
 
-
+		CalculateVisualPos();
 	}
 	else
 	{

@@ -56,7 +56,8 @@ public:
 	void CalculateVisualPos();
 	void SetSelectedNodeID(int nodeID) { mSelectedNodeID = nodeID;  }
 	const Node& GetNode(int nodeID) const { return mNodes[nodeID]; }
-private:
+
+protected:
 	int GetRootNodeID();
 	int DfsWidth(int nodeID);
 	void DfsVisualPos(int nodeID, int y, int x);

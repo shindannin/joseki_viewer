@@ -50,8 +50,7 @@ using namespace s3d;
 
 void Main()
 {
-	// ウィンドウサイズを 幅 300, 高さ 400 にする
-	Window::Resize(640, 480+200);
+	Window::Resize(1280, 720);
 	const Font font(30);
 
 
@@ -60,7 +59,7 @@ void Main()
 	Image img;
 
 	Board* board = new BoardSiv3D();
-	Tree* tree = new Tree(board);
+	Tree* tree = new TreeSiv3D(board);
 
 	while (System::Update())
 	{

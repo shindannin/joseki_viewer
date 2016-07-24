@@ -36,7 +36,7 @@ BoardSiv3D::BoardSiv3D()
 
 	mInputState = E_IDLE;
 
-	SetOffset(100, 200);
+	SetOffset(100, 100);
 
 	mServer = nullptr;
 
