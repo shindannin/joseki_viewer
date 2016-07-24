@@ -155,10 +155,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\joseki_viewer\board.h" />
+    <ClInclude Include="..\joseki_viewer\tree.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\joseki_viewer\board.cpp" />
+    <ClCompile Include="..\joseki_viewer\tree.cpp" />
     <ClCompile Include="unittest1.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

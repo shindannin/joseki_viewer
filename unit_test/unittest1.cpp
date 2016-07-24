@@ -1,5 +1,6 @@
 #include "CppUnitTest.h"
 #include "../joseki_viewer/board.h"
+#include "../joseki_viewer/tree.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -210,21 +211,80 @@ namespace unit_test
 			delete board;
 		}
 
+		TEST_METHOD(TestMoveFromTe)
+		{
+			Board* board = new Board();
+
+			const vector <string> tes =
+			{
+				"7g7f",
+				"3c3d",
+				"8h2b+",
+				"3a2b",
+				"B*4e",
+				"B*5d",
+				"4e5d",
+				"5c5d",
+				"B*4e",
+				"N*7e",
+				"9i8i",
+				"7e8c+",
+				"8b8c",
+				"3a7a",
+				"G*5g",
+				"P*4f",
+				"5g6g",
+				"6h6g",
+				"8i6g",
+				"G*6h",
+				"6g5f",
+				"7a8a",
+			};
+
+			for (const auto& te : tes)
+			{
+				Move mv = board->GetMoveFromTe(te);
+				string ret = board->GetTeFromMove(mv);
+				Assert::AreEqual(ret, te);
+			}
+
+			delete board;
+		}
+
 		TEST_METHOD(TestTreeAddLink)
 		{
 			Board* board = new Board();
 			Tree* tree = new Tree(board);
 
 			tree->AddLink("7g7f");
+			tree->AddLink("3c3d");
+			tree->AddLink("6i7h");
 
+			tree->SetSelectedNodeID(0);
+			tree->AddLink("8c8d");
+			tree->AddLink("6i7h");
+			tree->CalculateVisualPos();
+
+			Assert::AreEqual(tree->GetNode(0).mVisualX, 0);
+			Assert::AreEqual(tree->GetNode(0).mVisualY, 0);
+
+			Assert::AreEqual(tree->GetNode(1).mVisualX, -1);
+			Assert::AreEqual(tree->GetNode(1).mVisualY, 1);
+
+			Assert::AreEqual(tree->GetNode(2).mVisualX, -1);
+			Assert::AreEqual(tree->GetNode(2).mVisualY, 2);
+
+			Assert::AreEqual(tree->GetNode(3).mVisualX, -1);
+			Assert::AreEqual(tree->GetNode(3).mVisualY, 3);
+
+			Assert::AreEqual(tree->GetNode(4).mVisualX, 1);
+			Assert::AreEqual(tree->GetNode(4).mVisualY, 1);
+
+			Assert::AreEqual(tree->GetNode(5).mVisualX, 1);
+			Assert::AreEqual(tree->GetNode(5).mVisualY, 2);
 
 			delete tree;
 			delete board;
 		}
 	};
-
-
-
-
-
 }
