@@ -30,14 +30,19 @@ void TreeSiv3D::Draw()
 	for (int nodeID = 0; nodeID<SZ(mNodes); ++nodeID)
 	{
 		const Node& node = mNodes[nodeID];
+		const float centerX = ScaleX(node.mVisualX);
+		const float centerY = ScaleY(node.mVisualY);
+
 		Color color = Palette::White;
 		if (nodeID == mSelectedNodeID)
 		{
 			color = Palette::Yellow;
 		}
+		else if (SQSUM(Mouse::Pos().x - centerX, Mouse::Pos().y - centerY) < SQ(mNodeRadius))
+		{
+			color = Palette::Orange;
+		}
 
-		const float centerX = ScaleX(node.mVisualX);
-		const float centerY = ScaleY(node.mVisualY);
 		Circle(centerX, centerY, mNodeRadius).draw(color);
 		mFont(node.mScore).drawCenter(centerX, centerY, Palette::Red);
 	}
@@ -49,28 +54,33 @@ void TreeSiv3D::Update()
 {
 	Tree::Update();
 
-	// スケールの変更
 	{
 		// 中心座標の変更（前フレームからのカーソルの移動量）
-		if (Input::MouseL.pressed)
+		if (Input::MouseR.pressed)
 		{
 			const Point delta = Mouse::Delta();
 			mOffsetX += delta.x;
 			mOffsetY += delta.y;
 		}
+		else if (Input::MouseL.clicked)
+		{
+			for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
+			{
+				const Node& node = mNodes[nodeID];
+				const float centerX = ScaleX(node.mVisualX);
+				const float centerY = ScaleY(node.mVisualY);
+				if (SQSUM(Mouse::Pos().x - centerX, Mouse::Pos().y - centerY) < SQ(mNodeRadius))
+				{
+					SetSelectedNodeID(nodeID);
+					break;
+				}
+			}
+		}
 
 
+
+		// 拡大縮小
 		const int wheelY = Mouse::Wheel();
 		mGridScale *= (float)pow(1.1, -wheelY);
 	}
-
-/*
-
-	string	te;
-	wstring	teJap;
-	if (mBoard->Update(te, teJap))
-	{
-		AddLink(te, &teJap);
-	}
-*/
 }

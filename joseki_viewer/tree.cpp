@@ -76,7 +76,7 @@ void Tree::AddLink(const string& te, const wstring* pTeJap)
 		Node nextNode;
 
 		nextNode.mState = mBoard->GetState();
-		nextNode.mScore = mBoard->CalcBestMoveAndScore();
+		nextNode.mScore = 0; // ˆêŽž“I‚É mBoard->CalcBestMoveAndScore();
 		nextNode.mParentNodeID = mSelectedNodeID;
 
 		mNodes.push_back(nextNode);
@@ -154,3 +154,8 @@ void Tree::CalculateVisualPos()
 	DfsVisualPos(rootNodeID, 0, 0);
 }
 
+void Tree::SetSelectedNodeID(int nodeID)
+{
+	mSelectedNodeID = nodeID;
+	mBoard->SetState(mNodes[nodeID].mState);
+}

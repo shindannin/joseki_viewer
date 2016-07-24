@@ -54,7 +54,7 @@ public:
 	virtual void Update();
 	void AddLink(const string& te, const wstring* pTeJap = nullptr);
 	void CalculateVisualPos();
-	void SetSelectedNodeID(int nodeID) { mSelectedNodeID = nodeID;  }
+	void SetSelectedNodeID(int nodeID);
 	const Node& GetNode(int nodeID) const { return mNodes[nodeID]; }
 
 protected:

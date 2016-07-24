@@ -40,6 +40,7 @@ BoardSiv3D::BoardSiv3D()
 
 	mServer = nullptr;
 
+/*  // 一時的に
 	///////////////////////////////////
 	//
 	// クライアントを起動
@@ -50,6 +51,7 @@ BoardSiv3D::BoardSiv3D()
 	{
 		mServer = new Server(path.value(), false);
 	}
+*/
 }
 
 BoardSiv3D::~BoardSiv3D()
@@ -324,7 +326,7 @@ int BoardSiv3D::CalcBestMoveAndScore()
 		Print(wsTmp);
 	}
 
-	if (mServer->write(writeStr))
+	if (mServer!=nullptr && mServer->write(writeStr))
 	{
 		writeStr = "go btime 0 wtime 0 byoyomi 4000\n";
 		mServer->write(writeStr);
@@ -346,6 +348,7 @@ int BoardSiv3D::CalcBestMoveAndScore()
 
 				for (int k = 0; k < SZ(tmp); ++k)
 				{
+					// TODO : ここのフォーマット、詰みの時は違う！
 					if (tmp[k] == "score")
 					{
 						mScore = stoi(tmp[k + 2]);

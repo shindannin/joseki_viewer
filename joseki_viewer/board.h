@@ -7,6 +7,10 @@
 using namespace std;
 
 template<class T> bool INRANGE(T x, T a, T b) { return a <= x&&x <= b; }
+template<class T> T SQ(T x) { return x*x; }
+template<class T> T SQSUM(T x, T y) { return x*x + y*y; }
+
+
 #define SZ(a) ((int)a.size())
 const int NG = -1;
 
