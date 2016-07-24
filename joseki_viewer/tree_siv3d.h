@@ -23,8 +23,9 @@ private:
 	{
 		mOffsetX = 960;
 		mOffsetY = 100;
-		mNodeRadius = 8.f;
-		mGridScale = 30.f;
+		mNodeRadius = 12.f;
+		mGridScale =  40.f;
+		mFont = Font(10, L"ÉÅÉCÉäÉI");
 	}
 
 	float ScaleX(int x) const
@@ -37,9 +38,9 @@ private:
 		return mOffsetY + y * mGridScale;
 	}
 
-
-	int mOffsetX;
-	int mOffsetY;
+	Font mFont;
+	float mOffsetX;
+	float mOffsetY;
 	float mNodeRadius;
 	float mGridScale;
 };

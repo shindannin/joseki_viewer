@@ -360,7 +360,7 @@ int BoardSiv3D::CalcBestMoveAndScore()
 	NUKE:;
 	}
 
-	return 0;
+	return mScore;
 }
 
 void BoardSiv3D::UpdateDecided(string& te, wstring& teJap, bool& isMoved)
