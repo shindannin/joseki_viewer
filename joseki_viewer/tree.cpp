@@ -44,7 +44,7 @@ int Node::HasLink(const string& te) const
 
 Tree::Tree(Board* board)
 {
-	mVersion = 0;
+	mVersion = 1;
 	mSelectedNodeID = 0;
 	mNodes.clear();
 	mNodes.push_back(Node());
@@ -146,6 +146,24 @@ void Tree::DfsVisualPos(int nodeID, int y, int x)
 	}
 }
 
+void Tree::DfsState(int nodeID)
+{
+	Node& node = mNodes[nodeID];
+	node.mState = mBoard->GetState();
+
+	for (int i = 0; i < SZ(node.mLinks); ++i)
+	{
+		Link& link = node.mLinks[i];
+		
+		const int nextNodeID = link.destNodeID;
+		const Node& nextNode = mNodes[nextNodeID];
+
+		link.teJap = mBoard->MoveByTe(link.te);
+		DfsState(nextNodeID);
+		mBoard->SetState(node.mState);
+	}
+}
+
 void Tree::CalculateVisualPos()
 {
 	const int rootNodeID = GetRootNodeID();
@@ -158,4 +176,14 @@ void Tree::SetSelectedNodeID(int nodeID)
 {
 	mSelectedNodeID = nodeID;
 	mBoard->SetState(mNodes[nodeID].mState);
+}
+
+void Tree::InitializeAfterLoad()
+{
+	mBoard->InitState();
+
+	const int rootNodeID = GetRootNodeID();
+	DfsState(rootNodeID);
+
+	SetSelectedNodeID(rootNodeID);
 }

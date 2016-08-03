@@ -148,6 +148,8 @@ public:
 	virtual bool Update(string& /* te */, wstring& /* teJap */) { return false; };
 	virtual int CalcBestMoveAndScore() { return 0; }
 
+	void InitState();
+
 	wstring MoveByTejun(const string& tejun);
 	wstring MoveByTe(const string& te);
 

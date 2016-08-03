@@ -54,6 +54,25 @@ void TreeSiv3D::Update()
 {
 	Tree::Update();
 
+	if (mGui.button(L"kifu_load").pushed)
+	{
+		const auto path = Dialog::GetOpen({ { L"定跡ビューワファイル (*.jsv)", L"*.jsv" } });
+		if (path.has_value())
+		{
+			Load(path.value().str());
+			InitializeAfterLoad();
+			CalculateVisualPos();
+		}
+	}
+	else if (mGui.button(L"kifu_save").pushed)
+	{
+		const auto path = Dialog::GetSave({ { L"定跡ビューワファイル (*.jsv)", L"*.jsv" } });
+		if (path.has_value())
+		{
+			Save(path.value().str());
+		}
+	}
+
 	{
 		// 中心座標の変更（前フレームからのカーソルの移動量）
 		if (Input::MouseR.pressed)
