@@ -1,11 +1,7 @@
 #include "board_siv3d.h"
-
+#include "util.h"
 
 #include <cassert>
-#include <algorithm>
-#include <numeric>
-
-
 
 BoardSiv3D::BoardSiv3D()
 {
@@ -37,33 +33,10 @@ BoardSiv3D::BoardSiv3D()
 	mInputState = E_IDLE;
 
 	SetOffset(100, 100);
-
-	mServer = nullptr;
-
-/*  // 一時的に
-	///////////////////////////////////
-	//
-	// クライアントを起動
-	//
-	const auto path = Dialog::GetOpen({ { L"実行ファイル (*.exe)", L"*.exe" } });
-
-	if (path)
-	{
-		mServer = new Server(path.value(), false);
-	}
-*/
 }
 
 BoardSiv3D::~BoardSiv3D()
 {
-	if (mServer != nullptr)
-	{
-		mServer->write("quit\n");
-
-		delete mServer;
-		mServer = nullptr;
-	}
-
 }
 
 
@@ -281,90 +254,7 @@ void BoardSiv3D::GetXYNaruNarazuChoice(float& y, float& x) const
 	y = static_cast<float>( (Mouse::Pos().y - topY) / mKomaTextureHeight );
 }
 
-void BoardSiv3D::InitServer()
-{
-	if (mServer)
-	{
-		if (mServer->write("usi\n"))
-		{
-			std::string readStr;
 
-			System::Sleep(500);
-			if (mServer->read(readStr))
-			{
-				const vector <string> options = {
-					"isready\n",
-				};
-
-				string allOptions = accumulate(options.begin(), options.end(), string() );
-
-				if (mServer->write(allOptions))
-				{
-					System::Sleep(500);
-					if (mServer->read(readStr))
-					{
-						std::wstring wsTmp(readStr.begin(), readStr.end());
-						Print(wsTmp);
-						if (mServer->write("usinewgame\n"))
-						{
-						}
-					}
-				}
-			}
-		}
-	}
-
-}
-
-int BoardSiv3D::CalcBestMoveAndScore()
-{
-	string writeStr;
-	writeStr += "position sfen " + GetState()+ "\n";
-
-	{
-		std::wstring wsTmp(writeStr.begin(), writeStr.end());
-		Print(wsTmp);
-	}
-
-	if (mServer!=nullptr && mServer->write(writeStr))
-	{
-		writeStr = "go btime 0 wtime 0 byoyomi 4000\n";
-		mServer->write(writeStr);
-			
-		System::Sleep(4000);
-
-		
-		string readStr;
-		if (mServer->read(readStr))
-		{
-			vector <string> vs;
-			Split1(readStr, vs, '\n');
-
-			for (int i=SZ(vs)-1; i>=0; --i)
-			{
-				const string& lastInfo = vs[i];
-				vector <string> tmp;
-				Split1(lastInfo, tmp, ' ');
-
-				for (int k = 0; k < SZ(tmp); ++k)
-				{
-					// TODO : ここのフォーマット、詰みの時は違う！
-					if (tmp[k] == "score")
-					{
-						mScore = stoi(tmp[k + 2]);
-						std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
-						Print(wsTmp);
-						goto NUKE;
-					}
-				}
-			}
-		}
-
-	NUKE:;
-	}
-
-	return mScore;
-}
 
 void BoardSiv3D::UpdateDecided(string& te, wstring& teJap, bool& isMoved)
 {
@@ -378,15 +268,7 @@ bool BoardSiv3D::Update(string& te, wstring& teJap)
 {
 	bool isMoved = false;
 
-	if (Input::KeyA.released)
-	{
-		if(mServer==nullptr)
-		{
-			InitServer();
-		}
-		CalcBestMoveAndScore();
-	}
-	else if (Input::MouseL.clicked)
+	if (Input::MouseL.clicked)
 	{
 		switch (mInputState)
 		{

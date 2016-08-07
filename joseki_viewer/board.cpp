@@ -1,25 +1,8 @@
-// 次にやること！
-
-// bool Update()にかえて、手を打ったら(string& te, wstring& teJap)を返すようにする。
-// linkにそれを入れる
-
-
 #include <cassert>
 #include <algorithm>
+#include "util.h"
 
 #include "board.h"
-
-//先手の玉：K、後手の玉：k （Kingの頭文字）
-//先手の飛車：R、後手の飛車：r （Rookの頭文字）
-//先手の角：B、後手の角：b （Bishopの頭文字）
-//先手の金：G、後手の金：g （Goldの頭文字）
-//先手の銀：S、後手の銀：s （Silverの頭文字）
-//先手の桂馬：N、後手の桂馬：n （kNightより）
-//先手の香車：L、後手の香車：l （Lanceの頭文字）
-//先手の歩：P、後手の歩：p （Pawnの頭文字）
-
-
-
 
 Board::Board()
 {
@@ -514,23 +497,7 @@ string Board::GetState() const
 	return ret;
 }
 
-void Board::Split1(const string& str, vector<string>& out, const char splitter) const
-{
-	out.clear();
-	string::size_type st = 0;
-	string::size_type next = 0;
-	string tmp = str;
-	do
-	{
-		next = tmp.find(splitter, st); // tmp.find_first_of("+-",st); 複数の文字で分けたいとき
-		string word = tmp.substr(st, next - st);
-		if (word.length() >= 1) // 空文字列ありのときは消す
-		{
-			out.push_back(word);
-		}
-		st = next + 1;
-	} while (next != string::npos);
-}
+
 
 void Board::RemoveCharsFromString(string &str, char* charsToRemove) const
 {

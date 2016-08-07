@@ -4,7 +4,7 @@ Node::Node()
 {
 	mState = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";
 	mLinks.clear();
-	mScore = 0;
+	mScore = SCORE_NOT_EVALUATED;
 	mComment.clear();
 
 	mVisualX = 0;
@@ -76,7 +76,7 @@ void Tree::AddLink(const string& te, const wstring* pTeJap)
 		Node nextNode;
 
 		nextNode.mState = mBoard->GetState();
-		nextNode.mScore = 0; // ˆêŽž“I‚É mBoard->CalcBestMoveAndScore();
+		nextNode.mScore = Node::SCORE_NOT_EVALUATED;
 		nextNode.mParentNodeID = mSelectedNodeID;
 
 		mNodes.push_back(nextNode);
@@ -104,6 +104,19 @@ int Tree::GetRootNodeID()
 	}
 
 	assert(0);
+	return NG;
+}
+
+int Tree::GetNextEvaludatedNodeID() const
+{
+	for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
+	{
+		if (!mNodes[nodeID].IsScoreEvaluated())
+		{
+			return nodeID;
+		}
+	}
+
 	return NG;
 }
 
@@ -187,3 +200,4 @@ void Tree::InitializeAfterLoad()
 
 	SetSelectedNodeID(rootNodeID);
 }
+

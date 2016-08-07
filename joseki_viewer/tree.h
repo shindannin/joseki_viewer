@@ -31,10 +31,13 @@ struct Link
 class Node
 {
 public:
+	enum { SCORE_NOT_EVALUATED = 123456789 };
+
 	Node();
 	void AddLink(int newNodeID, const string& te, const wstring* pTeJap = nullptr);
 	int HasLink(const string& te) const;
 	bool IsRoot() const { return mParentNodeID == NG; }
+	bool IsScoreEvaluated() const { return mScore != SCORE_NOT_EVALUATED;  }
 
 	void Save(wfstream& wfs)
 	{
@@ -91,8 +94,10 @@ public:
 	void AddLink(const string& te, const wstring* pTeJap = nullptr);
 	void CalculateVisualPos();
 	void SetSelectedNodeID(int nodeID);
+	int GetNextEvaludatedNodeID() const;
 	const Node& GetNode(int nodeID) const { return mNodes[nodeID]; }
 	void InitializeAfterLoad();
+	void SetScore(int nodeID, int score) { mNodes[nodeID].mScore = score; }
 
 	void Save(const wstring& path)
 	{
@@ -138,7 +143,6 @@ protected:
 	void DfsVisualPos(int nodeID, int y, int x);
 	void DfsState(int nodeID);
 
-
 	// セーブする
 	int mVersion;
 	vector <Node> mNodes;
@@ -146,5 +150,4 @@ protected:
 	// セーブしない
 	int mSelectedNodeID;
 	Board* mBoard;
-
 };

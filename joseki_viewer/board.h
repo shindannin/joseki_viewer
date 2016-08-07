@@ -166,7 +166,6 @@ public:
 
 
 	void InitNextMove() { mNextMove.Init(); }
-	void Split1(const string& str, vector<string>& out, const char splitter = ' ') const;
 	void RemoveCharsFromString(string &str, char* charsToRemove) const;
 
 	// setter, getter

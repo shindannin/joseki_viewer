@@ -1,4 +1,8 @@
 #include "tree_siv3d.h"
+#include "util.h"
+
+#include <algorithm>
+#include <numeric>
 
 
 void TreeSiv3D::Draw()
@@ -53,6 +57,7 @@ void TreeSiv3D::Draw()
 void TreeSiv3D::Update()
 {
 	Tree::Update();
+	mEvaluator.Update();
 
 	if (mGui.button(L"kifu_load").pushed)
 	{
@@ -71,6 +76,10 @@ void TreeSiv3D::Update()
 		{
 			Save(path.value().str());
 		}
+	}
+	else if (mGui.button(L"evaluator_load").pushed)
+	{
+		mEvaluator.Open();
 	}
 
 	{
@@ -96,10 +105,165 @@ void TreeSiv3D::Update()
 			}
 		}
 
-
-
 		// 拡大縮小
 		const int wheelY = Mouse::Wheel();
 		mGridScale *= (float)pow(1.1, -wheelY);
+	}
+}
+
+void Evaluator::Open()
+{
+	///////////////////////////////////
+	//
+	// クライアントを起動
+	//
+	const auto path = Dialog::GetOpen({ { L"実行ファイル (*.exe)", L"*.exe" } });
+
+	if (path)
+	{
+		if (mServer != nullptr)
+		{
+			Close();
+		}
+		mServer = new Server(path.value(), false);
+	}
+
+	if (mServer)
+	{
+		if (mServer->write("usi\n"))
+		{
+			std::string readStr;
+
+			System::Sleep(mDurationMilliSecMargin);
+			if (mServer->read(readStr))
+			{
+				const vector <string> options = {
+					"isready\n",
+				};
+
+				string allOptions = accumulate(options.begin(), options.end(), string());
+
+				if (mServer->write(allOptions))
+				{
+					System::Sleep(mDurationMilliSecMargin);
+					if (mServer->read(readStr))
+					{
+						std::wstring wsTmp(readStr.begin(), readStr.end());
+						Print(wsTmp);
+						if (mServer->write("usinewgame\n"))
+						{
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void Evaluator::Close()
+{
+	if (mServer != nullptr)
+	{
+		mServer->write("quit\n");
+
+		delete mServer;
+		mServer = nullptr;
+	}
+}
+
+void Evaluator::Update()
+{
+	if (mServer)
+	{
+		// 毎フレーム呼ぶ必要はない！
+
+		switch (mEStateEvaluation)
+		{
+		case EStateEvaluation_FindingNode:
+		{
+			mEvaludatingNodeID = mTree->GetNextEvaludatedNodeID();
+			if (mEvaludatingNodeID != NG)
+			{
+				if (Go())
+				{
+					mEStateEvaluation = EStateEvaluation_WaitingScore;
+					mTimerMilliSec.restart();
+				}
+			}
+		}
+		break;
+
+		case EStateEvaluation_WaitingScore:
+			if (mTimerMilliSec.elapsed() > mDurationMilliSec) // 時間経過したら受け取りに
+			{
+				ReceiveBestMoveAndScore();
+				mEStateEvaluation = EStateEvaluation_FindingNode;
+			}
+			break;
+
+		default:
+			assert(0);
+			break;
+		}
+	}
+}
+
+bool Evaluator::Go()
+{
+	assert(mEvaludatingNodeID != NG);
+	const Node& node = mTree->GetNode(mEvaludatingNodeID);
+
+	string writeStr;
+	writeStr += "position sfen " + node.mState + "\n";
+
+	{
+		std::wstring wsTmp(writeStr.begin(), writeStr.end());
+		Print(wsTmp);
+	}
+
+	assert(mServer != nullptr);
+
+	if (mServer != nullptr && mServer->write(writeStr))
+	{
+		writeStr = "go btime 0 wtime 0 byoyomi " + to_string(mDurationMilliSec + mDurationMilliSecMargin) + "\n";
+		return mServer->write(writeStr);
+	}
+
+	return false;
+}
+
+void Evaluator::ReceiveBestMoveAndScore()
+{
+	string readStr;
+	if (mServer->read(readStr))
+	{
+		int score = 0;
+
+		vector <string> vs;
+		Split1(readStr, vs, '\n');
+
+		for (int i = SZ(vs) - 1; i >= 0; --i)
+		{
+			const string& lastInfo = vs[i];
+			vector <string> tmp;
+			Split1(lastInfo, tmp, ' ');
+
+			for (int k = 0; k < SZ(tmp); ++k)
+			{
+				// TODO : ここのフォーマット、詰みの時は違う！
+				if (tmp[k] == "score")
+				{
+					assert(mEvaludatingNodeID != NG);
+					score = stoi(tmp[k + 2]);
+					std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
+					Print(wsTmp);
+					goto NUKE;
+				}
+			}
+		
+		}
+
+		NUKE:;
+		mTree->SetScore(mEvaludatingNodeID, score);
 	}
 }
