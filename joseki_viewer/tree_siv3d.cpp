@@ -48,7 +48,10 @@ void TreeSiv3D::Draw()
 		}
 
 		Circle(centerX, centerY, mNodeRadius).draw(color);
+
+
 		mFont(node.mScore).drawCenter(centerX, centerY, Palette::Red);
+		mFont(node.mTejunJap).drawCenter(centerX, centerY+15, Palette::Aqua);
 	}
 
 
@@ -237,7 +240,8 @@ void Evaluator::ReceiveBestMoveAndScore()
 	string readStr;
 	if (mServer->read(readStr))
 	{
-		int score = 0;
+		assert(mEvaludatingNodeID != NG);
+
 
 		vector <string> vs;
 		Split1(readStr, vs, '\n');
@@ -245,25 +249,44 @@ void Evaluator::ReceiveBestMoveAndScore()
 		for (int i = SZ(vs) - 1; i >= 0; --i)
 		{
 			const string& lastInfo = vs[i];
+			std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
+			Print(wsTmp);
+
 			vector <string> tmp;
 			Split1(lastInfo, tmp, ' ');
+
+
+			bool isScoreFound = false;
+			int score = 0;
+			string tejun;
 
 			for (int k = 0; k < SZ(tmp); ++k)
 			{
 				// TODO : ここのフォーマット、詰みの時は違う！
 				if (tmp[k] == "score")
 				{
-					assert(mEvaludatingNodeID != NG);
 					score = stoi(tmp[k + 2]);
-					std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
-					Print(wsTmp);
-					goto NUKE;
+					isScoreFound = true;
+				}
+				else if (tmp[k] == "pv")
+				{
+					for (int x = k+1; x < SZ(tmp); ++x)
+					{
+						tejun += tmp[x];
+						if (x < SZ(tmp) - 1)
+						{
+							tejun += " ";
+						}
+					}
 				}
 			}
-		
-		}
 
-		NUKE:;
-		mTree->SetScore(mEvaludatingNodeID, score);
+			if (isScoreFound)
+			{
+				mTree->SetScore(mEvaludatingNodeID, score);
+				mTree->SetTejun(mEvaludatingNodeID, tejun);
+				break;
+			}
+		}
 	}
 }

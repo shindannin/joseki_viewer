@@ -169,8 +169,6 @@ void Tree::DfsState(int nodeID)
 		Link& link = node.mLinks[i];
 		
 		const int nextNodeID = link.destNodeID;
-		const Node& nextNode = mNodes[nextNodeID];
-
 		link.teJap = mBoard->MoveByTe(link.te);
 		DfsState(nextNodeID);
 		mBoard->SetState(node.mState);
@@ -197,6 +195,16 @@ void Tree::InitializeAfterLoad()
 
 	const int rootNodeID = GetRootNodeID();
 	DfsState(rootNodeID);
+
+	// “ú–{ŒêŽè‡‚¾‚¯ŒvŽZ
+	for (Node& node : mNodes)
+	{
+		if (!node.mTejun.empty())
+		{
+			mBoard->SetState(node.mState);
+			node.mTejunJap = mBoard->MoveByTejun(node.mTejun);
+		}
+	}
 
 	SetSelectedNodeID(rootNodeID);
 }

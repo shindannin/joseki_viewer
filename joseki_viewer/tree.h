@@ -1,6 +1,7 @@
 #pragma once
 
 #include "board.h"
+#include "util.h"
 #include <fstream>
 
 #define MAX_SAVE_SIZE	(0x1000)
@@ -23,8 +24,8 @@ struct Link
 	void Load(wfstream& wfs)
 	{
 		wstring ws;
-		getline(wfs, ws);	destNodeID = stoi(ws);
-		getline(wfs, ws);	te = string(ws.begin(), ws.end());
+		GetLineTrim(wfs, ws);	destNodeID = stoi(ws);
+		GetLineTrim(wfs, ws);	te = string(ws.begin(), ws.end());
 	}
 };
 
@@ -49,18 +50,19 @@ public:
 		{
 			mLinks[i].Save(wfs);
 		}
-		wfs << mComment << endl;;		// コメント
+		wfs << mComment << endl;		// コメント
+		wfs << wstring(mTejun.begin(), mTejun.end()) << endl;
 	}
 
 	void Load(wfstream& wfs)
 	{
 		wstring ws;
-//		getline(wfs, ws);	mState = string(ws.begin(), ws.end());
-		getline(wfs, ws);	mScore = stoi(ws);
-		getline(wfs, ws);	mParentNodeID = stoi(ws);
+//		GetLineTrim(wfs, ws);	mState = string(ws.begin(), ws.end());
+		GetLineTrim(wfs, ws);	mScore = stoi(ws);
+		GetLineTrim(wfs, ws);	mParentNodeID = stoi(ws);
 
 		int numLinks = 0;
-		getline(wfs, ws);	numLinks = stoi(ws);
+		GetLineTrim(wfs, ws);	numLinks = stoi(ws);
 		mLinks.clear();
 		mLinks.resize(numLinks);
 		for (int i = 0; i < SZ(mLinks); ++i)
@@ -68,7 +70,8 @@ public:
 			mLinks[i].Load(wfs);
 		}
 
-		getline(wfs, ws);	mComment = ws;
+		GetLineTrim(wfs, ws);	mComment = ws;
+		GetLineTrim(wfs, ws);	mTejun = string(ws.begin(), ws.end());
 	}
 
 	// セーブする情報
@@ -76,12 +79,14 @@ public:
 	int				mParentNodeID;
 	vector <Link>	mLinks;
 	wstring			mComment;		// コメント
+	string			mTejun;			// 最善手
 
 	// セーブしない情報
 	string			mState;			// ルート以外は本当は必須でもない。
-	int mVisualX;
-	int mVisualY;
-	int mWidth;
+	int				mVisualX;
+	int				mVisualY;
+	int				mWidth;
+	wstring			mTejunJap;
 };
 
 class Tree
@@ -98,6 +103,7 @@ public:
 	const Node& GetNode(int nodeID) const { return mNodes[nodeID]; }
 	void InitializeAfterLoad();
 	void SetScore(int nodeID, int score) { mNodes[nodeID].mScore = score; }
+	void SetTejun(int nodeID, string tejun) { mNodes[nodeID].mTejun = tejun; }
 
 	void Save(const wstring& path)
 	{
@@ -120,10 +126,10 @@ public:
 		wfs.open(path, std::fstream::in);
 
 		wstring ws;
-		getline(wfs, ws);	mVersion = stoi(ws);
+		GetLineTrim(wfs, ws);	mVersion = stoi(ws);
 
 		int numNodes = 0;
-		getline(wfs, ws);	numNodes = stoi(ws);
+		GetLineTrim(wfs, ws);	numNodes = stoi(ws);
 
 		mNodes.clear();
 		mNodes.resize(numNodes);

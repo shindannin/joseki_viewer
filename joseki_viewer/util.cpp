@@ -1,4 +1,5 @@
 #include "util.h"
+#include <fstream>
 
 void Split1(const string& str, vector<string>& out, const char splitter)
 {
@@ -16,4 +17,13 @@ void Split1(const string& str, vector<string>& out, const char splitter)
 		}
 		st = next + 1;
 	} while (next != string::npos);
+}
+
+void GetLineTrim(wfstream& wfs, wstring& ws)
+{
+	getline(wfs, ws);
+	if (!ws.empty() && ws[ws.size() - 1] == '\r')
+	{
+		ws.erase(ws.size() - 1);
+	}
 }
