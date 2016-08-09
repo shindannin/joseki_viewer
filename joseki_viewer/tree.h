@@ -83,9 +83,9 @@ public:
 
 	// セーブしない情報
 	string			mState;			// ルート以外は本当は必須でもない。
-	int				mVisualX;
-	int				mVisualY;
-	int				mWidth;
+	float			mVisualX;
+	float			mVisualY;
+	float			mWidth;
 	wstring			mTejunJap;
 };
 
@@ -145,8 +145,8 @@ protected:
 	Tree() {};
 
 	int GetRootNodeID();
-	int DfsWidth(int nodeID);
-	void DfsVisualPos(int nodeID, int y, int x);
+	float DfsWidth(int nodeID);
+	void DfsVisualPos(int nodeID, float y, float x);
 	void DfsState(int nodeID);
 
 	// セーブする

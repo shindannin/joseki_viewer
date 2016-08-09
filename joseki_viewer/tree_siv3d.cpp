@@ -110,7 +110,17 @@ void TreeSiv3D::Update()
 
 		// ägëÂèkè¨
 		const int wheelY = Mouse::Wheel();
-		mGridScale *= (float)pow(1.1, -wheelY);
+		if (wheelY != 0)
+		{
+			const float prevGridScale = mGridScale;
+			const float invScaledX = InvScaleX(WINDOW_W*0.75f);
+			const float invScaledY = InvScaleY(WINDOW_H*0.5f);
+			mGridScale *= (float)pow(1.1, -wheelY);
+			const float diffGridScale = mGridScale - prevGridScale;
+
+			mOffsetX -= invScaledX * diffGridScale;
+			mOffsetY -= invScaledY * diffGridScale;
+		}
 	}
 }
 

@@ -1,3 +1,16 @@
+// のこりの実装項目
+
+// 重要なやつ
+// - 最善手の表示
+// - 評価ソフトの時間変更
+// - Delete
+// - 再評価
+// - 拡縮を中央に
+// - Undo
+// - デザイン
+
+
+
 #pragma once
 
 #include <Siv3D.hpp>
@@ -170,8 +183,8 @@ class TreeSiv3D : public Tree
 public:
 	TreeSiv3D(Board* board) : Tree(board), mEvaluator(this)
 	{
-		mOffsetX = 960;
-		mOffsetY = 100;
+		mOffsetX = WINDOW_W * 0.75f;
+		mOffsetY = WINDOW_H * 0.5f;
 		mNodeRadius = 12.f;
 		mGridScale = 40.f;
 		mFont = Font(10, L"メイリオ");
@@ -180,6 +193,12 @@ public:
 		mGui.add(L"kifu_load", GUIButton::Create(L"定跡ファイルを開く"));
 		mGui.add(L"kifu_save", GUIButton::Create(L"定跡ファイルを保存"));
 		mGui.add(L"evaluator_load", GUIButton::Create(L"評価ソフトを開く"));
+
+		mGuiNode = GUI(GUIStyle::Default);
+		mGuiNode.setPos(0, 570);
+		mGuiNode.addln(L"comment", GUITextField::Create(30));
+		mGuiNode.addln(L"score", GUIText::Create(L"評価値", 640));
+		mGuiNode.addln(L"tejunJap", GUIText::Create(L"読み筋", 640));
 	}
 
 	virtual void Draw() override;
@@ -188,18 +207,31 @@ public:
 private:
 	TreeSiv3D()	{};
 
-	float ScaleX(int x) const
+	float ScaleX(float x) const
 	{
 		return mOffsetX + x * mGridScale;
 	}
 
-	float ScaleY(int y) const
+	float ScaleY(float y) const
 	{
 		return mOffsetY + y * mGridScale;
 	}
 
+	float InvScaleX(float scaledX) const
+	{
+		assert(mGridScale > 0.f);
+		return (scaledX - mOffsetX) / mGridScale;
+	}
+
+	float InvScaleY(float scaledY) const
+	{
+		assert(mGridScale > 0.f);
+		return (scaledY - mOffsetY) / mGridScale;;
+	}
+
 	Font mFont;
 	GUI mGui;
+	GUI mGuiNode;
 	
 	float mOffsetX;
 	float mOffsetY;

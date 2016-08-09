@@ -120,11 +120,11 @@ int Tree::GetNextEvaludatedNodeID() const
 	return NG;
 }
 
-int Tree::DfsWidth(int nodeID)
+float Tree::DfsWidth(int nodeID)
 {
 	Node& node = mNodes[nodeID];
 
-	node.mWidth = 0;
+	node.mWidth = 0.f;
 	for (int i = 0; i < SZ(node.mLinks); ++i)
 	{
 		node.mWidth += DfsWidth(node.mLinks[i].destNodeID);
@@ -132,7 +132,7 @@ int Tree::DfsWidth(int nodeID)
 
 	if (SZ(node.mLinks) >= 1)
 	{
-		node.mWidth += 2 * (SZ(node.mLinks) - 1);
+		node.mWidth += 2.0f * (SZ(node.mLinks) - 1.0f);
 	}
 
 	assert(node.mWidth >= 0);
@@ -140,22 +140,22 @@ int Tree::DfsWidth(int nodeID)
 	return node.mWidth;
 }
 
-void Tree::DfsVisualPos(int nodeID, int y, int x)
+void Tree::DfsVisualPos(int nodeID, float y, float x)
 {
 	Node& node = mNodes[nodeID];
 	node.mVisualY = y;
 	node.mVisualX = x;
 
-	int dx = -node.mWidth / 2;
+	float dx = -node.mWidth / 2.0f;
 	for (int i = 0; i < SZ(node.mLinks); ++i)
 	{
 		const int nextNodeID = node.mLinks[i].destNodeID;
 		const Node& nextNode = mNodes[nextNodeID];
 
-		dx += nextNode.mWidth / 2;
-		DfsVisualPos(nextNodeID, y + 1, x + dx);
-		dx += nextNode.mWidth / 2;
-		dx += 2;
+		dx += nextNode.mWidth / 2.0f;
+		DfsVisualPos(nextNodeID, y + 1.0f, x + dx);
+		dx += nextNode.mWidth / 2.0f;
+		dx += 2.0f;
 	}
 }
 

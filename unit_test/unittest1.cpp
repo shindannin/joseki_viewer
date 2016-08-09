@@ -265,23 +265,23 @@ namespace unit_test
 			tree->AddLink("6i7h");
 			tree->CalculateVisualPos();
 
-			Assert::AreEqual(tree->GetNode(0).mVisualX, 0);
-			Assert::AreEqual(tree->GetNode(0).mVisualY, 0);
+			Assert::AreEqual(tree->GetNode(0).mVisualX, 0.f);
+			Assert::AreEqual(tree->GetNode(0).mVisualY, 0.f);
 
-			Assert::AreEqual(tree->GetNode(1).mVisualX, -1);
-			Assert::AreEqual(tree->GetNode(1).mVisualY, 1);
+			Assert::AreEqual(tree->GetNode(1).mVisualX, -1.f);
+			Assert::AreEqual(tree->GetNode(1).mVisualY, 1.f);
 
-			Assert::AreEqual(tree->GetNode(2).mVisualX, -1);
-			Assert::AreEqual(tree->GetNode(2).mVisualY, 2);
+			Assert::AreEqual(tree->GetNode(2).mVisualX, -1.f);
+			Assert::AreEqual(tree->GetNode(2).mVisualY, 2.f);
 
-			Assert::AreEqual(tree->GetNode(3).mVisualX, -1);
-			Assert::AreEqual(tree->GetNode(3).mVisualY, 3);
+			Assert::AreEqual(tree->GetNode(3).mVisualX, -1.f);
+			Assert::AreEqual(tree->GetNode(3).mVisualY, 3.f);
 
-			Assert::AreEqual(tree->GetNode(4).mVisualX, 1);
-			Assert::AreEqual(tree->GetNode(4).mVisualY, 1);
+			Assert::AreEqual(tree->GetNode(4).mVisualX, 1.f);
+			Assert::AreEqual(tree->GetNode(4).mVisualY, 1.f);
 
-			Assert::AreEqual(tree->GetNode(5).mVisualX, 1);
-			Assert::AreEqual(tree->GetNode(5).mVisualY, 2);
+			Assert::AreEqual(tree->GetNode(5).mVisualX, 1.f);
+			Assert::AreEqual(tree->GetNode(5).mVisualY, 2.f);
 
 			delete tree;
 			delete board;

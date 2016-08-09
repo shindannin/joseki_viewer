@@ -1,6 +1,8 @@
 #include "util.h"
 #include <fstream>
 
+#define WINDOW_SIZE_W (960.f)
+
 void Split1(const string& str, vector<string>& out, const char splitter)
 {
 	out.clear();

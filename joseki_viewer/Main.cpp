@@ -43,6 +43,7 @@
 
 #include "board_siv3d.h"
 #include "tree_siv3d.h"
+#include "util.h"
 
 
 using namespace std;
@@ -50,7 +51,7 @@ using namespace s3d;
 
 void Main()
 {
-	Window::Resize(1280, 720);
+	Window::Resize(WINDOW_W, WINDOW_H);
 	const Font font(30);
 
 
