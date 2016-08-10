@@ -102,8 +102,18 @@ public:
 	int GetNextEvaludatedNodeID() const;
 	const Node& GetNode(int nodeID) const { return mNodes[nodeID]; }
 	void InitializeAfterLoad();
-	void SetScore(int nodeID, int score) { mNodes[nodeID].mScore = score; }
-	void SetTejun(int nodeID, string tejun) { mNodes[nodeID].mTejun = tejun; }
+
+	void UpdateNode(int nodeID, int score, const string& tejun)
+	{
+		Node& node = mNodes[nodeID];
+		node.mScore = score;
+		node.mTejun = tejun;
+
+		Board tmpBoard;
+		tmpBoard.SetState(node.mState);
+		node.mTejunJap = tmpBoard.MoveByTejun(tejun);
+	}
+
 
 	void Save(const wstring& path)
 	{

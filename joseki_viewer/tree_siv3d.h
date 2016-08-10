@@ -197,8 +197,8 @@ public:
 		mGuiNode = GUI(GUIStyle::Default);
 		mGuiNode.setPos(0, 570);
 		mGuiNode.addln(L"comment", GUITextField::Create(30));
-		mGuiNode.addln(L"score", GUIText::Create(L"•]‰¿’l", 640));
-		mGuiNode.addln(L"tejunJap", GUIText::Create(L"“Ç‚Ý‹Ø", 640));
+		mGuiNode.addln(L"score", GUIText::Create(L"", 640));
+		mGuiNode.addln(L"tejunJap", GUIText::Create(L"‹Ø", 640));
 	}
 
 	virtual void Draw() override;

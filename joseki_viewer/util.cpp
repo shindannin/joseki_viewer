@@ -29,3 +29,40 @@ void GetLineTrim(wfstream& wfs, wstring& ws)
 		ws.erase(ws.size() - 1);
 	}
 }
+
+void Trim(wstring& ws)
+{
+	if (!ws.empty() && ws[ws.size() - 1] == '\r')
+	{
+		ws.erase(ws.size() - 1);
+	}
+}
+
+void Trim(string& s)
+{
+	if (!s.empty() && s[s.size() - 1] == '\r')
+	{
+		s.erase(s.size() - 1);
+	}
+}
+
+wstring AddNewLine(const wstring& ws, int perNumTe)
+{
+	wstring ret;
+	int numTe = 0;
+	for (int i = 0; i < ws.size(); ++i)
+	{
+		ret += ws[i];
+		if (i + 1 < ws.size() && (ws[i + 1] == L'£' || ws[i + 1] == L'¢'))
+		{
+			numTe++;
+			if (numTe%perNumTe == 0)
+			{
+				ret += L'\n';
+			}
+		}
+
+	}
+
+	return ret;
+}

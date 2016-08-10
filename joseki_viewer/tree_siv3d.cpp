@@ -51,10 +51,8 @@ void TreeSiv3D::Draw()
 
 
 		mFont(node.mScore).drawCenter(centerX, centerY, Palette::Red);
-		mFont(node.mTejunJap).drawCenter(centerX, centerY+15, Palette::Aqua);
+//		mFont(node.mTejunJap).drawCenter(centerX, centerY+15, Palette::Aqua);
 	}
-
-
 }
 
 void TreeSiv3D::Update()
@@ -62,6 +60,7 @@ void TreeSiv3D::Update()
 	Tree::Update();
 	mEvaluator.Update();
 
+	// メニュー
 	if (mGui.button(L"kifu_load").pushed)
 	{
 		const auto path = Dialog::GetOpen({ { L"定跡ビューワファイル (*.jsv)", L"*.jsv" } });
@@ -95,6 +94,7 @@ void TreeSiv3D::Update()
 		}
 		else if (Input::MouseL.clicked)
 		{
+			// ノードの選択
 			for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
 			{
 				const Node& node = mNodes[nodeID];
@@ -120,6 +120,21 @@ void TreeSiv3D::Update()
 
 			mOffsetX -= invScaledX * diffGridScale;
 			mOffsetY -= invScaledY * diffGridScale;
+		}
+	}
+
+	// ノード情報
+	{
+		const Node& node = mNodes[mSelectedNodeID];
+		if (node.IsScoreEvaluated())
+		{
+			mGuiNode.text(L"score").text = Format(L"評価値", node.mScore);
+			mGuiNode.text(L"tejunJap").text = AddNewLine(node.mTejunJap, 6);
+		}
+		else
+		{
+			mGuiNode.text(L"score").text = Format(L"未評価");
+			mGuiNode.text(L"tejunJap").text = L"";
 		}
 	}
 }
@@ -161,8 +176,8 @@ void Evaluator::Open()
 					System::Sleep(mDurationMilliSecMargin);
 					if (mServer->read(readStr))
 					{
-						std::wstring wsTmp(readStr.begin(), readStr.end());
-						Print(wsTmp);
+// 						std::wstring wsTmp(readStr.begin(), readStr.end());
+// 						Print(wsTmp);
 						if (mServer->write("usinewgame\n"))
 						{
 						}
@@ -229,10 +244,10 @@ bool Evaluator::Go()
 	string writeStr;
 	writeStr += "position sfen " + node.mState + "\n";
 
-	{
-		std::wstring wsTmp(writeStr.begin(), writeStr.end());
-		Print(wsTmp);
-	}
+// 	{
+// 		std::wstring wsTmp(writeStr.begin(), writeStr.end());
+// 		Print(wsTmp);
+// 	}
 
 	assert(mServer != nullptr);
 
@@ -259,12 +274,12 @@ void Evaluator::ReceiveBestMoveAndScore()
 		for (int i = SZ(vs) - 1; i >= 0; --i)
 		{
 			const string& lastInfo = vs[i];
-			std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
-			Print(wsTmp);
+// 			std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
+// 			Print(wsTmp);
 
 			vector <string> tmp;
 			Split1(lastInfo, tmp, ' ');
-
+			Trim(tmp.back());
 
 			bool isScoreFound = false;
 			int score = 0;
@@ -293,8 +308,7 @@ void Evaluator::ReceiveBestMoveAndScore()
 
 			if (isScoreFound)
 			{
-				mTree->SetScore(mEvaludatingNodeID, score);
-				mTree->SetTejun(mEvaludatingNodeID, tejun);
+				mTree->UpdateNode(mEvaludatingNodeID, score, tejun);
 				break;
 			}
 		}
