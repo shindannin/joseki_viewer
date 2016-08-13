@@ -49,11 +49,19 @@ void TreeSiv3D::Draw()
 
 		Circle(centerX, centerY, mNodeRadius).draw(color);
 
+		if (node.IsScoreEvaluated())
+		{
+			mFont(node.mScore).drawCenter(centerX, centerY, Palette::Red);
+		}
 
-		mFont(node.mScore).drawCenter(centerX, centerY, Palette::Red);
-		mFont(nodeID).drawCenter(centerX, centerY+15, Palette::Aqua);
-
-//		mFont(node.mTejunJap).drawCenter(centerX, centerY+15, Palette::Aqua);
+		if (!node.mComment.empty())
+		{
+			Rect rect = mFont(node.mComment).region(centerX, centerY - 20);
+			rect.pos.x -= rect.size.x / 2;
+			rect.pos.y -= rect.size.y / 2;
+			rect.draw(Palette::Green);
+			mFont(node.mComment).drawCenter(centerX, centerY - 20, Palette::White);
+		}
 	}
 }
 
