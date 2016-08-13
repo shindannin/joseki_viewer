@@ -51,6 +51,8 @@ void TreeSiv3D::Draw()
 
 
 		mFont(node.mScore).drawCenter(centerX, centerY, Palette::Red);
+		mFont(nodeID).drawCenter(centerX, centerY+15, Palette::Aqua);
+
 //		mFont(node.mTejunJap).drawCenter(centerX, centerY+15, Palette::Aqua);
 	}
 }
@@ -126,6 +128,11 @@ void TreeSiv3D::Update()
 
 			mOffsetX -= invScaledX * diffGridScale;
 			mOffsetY -= invScaledY * diffGridScale;
+		}
+
+		if (Input::KeyDelete.clicked)
+		{
+			DeleteSelectedNode();
 		}
 	}
 

@@ -149,6 +149,7 @@ protected:
 	float DfsWidth(int nodeID);
 	void DfsVisualPos(int nodeID, float y, float x);
 	void DfsState(int nodeID);
+	void DeleteSelectedNode();
 
 	// ÉZÅ[ÉuÇ∑ÇÈ
 	int mVersion;
@@ -158,5 +159,6 @@ protected:
 	Board* mBoard;
 
 private:
+	void DfsCalcNewNodeID(int nodeID, vector <int>& newNodeIDs);
 	int mSelectedNodeID;
 };

@@ -220,3 +220,78 @@ void Tree::UpdateNode(int nodeID, int score, const string& tejun)
 	tmpBoard.SetState(node.mState);
 	node.mTejunJap = tmpBoard.MoveByTejun(tejun);
 }
+
+void Tree::DfsCalcNewNodeID(int nodeID, vector <int>& newNodeIDs)
+{
+	if (nodeID == mSelectedNodeID)
+	{
+		return;	// 選択ノードとそこから先を消すので、newNodeIDsは登録しない
+	}
+
+	newNodeIDs.push_back(nodeID);
+
+	const Node& node = mNodes[nodeID];
+
+	for (int i = 0; i < SZ(node.mLinks); ++i)
+	{
+		const Link& link = node.mLinks[i];
+
+		const int nextNodeID = link.destNodeID;
+		DfsCalcNewNodeID(nextNodeID, newNodeIDs);
+	}
+}
+
+void Tree::DeleteSelectedNode()
+{
+	const int rootNodeID = GetRootNodeID();
+	if (rootNodeID == mSelectedNodeID)
+	{
+		return;
+	}
+
+	vector <int> newNodeIDs;
+	DfsCalcNewNodeID(rootNodeID, newNodeIDs);
+
+	vector <int> invNewNodeIDs(SZ(mNodes), NG);
+	for (int i = 0; i < SZ(newNodeIDs); ++i)
+	{
+		invNewNodeIDs[newNodeIDs[i]] = i;
+	}
+
+	vector <Node> mNewNodes;
+	for (int i = 0; i < SZ(newNodeIDs); ++i)
+	{
+		mNewNodes.push_back(mNodes[newNodeIDs[i]]);
+	}
+
+	for (int i = 0; i < SZ(mNewNodes); ++i)
+	{
+		Node& newNode = mNewNodes[i];
+
+		if (newNode.mParentNodeID != NG)
+		{
+			newNode.mParentNodeID = invNewNodeIDs[newNode.mParentNodeID];
+			assert(newNode.mParentNodeID != NG);	// 親が消えている可能性はない
+		}
+
+		vector <Link>	newLinks;
+		for (int k=0;k<SZ(newNode.mLinks);++k)
+		{
+			const int newDestNodeID = invNewNodeIDs[newNode.mLinks[k].destNodeID];
+			if (newDestNodeID != NG)
+			{
+				newLinks.push_back(newNode.mLinks[k]);
+				newLinks[SZ(newLinks) - 1].destNodeID = newDestNodeID;
+			}
+		}
+
+		newNode.mLinks = newLinks;
+	}
+
+	const int newSelectedNodeID = mNodes[mSelectedNodeID].mParentNodeID;
+	assert(newSelectedNodeID != NG);
+
+	mNodes = mNewNodes;
+	SetSelectedNodeID(newSelectedNodeID);
+	CalculateVisualPos();
+}
