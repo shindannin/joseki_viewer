@@ -137,6 +137,7 @@ enum EStateEvaluation
 {
 	EStateEvaluation_FindingNode,
 	EStateEvaluation_WaitingScore,
+	EStateEvaluation_WaitingCancel,
 };
 
 class Tree;
@@ -163,10 +164,12 @@ public:
 	void Open();
 	void Close();
 	void Update();
+	void RequestCancel();
 
 private:
 	bool Go();
 	void ReceiveBestMoveAndScore();
+	void WaitAndCancel();
 
 	int mEvaludatingNodeID;
 	Server* mServer;

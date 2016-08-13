@@ -130,8 +130,10 @@ void TreeSiv3D::Update()
 			mOffsetY -= invScaledY * diffGridScale;
 		}
 
+		// ノードの削除
 		if (Input::KeyDelete.clicked)
 		{
+			mEvaluator.RequestCancel();
 			DeleteSelectedNode();
 		}
 	}
@@ -257,6 +259,14 @@ void Evaluator::Update()
 			}
 			break;
 
+		case EStateEvaluation_WaitingCancel:
+			if (mTimerMilliSec.elapsed() > mDurationMilliSec) // 時間経過したら受け取りに
+			{
+				WaitAndCancel();
+				mEStateEvaluation = EStateEvaluation_FindingNode;
+			}
+			break;
+
 		default:
 			assert(0);
 			break;
@@ -340,5 +350,22 @@ void Evaluator::ReceiveBestMoveAndScore()
 				break;
 			}
 		}
+	}
+}
+
+void Evaluator::WaitAndCancel()
+{
+	string readStr;
+	if (mServer->read(readStr))
+	{
+	}
+}
+
+void Evaluator::RequestCancel()
+{
+	// もし評価中であれば、評価をキャンセル
+	if (mEStateEvaluation == EStateEvaluation_WaitingScore)
+	{
+		mEStateEvaluation = EStateEvaluation_WaitingCancel;
 	}
 }
