@@ -96,24 +96,15 @@ public:
 	virtual ~Tree() {};
 	virtual void Draw();
 	virtual void Update();
+	virtual void OnSelectedNodeIDChanged() {};
 	void AddLink(const string& te, const wstring* pTeJap = nullptr);
 	void CalculateVisualPos();
-	void SetSelectedNodeID(int nodeID);
 	int GetNextEvaludatedNodeID() const;
 	const Node& GetNode(int nodeID) const { return mNodes[nodeID]; }
 	void InitializeAfterLoad();
-
-	void UpdateNode(int nodeID, int score, const string& tejun)
-	{
-		Node& node = mNodes[nodeID];
-		node.mScore = score;
-		node.mTejun = tejun;
-
-		Board tmpBoard;
-		tmpBoard.SetState(node.mState);
-		node.mTejunJap = tmpBoard.MoveByTejun(tejun);
-	}
-
+	void UpdateNode(int nodeID, int score, const string& tejun);
+	void SetSelectedNodeID(int nodeID);
+	int  GetSelectedNodeID() const { return mSelectedNodeID; }
 
 	void Save(const wstring& path)
 	{
@@ -164,6 +155,8 @@ protected:
 	vector <Node> mNodes;
 
 	// ÉZÅ[ÉuÇµÇ»Ç¢
-	int mSelectedNodeID;
 	Board* mBoard;
+
+private:
+	int mSelectedNodeID;
 };

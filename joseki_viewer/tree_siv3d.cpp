@@ -38,7 +38,7 @@ void TreeSiv3D::Draw()
 		const float centerY = ScaleY(node.mVisualY);
 
 		Color color = Palette::White;
-		if (nodeID == mSelectedNodeID)
+		if (nodeID == GetSelectedNodeID())
 		{
 			color = Palette::Yellow;
 		}
@@ -53,6 +53,12 @@ void TreeSiv3D::Draw()
 		mFont(node.mScore).drawCenter(centerX, centerY, Palette::Red);
 //		mFont(node.mTejunJap).drawCenter(centerX, centerY+15, Palette::Aqua);
 	}
+}
+
+void TreeSiv3D::OnSelectedNodeIDChanged()
+{
+	Node& node = mNodes[GetSelectedNodeID()];
+	mGuiNode.textField(L"comment").setText(node.mComment);
 }
 
 void TreeSiv3D::Update()
@@ -125,7 +131,22 @@ void TreeSiv3D::Update()
 
 	// ノード情報
 	{
-		const Node& node = mNodes[mSelectedNodeID];
+		Node& node = mNodes[GetSelectedNodeID()];
+
+
+		// コメント
+		// 入力があったら nodeCommentにセーブ
+		// 初期値はnodeCommentからロード
+
+
+//		mGuiNode.textField(L"comment").setText(node.mComment);
+		if (mGuiNode.textField(L"comment").hasChanged)
+		{
+			String tmp = mGuiNode.textField(L"comment").text;
+			node.mComment = tmp.str();
+		}
+
+
 		if (node.IsScoreEvaluated())
 		{
 			mGuiNode.text(L"score").text = Format(L"評価値", node.mScore);

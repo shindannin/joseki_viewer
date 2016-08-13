@@ -198,11 +198,13 @@ public:
 		mGuiNode.setPos(0, 570);
 		mGuiNode.addln(L"comment", GUITextField::Create(30));
 		mGuiNode.addln(L"score", GUIText::Create(L"", 640));
-		mGuiNode.addln(L"tejunJap", GUIText::Create(L"‹Ø", 640));
+		mGuiNode.addln(L"tejunJap", GUIText::Create(L"", 640));
 	}
 
 	virtual void Draw() override;
 	virtual void Update() override;
+	virtual void OnSelectedNodeIDChanged() override;
+
 
 private:
 	TreeSiv3D()	{};

@@ -45,11 +45,11 @@ int Node::HasLink(const string& te) const
 Tree::Tree(Board* board)
 {
 	mVersion = 1;
-	mSelectedNodeID = 0;
 	mNodes.clear();
 	mNodes.push_back(Node());
 	mBoard = board; // 外でnew deleteするので、ポインタ渡すだけ
 	CalculateVisualPos();
+	SetSelectedNodeID(0);
 }
 
 void Tree::Draw()
@@ -82,14 +82,14 @@ void Tree::AddLink(const string& te, const wstring* pTeJap)
 		mNodes.push_back(nextNode);
 		nextNodeID = SZ(mNodes) - 1;
 		mNodes[mSelectedNodeID].AddLink(nextNodeID, te, pTeJap);
-		mSelectedNodeID = nextNodeID;
+		SetSelectedNodeID(nextNodeID);
 
 		CalculateVisualPos();
 	}
 	else
 	{
 		// もしリンクがあるときは、そちらへ進める
-		mSelectedNodeID = nextNodeID;
+		SetSelectedNodeID(nextNodeID);
 	}
 }
 
@@ -187,6 +187,7 @@ void Tree::SetSelectedNodeID(int nodeID)
 {
 	mSelectedNodeID = nodeID;
 	mBoard->SetState(mNodes[nodeID].mState);
+	OnSelectedNodeIDChanged();
 }
 
 void Tree::InitializeAfterLoad()
@@ -209,3 +210,13 @@ void Tree::InitializeAfterLoad()
 	SetSelectedNodeID(rootNodeID);
 }
 
+void Tree::UpdateNode(int nodeID, int score, const string& tejun)
+{
+	Node& node = mNodes[nodeID];
+	node.mScore = score;
+	node.mTejun = tejun;
+
+	Board tmpBoard;
+	tmpBoard.SetState(node.mState);
+	node.mTejunJap = tmpBoard.MoveByTejun(tejun);
+}
