@@ -187,9 +187,10 @@ public:
 	{
 		mOffsetX = WINDOW_W * 0.75f;
 		mOffsetY = WINDOW_H * 0.5f;
-		mNodeRadius = 12.f;
+		mNodeRadius = 8.f;
 		mGridScale = 40.f;
 		mFont = Font(10, L"メイリオ");
+		mFontScore = Font(10, L"Segoe WP Black");
 		mGui = GUI(GUIStyle::Default);
 		mGui.setTitle(L"メニュー");
 		mGui.add(L"kifu_load", GUIButton::Create(L"定跡ファイルを開く"));
@@ -233,7 +234,10 @@ private:
 		return (scaledY - mOffsetY) / mGridScale;;
 	}
 
+	void DrawScoreBar(int score, int maxScore, float cx, float cy, float w, float h);
+
 	Font mFont;
+	Font mFontScore;
 	GUI mGui;
 	GUI mGuiNode;
 	

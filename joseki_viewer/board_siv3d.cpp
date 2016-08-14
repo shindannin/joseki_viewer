@@ -111,7 +111,7 @@ void BoardSiv3D::Draw()
 		wstring name[2] = { L"æè”Ô", L"Œãè”Ô" };
 		mFont(name[GetTeban()]).draw(leftX + tebanOffestX * mKomaTextureWidth, topY);
 
-		mFont(mScore).draw(leftX + tebanOffestX * mKomaTextureWidth, topY + 30);
+//		mFont(mScore).draw(leftX + tebanOffestX * mKomaTextureWidth, topY + 30);
 	}
 
 	//----- ”Õ–Ê -----

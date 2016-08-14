@@ -5,6 +5,26 @@
 #include <numeric>
 
 
+void TreeSiv3D::DrawScoreBar(int score, int maxScore, float cx, float cy, float w, float h)
+{
+	const float x = cx - w * 0.5f;
+	const float y = cy - h * 0.5f;
+	float blueRatio = 0.5f - 0.5f * score / maxScore;
+	
+	if (blueRatio < 0.f)
+	{
+		blueRatio = 0.f;
+	}
+	else if (blueRatio > 1.0f)
+	{
+		blueRatio = 1.f;
+	}
+
+	Rect(x, y, w*blueRatio, h).draw(Palette::Blue);
+	Rect(x + w*blueRatio, y, w*(1.0f-blueRatio), h).draw(Palette::Red);
+}
+
+
 void TreeSiv3D::Draw()
 {
 	Tree::Draw();
@@ -22,7 +42,7 @@ void TreeSiv3D::Draw()
 			const float deX = ScaleX(destNode.mVisualX);
 			const float deY = ScaleY(destNode.mVisualY);
 
-			Line(stX, stY, deX, deY).draw();
+			Line(stX, stY, deX, deY).draw(5, Color(255, 255, 255, 128));
 
 			const float centerX = 0.5f * (stX + deX);
 			const float centerY = 0.5f * (stY + deY);
@@ -47,20 +67,38 @@ void TreeSiv3D::Draw()
 			color = Palette::Orange;
 		}
 
-		Circle(centerX, centerY, mNodeRadius).draw(color);
+		Rect(centerX-15, centerY- mNodeRadius, 30, mNodeRadius*2).draw(color);
+		Circle(centerX- 15, centerY, mNodeRadius).draw(color);
+		Circle(centerX+ 15, centerY, mNodeRadius).draw(color);
 
 		if (node.IsScoreEvaluated())
 		{
-			mFont(node.mScore).drawCenter(centerX, centerY, Palette::Red);
+//			DrawScoreBar(node.mScore, 2000, centerX, centerY, 80, 10);
+
+			if (node.mScore > 0)
+			{
+				mFontScore(node.mScore).drawCenter(centerX, centerY, Palette::Red);
+			}
+			else if (node.mScore < 0)
+			{
+				mFontScore(-node.mScore).drawCenter(centerX, centerY, Palette::Blue);
+			}
+			else
+			{
+				mFontScore(node.mScore).drawCenter(centerX, centerY, Palette::Purple);
+			}
 		}
 
 		if (!node.mComment.empty())
 		{
-			Rect rect = mFont(node.mComment).region(centerX, centerY - 20);
+			Rect rect = mFont(node.mComment).region(centerX, centerY - 22);
+
+
 			rect.pos.x -= rect.size.x / 2;
 			rect.pos.y -= rect.size.y / 2;
-			rect.draw(Palette::Green);
-			mFont(node.mComment).drawCenter(centerX, centerY - 20, Palette::White);
+			rect.draw(Color(0,255,0,128));
+			rect.drawFrame(0, 2, Color(255, 255, 255, 255));
+			mFont(node.mComment).drawCenter(centerX, centerY - 22, Palette::White);
 		}
 	}
 }
