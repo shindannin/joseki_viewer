@@ -19,6 +19,7 @@ BoardSiv3D::BoardSiv3D()
 	mKomaTextureWidth = mTexture[0][0].width;
 	mKomaTextureHeight = mTexture[0][0].height;
 
+	mTextureBackground = Texture(L"pictures/background.jpg");
 	mTextureBoard = Texture(L"pictures/ban_kaya_a.png");
 	mTextureGrid = Texture(L"pictures/masu_dot.png");
 
@@ -59,6 +60,7 @@ void BoardSiv3D::DrawCursor(const GridPos& gp, const Color& color) const
 
 void BoardSiv3D::Draw()
 {
+	mTextureBackground.draw(0, 0);
 	mTextureBoard.draw(mOffsetX, mOffsetY);
 	mTextureGrid.draw(mOffsetX, mOffsetY);
 
