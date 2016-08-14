@@ -213,11 +213,28 @@ void Tree::InitializeAfterLoad()
 void Tree::UpdateNode(int nodeID, int score, const string& tejun)
 {
 	Node& node = mNodes[nodeID];
-	node.mScore = score;
+
+	// ‚±‚Ìƒm[ƒh‚ªæè”Ô‚©Œãè”Ô‚©
+
 	node.mTejun = tejun;
 
 	Board tmpBoard;
 	tmpBoard.SetState(node.mState);
+	switch (tmpBoard.GetTeban())
+	{
+	case E_SEN:
+		node.mScore = score;
+		break;
+
+	case E_GO:
+		node.mScore = -score;
+		break;
+
+	default:
+		assert(0);
+		break;
+	}
+
 	node.mTejunJap = tmpBoard.MoveByTejun(tejun);
 }
 
