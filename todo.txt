@@ -1,8 +1,9 @@
 
+
+https://github.com/Siv3D/Reference-JP/wiki
+
 // AIはつくりません！
 
-
-評価値のカプセル枠が変
 コメントが入れられない。
 左側のデザイン
 アンドゥ

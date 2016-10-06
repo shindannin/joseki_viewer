@@ -67,9 +67,9 @@ void TreeSiv3D::Draw()
 			color = Palette::Orange;
 		}
 
-		Rect(centerX-15, centerY- mNodeRadius, 30, mNodeRadius*2).draw(color);
-		Circle(centerX- 15, centerY, mNodeRadius).draw(color);
-		Circle(centerX+ 15, centerY, mNodeRadius).draw(color);
+		s3d::RoundRect(centerX-20, centerY-mNodeRadius, 40, mNodeRadius*2, mNodeRadius).draw(color);
+//		Circle(centerX- 15, centerY, mNodeRadius).draw(color);
+//		Circle(centerX+ 15, centerY, mNodeRadius).draw(color);
 
 		if (node.IsScoreEvaluated())
 		{
