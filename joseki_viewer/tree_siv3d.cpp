@@ -57,6 +57,7 @@ void TreeSiv3D::Draw()
 		const float centerX = ScaleX(node.mVisualX);
 		const float centerY = ScaleY(node.mVisualY);
 
+		// ノード背景の表示
 		Color color = Palette::White;
 		if (nodeID == GetSelectedNodeID())
 		{
@@ -66,11 +67,9 @@ void TreeSiv3D::Draw()
 		{
 			color = Palette::Orange;
 		}
-
 		s3d::RoundRect(centerX-20, centerY-mNodeRadius, 40, mNodeRadius*2, mNodeRadius).draw(color);
-//		Circle(centerX- 15, centerY, mNodeRadius).draw(color);
-//		Circle(centerX+ 15, centerY, mNodeRadius).draw(color);
 
+		// 評価値の表示
 		if (node.IsScoreEvaluated())
 		{
 //			DrawScoreBar(node.mScore, 2000, centerX, centerY, 80, 10);
@@ -188,6 +187,7 @@ void TreeSiv3D::Update()
 	{
 		Node& node = mNodes[GetSelectedNodeID()];
 
+		Graphics::SetBackground(Color(160, 200, 100));
 
 		// コメント
 		// 入力があったら nodeCommentにセーブ
@@ -195,8 +195,11 @@ void TreeSiv3D::Update()
 
 
 //		mGuiNode.textField(L"comment").setText(node.mComment);
+
+
 		if (mGuiNode.textField(L"comment").hasChanged)
 		{
+
 			String tmp = mGuiNode.textField(L"comment").text;
 			node.mComment = tmp.str();
 		}
@@ -212,6 +215,11 @@ void TreeSiv3D::Update()
 			mGuiNode.text(L"score").text = Format(L"未評価");
 			mGuiNode.text(L"tejunJap").text = L"";
 		}
+
+		
+		const Point delta(24, 16); // ウィンドウからコメント枠への相対座標
+		const Rect rect = mFontGuiDefault(node.mComment).region(mGuiNode.getPos() + delta);
+		IME::SetCompositionWindowPos(Point(rect.x + rect.w, rect.y));
 	}
 }
 

@@ -180,6 +180,7 @@ public:
 		mGridScale = 40.f;
 		mFont = Font(10, L"メイリオ");
 		mFontScore = Font(10, L"Segoe WP Black");
+		mFontGuiDefault = GUIManager::GetDefaultFont();
 		mGui = GUI(GUIStyle::Default);
 		mGui.setTitle(L"メニュー");
 		mGui.add(L"kifu_load", GUIButton::Create(L"定跡ファイルを開く"));
@@ -227,6 +228,7 @@ private:
 
 	Font mFont;
 	Font mFontScore;
+	Font mFontGuiDefault;
 	GUI mGui;
 	GUI mGuiNode;
 	

@@ -1,10 +1,15 @@
 
-
+Siv3D リファレンス
 https://github.com/Siv3D/Reference-JP/wiki
+
+Siv3D ユーザー助け合い所 (β)
+http://siv3d.jp/bbs/patio.cgi
+
 
 // AIはつくりません！
 
-コメントが入れられない。
+
+日本語入力時にコメントのカーソル位置がおかしい。
 左側のデザイン
 アンドゥ
 自動スクロール
