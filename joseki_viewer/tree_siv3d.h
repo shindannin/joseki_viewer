@@ -174,7 +174,8 @@ private:
 	Server* mServer;
 	EStateEvaluation mEStateEvaluation;
 	Tree* mTree;
-	s3d::legacy::TimerMillisec	mTimerMilliSec;
+	Stopwatch mStopwatch;
+
 	const unsigned int mDurationMilliSec		= 4000;
 	const unsigned int mDurationMilliSecMargin	=  100;
 };

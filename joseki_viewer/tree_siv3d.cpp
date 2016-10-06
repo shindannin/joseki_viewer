@@ -291,14 +291,14 @@ void Evaluator::Update()
 				if (Go())
 				{
 					mEStateEvaluation = EStateEvaluation_WaitingScore;
-					mTimerMilliSec.restart();
+					mStopwatch.restart();
 				}
 			}
 		}
 		break;
 
 		case EStateEvaluation_WaitingScore:
-			if (mTimerMilliSec.elapsed() > mDurationMilliSec) // 時間経過したら受け取りに
+			if (mStopwatch.ms() > mDurationMilliSec) // 時間経過したら受け取りに
 			{
 				ReceiveBestMoveAndScore();
 				mEStateEvaluation = EStateEvaluation_FindingNode;
@@ -306,7 +306,7 @@ void Evaluator::Update()
 			break;
 
 		case EStateEvaluation_WaitingCancel:
-			if (mTimerMilliSec.elapsed() > mDurationMilliSec) // 時間経過したら受け取りに
+			if (mStopwatch.ms() > mDurationMilliSec) // 時間経過したら受け取りに
 			{
 				WaitAndCancel();
 				mEStateEvaluation = EStateEvaluation_FindingNode;
