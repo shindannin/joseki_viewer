@@ -125,7 +125,8 @@ s3d::RoundRect TreeSiv3D::GetNodeShape(float centerX, float centerY)
 void TreeSiv3D::OnSelectedNodeIDChanged()
 {
 	Node& node = mNodes[GetSelectedNodeID()];
-	mGuiNode.textField(L"comment").setText(node.mSummary);
+	mGuiNode.textField(L"summary").setText(node.mSummary);
+	mGuiNode.textArea(L"comment").setText(node.mComment);
 
 	const float centerX = ScaleX(node.mVisualX);
 	const float centerY = ScaleY(node.mVisualY);
@@ -214,21 +215,31 @@ void TreeSiv3D::Update()
 
 		Graphics::SetBackground(Color(160, 200, 100));
 
-		// コメント
-		// 入力があったら nodeCommentにセーブ
-		// 初期値はnodeCommentからロード
-
-
-//		mGuiNode.textField(L"comment").setText(node.mComment);
-
-
-		if (mGuiNode.textField(L"comment").hasChanged)
+		if (mGuiNode.textField(L"summary").hasChanged)
 		{
-
-			String tmp = mGuiNode.textField(L"comment").text;
+			String tmp = mGuiNode.textField(L"summary").text;
 			node.mSummary = tmp.str();
 		}
 
+		if (mGuiNode.textField(L"summary").active)
+		{
+			const Point delta(24, 16); // ウィンドウからサマリ枠への相対座標
+			const Rect rect = mFontGuiDefault(node.mSummary).region(mGuiNode.getPos() + delta);
+			IME::SetCompositionWindowPos(Point(rect.x + rect.w, rect.y));
+		}
+
+		if (mGuiNode.textArea(L"comment").hasChanged)
+		{
+			String tmp = mGuiNode.textArea(L"comment").text;
+			node.mComment = tmp.str();
+		}
+
+		if (mGuiNode.textArea(L"comment").active)
+		{
+			const Point delta(24, 56); // ウィンドウからコメント枠への相対座標
+			// TODO ここは、ちゃんと相対座標を決める手段がないので、無理。
+			IME::SetCompositionWindowPos(mGuiNode.getPos() + delta);
+		}
 
 		if (node.IsScoreEvaluated())
 		{
@@ -242,9 +253,6 @@ void TreeSiv3D::Update()
 		}
 
 		
-		const Point delta(24, 16); // ウィンドウからコメント枠への相対座標
-		const Rect rect = mFontGuiDefault(node.mSummary).region(mGuiNode.getPos() + delta);
-		IME::SetCompositionWindowPos(Point(rect.x + rect.w, rect.y));
 	}
 }
 

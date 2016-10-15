@@ -50,7 +50,8 @@ public:
 		{
 			mLinks[i].Save(wfs);
 		}
-		wfs << mSummary << endl;		// コメント
+		wfs << mSummary << endl;
+		wfs << EasyEscape(mComment) << endl;
 		wfs << wstring(mTejun.begin(), mTejun.end()) << endl;
 	}
 
@@ -71,6 +72,7 @@ public:
 		}
 
 		GetLineTrim(wfs, ws);	mSummary = ws;
+		GetLineTrim(wfs, ws);	mComment = EasyUnescape(ws);
 		GetLineTrim(wfs, ws);	mTejun = string(ws.begin(), ws.end());
 	}
 
@@ -79,6 +81,7 @@ public:
 	int				mParentNodeID;
 	vector <Link>	mLinks;
 	wstring			mSummary;		// コメントの要約
+	wstring			mComment;		// コメント
 	string			mTejun;			// 最善手
 
 	// セーブしない情報

@@ -174,8 +174,8 @@ class TreeSiv3D : public Tree
 public:
 	TreeSiv3D(Board* board) : Tree(board), mEvaluator(this)
 	{
-		mOffsetX = WINDOW_W * 0.75f;
-		mOffsetY = WINDOW_H * 0.5f;
+		mOffsetX = RIGHT_CENTER_X;
+		mOffsetY = RIGHT_CENTER_Y;
 		mNodeRadius = 8.f;
 		mGridScale = 40.f;
 		mFont = Font(10, L"ÉÅÉCÉäÉI");
@@ -189,9 +189,10 @@ public:
 
 		mGuiNode = GUI(GUIStyle::Default);
 		mGuiNode.setPos(0, 570);
-		mGuiNode.addln(L"comment", GUITextField::Create(30));
+		mGuiNode.addln(L"summary", GUITextField::Create(30));
+		mGuiNode.addln(L"comment", GUITextArea::Create(4, 30));
 		mGuiNode.addln(L"score", GUIText::Create(L"", 640));
-		mGuiNode.addln(L"tejunJap", GUIText::Create(L"", 640));
+//		mGuiNode.addln(L"tejunJap", GUIText::Create(L"", 640));
 	}
 
 	virtual void Draw() override;

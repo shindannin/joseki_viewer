@@ -6,6 +6,7 @@ Node::Node()
 	mLinks.clear();
 	mScore = SCORE_NOT_EVALUATED;
 	mSummary.clear();
+	mComment.clear();
 
 	mVisualX = 0;
 	mVisualY = 0;

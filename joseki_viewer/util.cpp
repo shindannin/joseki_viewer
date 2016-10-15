@@ -21,6 +21,42 @@ void Split1(const string& str, vector<string>& out, const char splitter)
 	} while (next != string::npos);
 }
 
+// 改行エスケープを追加し、コメントをセーブ可能にする。
+wstring EasyEscape(const wstring& ws)
+{
+	wstring ret;
+	for (const auto& wc : ws)
+	{
+		if (wc == '\n')
+		{
+			ret.push_back('\\n');
+		}
+		else
+		{
+			ret.push_back(wc);
+		}
+	}
+	return ret;
+}
+
+wstring EasyUnescape(const wstring& ws)
+{
+	wstring ret;
+	for (int i=0;i<ws.size();++i)
+	{
+		if( ws[i]=='\\n')
+		{
+			ret.push_back('\n');
+		}
+		else
+		{
+			ret.push_back(ws[i]);
+		}
+	}
+	return ret;
+}
+
+
 void GetLineTrim(wfstream& wfs, wstring& ws)
 {
 	getline(wfs, ws);
