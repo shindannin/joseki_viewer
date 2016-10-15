@@ -5,7 +5,7 @@ Node::Node()
 	mState = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";
 	mLinks.clear();
 	mScore = SCORE_NOT_EVALUATED;
-	mComment.clear();
+	mSummary.clear();
 
 	mVisualX = 0;
 	mVisualY = 0;

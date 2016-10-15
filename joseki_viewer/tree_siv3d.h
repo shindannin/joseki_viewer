@@ -225,6 +225,7 @@ private:
 	}
 
 	void DrawScoreBar(int score, int maxScore, float cx, float cy, float w, float h);
+	s3d::RoundRect GetNodeShape(float centerX, float centerY);
 
 	Font mFont;
 	Font mFontScore;

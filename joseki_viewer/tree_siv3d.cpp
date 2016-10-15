@@ -66,15 +66,16 @@ void TreeSiv3D::Draw()
 
 		// ノード背景の表示
 		Color color = Palette::White;
+		const s3d::RoundRect& roundRect = GetNodeShape(centerX, centerY);
 		if (nodeID == GetSelectedNodeID())
 		{
 			color = Palette::Yellow;
 		}
-		else if (SQSUM(Mouse::Pos().x - centerX, Mouse::Pos().y - centerY) < SQ(mNodeRadius))
+		else if (roundRect.contains(Mouse::Pos()))
 		{
 			color = Palette::Orange;
 		}
-		s3d::RoundRect(centerX-20, centerY-mNodeRadius, 40, mNodeRadius*2, mNodeRadius).draw(color);
+		roundRect.draw(color);
 
 
 #ifdef DEBUG_DRAW_INFO
@@ -103,23 +104,28 @@ void TreeSiv3D::Draw()
 			}
 		}
 
-		if (!node.mComment.empty())
+		if (!node.mSummary.empty())
 		{
-			Rect rect = mFont(node.mComment).region(centerX, centerY - 22);
+			Rect rect = mFont(node.mSummary).region(centerX, centerY - 22);
 
 			rect.pos.x -= rect.size.x / 2;
 			rect.pos.y -= rect.size.y / 2;
 			rect.draw(Color(0,255,0,128));
 			rect.drawFrame(0, 2, Color(255, 255, 255, 255));
-			mFont(node.mComment).drawCenter(centerX, centerY - 22, Palette::White);
+			mFont(node.mSummary).drawCenter(centerX, centerY - 22, Palette::White);
 		}
 	}
+}
+
+s3d::RoundRect TreeSiv3D::GetNodeShape(float centerX, float centerY)
+{
+	return s3d::RoundRect(centerX - 20, centerY - mNodeRadius, 40, mNodeRadius * 2, mNodeRadius);
 }
 
 void TreeSiv3D::OnSelectedNodeIDChanged()
 {
 	Node& node = mNodes[GetSelectedNodeID()];
-	mGuiNode.textField(L"comment").setText(node.mComment);
+	mGuiNode.textField(L"comment").setText(node.mSummary);
 
 	const float centerX = ScaleX(node.mVisualX);
 	const float centerY = ScaleY(node.mVisualY);
@@ -172,7 +178,7 @@ void TreeSiv3D::Update()
 				const Node& node = mNodes[nodeID];
 				const float centerX = ScaleX(node.mVisualX);
 				const float centerY = ScaleY(node.mVisualY);
-				if (SQSUM(Mouse::Pos().x - centerX, Mouse::Pos().y - centerY) < SQ(mNodeRadius))
+				if (GetNodeShape(centerX, centerY).contains(Mouse::Pos()))
 				{
 					SetSelectedNodeID(nodeID);
 					break;
@@ -220,7 +226,7 @@ void TreeSiv3D::Update()
 		{
 
 			String tmp = mGuiNode.textField(L"comment").text;
-			node.mComment = tmp.str();
+			node.mSummary = tmp.str();
 		}
 
 
@@ -237,7 +243,7 @@ void TreeSiv3D::Update()
 
 		
 		const Point delta(24, 16); // ウィンドウからコメント枠への相対座標
-		const Rect rect = mFontGuiDefault(node.mComment).region(mGuiNode.getPos() + delta);
+		const Rect rect = mFontGuiDefault(node.mSummary).region(mGuiNode.getPos() + delta);
 		IME::SetCompositionWindowPos(Point(rect.x + rect.w, rect.y));
 	}
 }
