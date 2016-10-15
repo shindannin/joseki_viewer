@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <numeric>
 
+#define DEBUG_DRAW_INFO 
+
 
 void TreeSiv3D::DrawScoreBar(int score, int maxScore, float cx, float cy, float w, float h)
 {
@@ -28,6 +30,11 @@ void TreeSiv3D::DrawScoreBar(int score, int maxScore, float cx, float cy, float 
 void TreeSiv3D::Draw()
 {
 	Tree::Draw();
+
+#ifdef DEBUG_DRAW_INFO
+	// デバッグ用 
+	mFont(L"Offset=(", mOffsetX, L",", mOffsetY, L") GridScale=", mGridScale ).draw(WINDOW_W/2+20.f, 20.0f, Palette::Orange);
+#endif
 
 	// リンク
 	for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
@@ -69,6 +76,14 @@ void TreeSiv3D::Draw()
 		}
 		s3d::RoundRect(centerX-20, centerY-mNodeRadius, 40, mNodeRadius*2, mNodeRadius).draw(color);
 
+
+#ifdef DEBUG_DRAW_INFO
+		// デバッグ用：表示場所の表示
+		mFont(centerX,L",",centerY).draw(centerX, centerY, Palette::Orange);
+#endif // DEBUG_DRAW_INFO
+		
+
+
 		// 評価値の表示
 		if (node.IsScoreEvaluated())
 		{
@@ -92,7 +107,6 @@ void TreeSiv3D::Draw()
 		{
 			Rect rect = mFont(node.mComment).region(centerX, centerY - 22);
 
-
 			rect.pos.x -= rect.size.x / 2;
 			rect.pos.y -= rect.size.y / 2;
 			rect.draw(Color(0,255,0,128));
@@ -106,6 +120,11 @@ void TreeSiv3D::OnSelectedNodeIDChanged()
 {
 	Node& node = mNodes[GetSelectedNodeID()];
 	mGuiNode.textField(L"comment").setText(node.mComment);
+
+	const float centerX = ScaleX(node.mVisualX);
+	const float centerY = ScaleY(node.mVisualY);
+ 	mOffsetX = RIGHT_CENTER_X - node.mVisualX * mGridScale;
+ 	mOffsetY = RIGHT_CENTER_Y - node.mVisualY * mGridScale;
 }
 
 void TreeSiv3D::Update()
@@ -166,13 +185,13 @@ void TreeSiv3D::Update()
 		if (wheelY != 0)
 		{
 			const float prevGridScale = mGridScale;
-			const float invScaledX = InvScaleX(WINDOW_W*0.75f);
-			const float invScaledY = InvScaleY(WINDOW_H*0.5f);
+			const float invScaledRightCenterX = InvScaleX(RIGHT_CENTER_X);
+			const float invScaledRightCenterY = InvScaleY(RIGHT_CENTER_Y);
 			mGridScale *= (float)pow(1.1, -wheelY);
 			const float diffGridScale = mGridScale - prevGridScale;
 
-			mOffsetX -= invScaledX * diffGridScale;
-			mOffsetY -= invScaledY * diffGridScale;
+			mOffsetX -= invScaledRightCenterX * diffGridScale;
+			mOffsetY -= invScaledRightCenterY * diffGridScale;
 		}
 
 		// ノードの削除
