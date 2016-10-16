@@ -172,6 +172,16 @@ private:
 class TreeSiv3D : public Tree
 {
 public:
+	enum EGUICheckBox
+	{
+		SHOW_SCORE,			// "評価値" 
+		SHOW_TE,			// "指し手"
+		SHOW_TAG,			// "タグ"
+		FIX_SELECTED_NODE,	// "選択ノードの固定"
+		SHOW_DEBUG,			// "デバッグ"
+	};
+
+
 	TreeSiv3D(Board* board) : Tree(board), mEvaluator(this)
 	{
 		mOffsetX = RIGHT_CENTER_X;
@@ -181,18 +191,45 @@ public:
 		mFont = Font(10, L"メイリオ");
 		mFontScore = Font(10, L"Segoe WP Black");
 		mFontGuiDefault = GUIManager::GetDefaultFont();
-		mGui = GUI(GUIStyle::Default);
+
+		GUIStyle style = GUIStyle::Default;
+		style.font = mFont;
+		style.background.color = Color(0, 0, 255, 64);
+		style.padding.bottom = 0;
+		style.padding.top = 0;
+		style.padding.left = 0;
+		style.padding.right = 0;
+
+		WidgetStyle widgetStyle;
+		widgetStyle.font = mFont;
+		widgetStyle.color = Color(255, 255, 255, 255);
+
+
+		GUIStyle style2 = style;
+		style2.background.color = Color(255, 255, 255, 128);
+
+		WidgetStyle widgetStyle2 = widgetStyle;
+		widgetStyle2.color = Color(0, 0, 0, 255);
+
+		mGui = GUI(style2);
 		mGui.setTitle(L"メニュー");
-		mGui.add(L"kifu_load", GUIButton::Create(L"定跡ファイルを開く"));
-		mGui.add(L"kifu_save", GUIButton::Create(L"定跡ファイルを保存"));
-		mGui.add(L"evaluator_load", GUIButton::Create(L"評価ソフトを開く"));
+		mGui.add(L"kifu_load", GUIButton::Create(L"定跡ファイルを開く", widgetStyle2));
+		mGui.add(L"kifu_save", GUIButton::Create(L"定跡ファイルを保存", widgetStyle2));
+		mGui.add(L"evaluator_load", GUIButton::Create(L"評価ソフトを開く", widgetStyle2));
 
 		mGuiNode = GUI(GUIStyle::Default);
 		mGuiNode.setPos(0, 570);
 		mGuiNode.addln(L"summary", GUITextField::Create(30));
 		mGuiNode.addln(L"comment", GUITextArea::Create(4, 30));
-		mGuiNode.addln(L"score", GUIText::Create(L"", 640));
-//		mGuiNode.addln(L"tejunJap", GUIText::Create(L"", 640));
+
+		mGuiScore = GUI(style);
+		mGuiScore.setPos(630, 100);
+		mGuiScore.addln(L"score", GUIText::Create(L"", widgetStyle));
+		mGuiScore.addln(L"tejunJap", GUIText::Create(L"", widgetStyle));
+		
+		mGuiSettings = GUI(style2);
+		mGuiSettings.setPos(1137, 0);
+		mGuiSettings.add(L"settings", GUICheckBox::Create({ L"評価値", L"指し手", L"タグ", L"選択ノードの固定", L"デバッグ" }, { SHOW_SCORE, SHOW_TE, SHOW_TAG, FIX_SELECTED_NODE }, true, widgetStyle2));
 	}
 
 	virtual void Draw() override;
@@ -233,7 +270,11 @@ private:
 	Font mFontGuiDefault;
 	GUI mGui;
 	GUI mGuiNode;
-	
+	GUI mGuiEngine;
+	GUI mGuiScore;
+	GUI mGuiSettings;
+
+
 	float mOffsetX;
 	float mOffsetY;
 	float mNodeRadius;

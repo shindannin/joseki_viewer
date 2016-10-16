@@ -21,7 +21,8 @@ void Split1(const string& str, vector<string>& out, const char splitter)
 	} while (next != string::npos);
 }
 
-// 改行エスケープを追加し、コメントをセーブ可能にする。
+// 以下のエスケープシーケンスがてきと～。例えば文字列にバックスラッシュが入ったら失敗しそうなので直す。
+// 改行エスケープ、コメントをセーブ可能にする。
 wstring EasyEscape(const wstring& ws)
 {
 	wstring ret;
@@ -39,6 +40,7 @@ wstring EasyEscape(const wstring& ws)
 	return ret;
 }
 
+// 改行エスケープを元に戻す、コメントをロード可能にする。
 wstring EasyUnescape(const wstring& ws)
 {
 	wstring ret;

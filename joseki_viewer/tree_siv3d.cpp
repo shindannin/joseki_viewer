@@ -6,7 +6,6 @@
 
 #define DEBUG_DRAW_INFO 
 
-
 void TreeSiv3D::DrawScoreBar(int score, int maxScore, float cx, float cy, float w, float h)
 {
 	const float x = cx - w * 0.5f;
@@ -32,8 +31,11 @@ void TreeSiv3D::Draw()
 	Tree::Draw();
 
 #ifdef DEBUG_DRAW_INFO
-	// デバッグ用 
-	mFont(L"Offset=(", mOffsetX, L",", mOffsetY, L") GridScale=", mGridScale ).draw(WINDOW_W/2+20.f, 20.0f, Palette::Orange);
+	if (mGuiSettings.checkBox(L"settings").checked(SHOW_DEBUG))
+	{
+		// デバッグ用 
+		mFont(L"Offset=(", mOffsetX, L",", mOffsetY, L") GridScale=", mGridScale).draw(WINDOW_W / 2 + 20.f, 20.0f, Palette::Orange);
+	}
 #endif
 
 	// リンク
@@ -51,9 +53,12 @@ void TreeSiv3D::Draw()
 
 			Line(stX, stY, deX, deY).draw(5, Color(255, 255, 255, 128));
 
-			const float centerX = 0.5f * (stX + deX);
-			const float centerY = 0.5f * (stY + deY);
-			mFont(link.teJap).drawCenter(centerX, centerY);
+			if (mGuiSettings.checkBox(L"settings").checked(SHOW_TE))
+			{
+				const float centerX = 0.5f * (stX + deX);
+				const float centerY = 0.5f * (stY + deY);
+				mFont(link.teJap).drawCenter(centerX, centerY);
+			}
 		}
 	}
 
@@ -79,40 +84,67 @@ void TreeSiv3D::Draw()
 
 
 #ifdef DEBUG_DRAW_INFO
-		// デバッグ用：表示場所の表示
-		mFont(centerX,L",",centerY).draw(centerX, centerY, Palette::Orange);
+		if (mGuiSettings.checkBox(L"settings").checked(SHOW_DEBUG))
+		{
+			// デバッグ用：表示場所の表示
+			mFont(centerX, L",", centerY).draw(centerX, centerY, Palette::Orange);
+		}
 #endif // DEBUG_DRAW_INFO
 		
-
-
 		// 評価値の表示
-		if (node.IsScoreEvaluated())
+		if (mGuiSettings.checkBox(L"settings").checked(SHOW_SCORE))
 		{
-//			DrawScoreBar(node.mScore, 2000, centerX, centerY, 80, 10);
+			if (node.IsScoreEvaluated())
+			{
+				//			DrawScoreBar(node.mScore, 2000, centerX, centerY, 80, 10);
 
-			if (node.mScore > 0)
-			{
-				mFontScore(node.mScore).drawCenter(centerX, centerY, Palette::Red);
-			}
-			else if (node.mScore < 0)
-			{
-				mFontScore(-node.mScore).drawCenter(centerX, centerY, Palette::Blue);
-			}
-			else
-			{
-				mFontScore(node.mScore).drawCenter(centerX, centerY, Palette::Purple);
+				if (node.mScore > 0)
+				{
+					mFontScore(node.mScore).drawCenter(centerX, centerY, Palette::Red);
+				}
+				else if (node.mScore < 0)
+				{
+					mFontScore(-node.mScore).drawCenter(centerX, centerY, Palette::Blue);
+				}
+				else
+				{
+					mFontScore(node.mScore).drawCenter(centerX, centerY, Palette::Purple);
+				}
 			}
 		}
 
-		if (!node.mSummary.empty())
+		// タグの表示
+		if (mGuiSettings.checkBox(L"settings").checked(SHOW_TAG))
 		{
-			Rect rect = mFont(node.mSummary).region(centerX, centerY - 22);
+			if (!node.mSummary.empty())
+			{
+				Rect rect = mFont(node.mSummary).region(centerX, centerY - 22);
 
-			rect.pos.x -= rect.size.x / 2;
-			rect.pos.y -= rect.size.y / 2;
-			rect.draw(Color(0,255,0,128));
-			rect.drawFrame(0, 2, Color(255, 255, 255, 255));
-			mFont(node.mSummary).drawCenter(centerX, centerY - 22, Palette::White);
+				rect.pos.x -= rect.size.x / 2;
+				rect.pos.y -= rect.size.y / 2;
+				rect.draw(Color(0, 255, 0, 128));
+				rect.drawFrame(0, 2, Color(255, 255, 255, 255));
+				mFont(node.mSummary).drawCenter(centerX, centerY - 22, Palette::White);
+			}
+		}
+	}
+
+	{
+		const Node& node = mNodes[GetSelectedNodeID()];
+		if (node.IsScoreEvaluated())
+		{
+			mGuiScore.text(L"score").text = Format(L"評価値 ", node.mScore);
+			mGuiScore.text(L"tejunJap").text = AddNewLine(node.mTejunJap, 1);
+
+// 			mFont(node.mScore).draw(600, 100);
+// 			mFont(AddNewLine(node.mTejunJap, 1)).draw(600, 200);
+
+		}
+		else
+		{
+			mGuiScore.text(L"score").text = Format(L"未評価");
+			mGuiScore.text(L"tejunJap").text = L"";
+			// 			mFont(L"未評価").draw(600, 100);
 		}
 	}
 }
@@ -128,10 +160,13 @@ void TreeSiv3D::OnSelectedNodeIDChanged()
 	mGuiNode.textField(L"summary").setText(node.mSummary);
 	mGuiNode.textArea(L"comment").setText(node.mComment);
 
-	const float centerX = ScaleX(node.mVisualX);
-	const float centerY = ScaleY(node.mVisualY);
- 	mOffsetX = RIGHT_CENTER_X - node.mVisualX * mGridScale;
- 	mOffsetY = RIGHT_CENTER_Y - node.mVisualY * mGridScale;
+	if (mGuiSettings.checkBox(L"settings").checked(FIX_SELECTED_NODE))
+	{
+		const float centerX = ScaleX(node.mVisualX);
+		const float centerY = ScaleY(node.mVisualY);
+		mOffsetX = RIGHT_CENTER_X - node.mVisualX * mGridScale;
+		mOffsetY = RIGHT_CENTER_Y - node.mVisualY * mGridScale;
+	}
 }
 
 void TreeSiv3D::Update()
@@ -241,16 +276,7 @@ void TreeSiv3D::Update()
 			IME::SetCompositionWindowPos(mGuiNode.getPos() + delta);
 		}
 
-		if (node.IsScoreEvaluated())
-		{
-			mGuiNode.text(L"score").text = Format(L"評価値", node.mScore);
-			mGuiNode.text(L"tejunJap").text = AddNewLine(node.mTejunJap, 6);
-		}
-		else
-		{
-			mGuiNode.text(L"score").text = Format(L"未評価");
-			mGuiNode.text(L"tejunJap").text = L"";
-		}
+
 
 		
 	}

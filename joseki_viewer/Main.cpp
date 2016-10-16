@@ -24,11 +24,6 @@ void Main()
 	Window::Resize(WINDOW_W, WINDOW_H);
 	const Font font(30);
 
-
-	// 空の動的テクスチャ
-	DynamicTexture texture;
-	Image img;
-
 	Board* board = new BoardSiv3D();
 	Tree* tree = new TreeSiv3D(board);
 
