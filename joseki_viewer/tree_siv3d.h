@@ -156,8 +156,12 @@ public:
 	void Update();
 	void RequestCancel();
 
+	bool IsActive() const { return mServer!=nullptr; }
+	bool IsOptionRead() const { return !mOptions.empty(); }
 	long long GetPonderNodes() const { return mPonderNodes; }
 	long long GetPonderTime() const { return mPonderTime; }
+	const string& GetName() const { return mName; }
+
 private:
 	bool Go();
 	void ReceiveBestMoveAndScore();
@@ -171,6 +175,7 @@ private:
 	vector <string> mOptions;
 	long long mPonderNodes;
 	long long mPonderTime;
+	string mName;
 
 	const unsigned int mDurationMilliSec		    = 4000;
 	const unsigned int mDurationMilliSecStartMargin = 2000;
@@ -220,12 +225,20 @@ public:
 		WidgetStyle widgetStyle2 = widgetStyle;
 		widgetStyle2.color = Color(0, 0, 0, 255);
 
-		mGui = GUI(style2);
-		mGui.setTitle(L"メニュー");
-		mGui.add(L"kifu_load", GUIButton::Create(L"定跡ファイルを開く", widgetStyle2));
-		mGui.add(L"kifu_save", GUIButton::Create(L"定跡ファイルを保存", widgetStyle2));
-		mGui.add(L"evaluator_load", GUIButton::Create(L"評価ソフトを開く", widgetStyle2));
-		mGui.add(L"option_load", GUIButton::Create(L"オプションを開く", widgetStyle2));
+		GUIStyle style3 = style;
+		style3.background.color = Color(255, 0, 0, 64);
+
+		mGuiFile = GUI(style2);
+//		mGuiFile.setTitle(L"メニュー");
+		mGuiFile.addln(L"kifu_load", GUIButton::Create(L"定跡ファイルを開く", widgetStyle2));
+		mGuiFile.addln(L"kifu_save", GUIButton::Create(L"定跡ファイルを保存", widgetStyle2));
+
+		mGuiEvaluator = GUI(style3);
+		mGuiEvaluator.setPos(200, 0);
+		mGuiEvaluator.add(L"evaluator_load", GUIButton::Create(L"評価ソフトを開く", widgetStyle2));
+		mGuiEvaluator.addln(L"evaluator_name", GUIText::Create(L"", widgetStyle));
+		mGuiEvaluator.add(L"option_load", GUIButton::Create(L"オプションを開く", widgetStyle2));
+		mGuiEvaluator.addln(L"option_name", GUIText::Create(L"", widgetStyle));
 
 
 		mGuiNode = GUI(GUIStyle::Default);
@@ -282,9 +295,9 @@ private:
 	Font mFont;
 	Font mFontScore;
 	Font mFontGuiDefault;
-	GUI mGui;
+	GUI mGuiFile;
+	GUI mGuiEvaluator;
 	GUI mGuiNode;
-	GUI mGuiEngine;
 	GUI mGuiScore;
 	GUI mGuiSettings;
 

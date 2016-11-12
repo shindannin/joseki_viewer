@@ -38,8 +38,26 @@ void TreeSiv3D::Draw()
 	}
 #endif
 
-	// 読んだエンジン・読んだ手数・読んだ時間の表示
-	mFont(L"読んだ手数=", mEvaluator.GetPonderNodes(), L" 読んだ時間=", mEvaluator.GetPonderTime()).draw(WINDOW_W / 2 + 200, 20.0f, Palette::Orange);
+	// 読んだ評価ソフト・読んだ手数・読んだ時間の表示
+	if (mEvaluator.IsActive())
+	{
+		wstring wname(mEvaluator.GetName().begin(), mEvaluator.GetName().end());
+		mGuiEvaluator.text(L"evaluator_name").text = Format(L"評価ソフト=", wname, L" 読んだ手数=", mEvaluator.GetPonderNodes(), L" 読んだ時間=", mEvaluator.GetPonderTime());
+//		mFont(L"評価ソフト=", wname, L" 読んだ手数=", mEvaluator.GetPonderNodes(), L" 読んだ時間=", mEvaluator.GetPonderTime()).draw(370, 8.0f, Palette::White);
+	}
+
+	{
+		String optionString;
+		if (mEvaluator.IsOptionRead())
+		{
+			optionString = Format(L"設定済み");
+		}
+		else
+		{
+			optionString = Format(L"未設定");
+		}
+		mGuiEvaluator.text(L"option_name").text = optionString;
+	}
 
 	// リンク
 	for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
@@ -132,6 +150,7 @@ void TreeSiv3D::Draw()
 		}
 	}
 
+	// 手順
 	{
 		const Node& node = mNodes[GetSelectedNodeID()];
 		if (node.IsScoreEvaluated())
@@ -178,7 +197,7 @@ void TreeSiv3D::Update()
 	mEvaluator.Update();
 
 	// メニュー
-	if (mGui.button(L"kifu_load").pushed)
+	if (mGuiFile.button(L"kifu_load").pushed)
 	{
 		const auto path = Dialog::GetOpen({ { L"定跡ビューワファイル (*.jsv)", L"*.jsv" } });
 		if (path.has_value())
@@ -188,7 +207,7 @@ void TreeSiv3D::Update()
 			CalculateVisualPos();
 		}
 	}
-	else if (mGui.button(L"kifu_save").pushed)
+	else if (mGuiFile.button(L"kifu_save").pushed)
 	{
 		const auto path = Dialog::GetSave({ { L"定跡ビューワファイル (*.jsv)", L"*.jsv" } });
 		if (path.has_value())
@@ -196,11 +215,12 @@ void TreeSiv3D::Update()
 			Save(path.value().str());
 		}
 	}
-	else if (mGui.button(L"evaluator_load").pushed)
+
+	if (mGuiEvaluator.button(L"evaluator_load").pushed)
 	{
 		mEvaluator.Open();
 	}
-	else if (mGui.button(L"option_load").pushed)
+	else if (mGuiEvaluator.button(L"option_load").pushed)
 	{
 		mEvaluator.OpenOption();
 	}
@@ -316,6 +336,23 @@ void Evaluator::Open()
 
 			if (mServer->read(readStr))
 			{
+				// 
+				vector <string> vs;
+				Split1(readStr, vs, '\n');
+
+				for (const string& s : vs)
+				{
+					vector <string> tmp;
+					Split1(s, tmp, ' ');
+					Trim(tmp.back());
+
+					if (SZ(tmp)==3 && tmp[0] == "id" && tmp[1] == "name")
+					{
+						mName = tmp[2];
+						break;
+					}
+				}
+
 				vector <string> options = mOptions;
 				options.push_back("isready\n");
 				string allOptions = accumulate(options.begin(), options.end(), string());
@@ -453,8 +490,8 @@ void Evaluator::ReceiveBestMoveAndScore()
 		for (int i = SZ(vs) - 1; i >= 0; --i)
 		{
 			const string& lastInfo = vs[i];
- 			std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
- 			Print(wsTmp);
+// 			std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
+// 			Print(wsTmp);
 
 			vector <string> tmp;
 			Split1(lastInfo, tmp, ' ');
