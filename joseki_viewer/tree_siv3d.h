@@ -162,6 +162,9 @@ public:
 	long long GetPonderTime() const { return mPonderTime; }
 	const string& GetName() const { return mName; }
 
+	int GetDurationSec() const { return mDurationMilliSec/1000; }
+	void SetDurationSec(int sec) { mDurationMilliSec = sec * 1000; }
+
 private:
 	bool Go();
 	void ReceiveBestMoveAndScore();
@@ -177,7 +180,7 @@ private:
 	long long mPonderTime;
 	string mName;
 
-	const unsigned int mDurationMilliSec		    = 4000;
+	unsigned int mDurationMilliSec		            = 5000;
 	const unsigned int mDurationMilliSecStartMargin = 2000;
 	const unsigned int mDurationMilliSecMargin	    =  100;
 };
@@ -220,7 +223,7 @@ public:
 
 
 		GUIStyle style2 = style;
-		style2.background.color = Color(255, 255, 255, 128);
+		style2.background.color = Color(255, 255, 255, 196);
 
 		WidgetStyle widgetStyle2 = widgetStyle;
 		widgetStyle2.color = Color(0, 0, 0, 255);
@@ -238,7 +241,14 @@ public:
 		mGuiEvaluator.add(L"evaluator_load", GUIButton::Create(L"評価ソフトを開く", widgetStyle2));
 		mGuiEvaluator.addln(L"evaluator_name", GUIText::Create(L"", widgetStyle));
 		mGuiEvaluator.add(L"option_load", GUIButton::Create(L"オプションを開く", widgetStyle2));
-		mGuiEvaluator.addln(L"option_name", GUIText::Create(L"", widgetStyle));
+		mGuiEvaluator.add(L"option_name", GUIText::Create(L"", widgetStyle));
+		mGuiEvaluator.add(L"time_prefix", GUIText::Create(L"　　思考時間", widgetStyle));
+		mGuiEvaluator.add(L"time_sec", GUITextField::Create(5));
+		mGuiEvaluator.addln(L"time_suffix", GUIText::Create(L"秒", widgetStyle));
+
+
+		String x = CharacterSet::Widen(to_string(mEvaluator.GetDurationSec()));
+		mGuiEvaluator.textField(L"time_sec").setText(x);
 
 
 		mGuiNode = GUI(GUIStyle::Default);

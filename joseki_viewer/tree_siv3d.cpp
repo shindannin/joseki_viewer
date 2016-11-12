@@ -225,6 +225,21 @@ void TreeSiv3D::Update()
 		mEvaluator.OpenOption();
 	}
 
+	// 時間の更新
+	if (mGuiEvaluator.textField(L"time_sec").hasChanged)
+	{
+		string text = mGuiEvaluator.textField(L"time_sec").text.narrow();
+		if(!text.empty())
+		{
+			const int sec = strtol(text.c_str(),NULL,0);
+			if (sec > 0)
+			{
+				mEvaluator.SetDurationSec(sec);
+			}
+		}
+	}
+
+
 	{
 		// 中心座標の変更（前フレームからのカーソルの移動量）
 		if (Input::MouseR.pressed)
