@@ -38,6 +38,9 @@ void TreeSiv3D::Draw()
 	}
 #endif
 
+	// 読んだエンジン・読んだ手数・読んだ時間の表示
+	mFont(L"読んだ手数=", mEvaluator.GetPonderNodes(), L" 読んだ時間=", mEvaluator.GetPonderTime()).draw(WINDOW_W / 2 + 200, 20.0f, Palette::Orange);
+
 	// リンク
 	for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
 	{
@@ -197,6 +200,10 @@ void TreeSiv3D::Update()
 	{
 		mEvaluator.Open();
 	}
+	else if (mGui.button(L"option_load").pushed)
+	{
+		mEvaluator.OpenOption();
+	}
 
 	{
 		// 中心座標の変更（前フレームからのカーソルの移動量）
@@ -305,23 +312,21 @@ void Evaluator::Open()
 		{
 			std::string readStr;
 
-			System::Sleep(mDurationMilliSecMargin);
+			System::Sleep(mDurationMilliSecStartMargin);
+
 			if (mServer->read(readStr))
 			{
-				const vector <string> options = {
-					"isready\n",
-				};
-
+				vector <string> options = mOptions;
+				options.push_back("isready\n");
 				string allOptions = accumulate(options.begin(), options.end(), string());
-
 				if (mServer->write(allOptions))
 				{
-					System::Sleep(mDurationMilliSecMargin);
+					System::Sleep(mDurationMilliSecStartMargin);
 					if (mServer->read(readStr))
 					{
 // 						std::wstring wsTmp(readStr.begin(), readStr.end());
 // 						Print(wsTmp);
-						if (mServer->write("usinewgame\n"))
+						if (mServer->write("usinewgame\r\n"))
 						{
 						}
 					}
@@ -329,6 +334,29 @@ void Evaluator::Open()
 			}
 		}
 	}
+}
+
+void Evaluator::OpenOption()
+{
+	///////////////////////////////////
+	//
+	// クライアントを起動
+	//
+	const auto path = Dialog::GetOpen({ { L"テキストファイル (*.txt)", L"*.txt" } });
+
+	if (path)
+	{
+		mOptions.clear();
+
+		TextReader reader(path.value());
+		String line;
+		while (reader.readLine(line))
+		{
+			mOptions.push_back("setoption " + line.narrow()+"\n");
+		}
+	}
+
+
 }
 
 void Evaluator::Close()
@@ -425,8 +453,8 @@ void Evaluator::ReceiveBestMoveAndScore()
 		for (int i = SZ(vs) - 1; i >= 0; --i)
 		{
 			const string& lastInfo = vs[i];
-// 			std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
-// 			Print(wsTmp);
+ 			std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
+ 			Print(wsTmp);
 
 			vector <string> tmp;
 			Split1(lastInfo, tmp, ' ');
@@ -454,6 +482,14 @@ void Evaluator::ReceiveBestMoveAndScore()
 							tejun += " ";
 						}
 					}
+				}
+				else if (tmp[k] == "nodes")
+				{
+					mPonderNodes = stoll(tmp[k + 1]);
+				}
+				else if (tmp[k] == "time")
+				{
+					mPonderTime = stoll(tmp[k + 1]);
 				}
 			}
 

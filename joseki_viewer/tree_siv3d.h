@@ -141,6 +141,8 @@ public:
 		mEvaludatingNodeID = NG;
 		mServer = nullptr;
 		mEStateEvaluation = EStateEvaluation_FindingNode;
+		mPonderNodes = 0LL;
+		mPonderTime = 0LL;
 	}
 
 	~Evaluator()
@@ -149,10 +151,13 @@ public:
 	}
 
 	void Open();
+	void OpenOption();
 	void Close();
 	void Update();
 	void RequestCancel();
 
+	long long GetPonderNodes() const { return mPonderNodes; }
+	long long GetPonderTime() const { return mPonderTime; }
 private:
 	bool Go();
 	void ReceiveBestMoveAndScore();
@@ -163,9 +168,13 @@ private:
 	EStateEvaluation mEStateEvaluation;
 	Tree* mTree;
 	Stopwatch mStopwatch;
+	vector <string> mOptions;
+	long long mPonderNodes;
+	long long mPonderTime;
 
-	const unsigned int mDurationMilliSec		= 4000;
-	const unsigned int mDurationMilliSecMargin	=  100;
+	const unsigned int mDurationMilliSec		    = 4000;
+	const unsigned int mDurationMilliSecStartMargin = 2000;
+	const unsigned int mDurationMilliSecMargin	    =  100;
 };
 
 
@@ -216,6 +225,8 @@ public:
 		mGui.add(L"kifu_load", GUIButton::Create(L"定跡ファイルを開く", widgetStyle2));
 		mGui.add(L"kifu_save", GUIButton::Create(L"定跡ファイルを保存", widgetStyle2));
 		mGui.add(L"evaluator_load", GUIButton::Create(L"評価ソフトを開く", widgetStyle2));
+		mGui.add(L"option_load", GUIButton::Create(L"オプションを開く", widgetStyle2));
+
 
 		mGuiNode = GUI(GUIStyle::Default);
 		mGuiNode.setPos(0, 570);
@@ -235,6 +246,9 @@ public:
 	virtual void Draw() override;
 	virtual void Update() override;
 	virtual void OnSelectedNodeIDChanged() override;
+
+	long long GetPonderNodes() const { return mEvaluator.GetPonderNodes();}
+	long long GetPonderTime() const { return mEvaluator.GetPonderTime(); }
 
 
 private:
@@ -280,6 +294,6 @@ private:
 	float mNodeRadius;
 	float mGridScale;
 
-	Evaluator	mEvaluator;
+	Evaluator	mEvaluator; // TODO : 評価ソフトなので、treeに移動したほうが良いのでは。ただファイル読み込みとかがちがちにSIV3D使っているので、ちょっと移動は大変かも。
 };
 

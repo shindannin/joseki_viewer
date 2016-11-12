@@ -5,6 +5,10 @@ https://github.com/Siv3D/Reference-JP/wiki
 Siv3D ユーザー助け合い所 (β)
 http://siv3d.jp/bbs/patio.cgi
 
+将棋プロトコル
+http://www.geocities.jp/shogidokoro/usi.html
+
+
 
 // AIはつくりません！
 
@@ -13,9 +17,12 @@ http://siv3d.jp/bbs/patio.cgi
 
 // 優先度高い
 評価ソフトの簡易設定（せめてスレッド数・時間）
+
+ ⇒評価途中に何らかの表示が必要。
  ⇒ファイルからini読み込みでもいい。簡単でいいので
 詰み時の評価はフォーマットが違う（これはさすがにおかしい…）
 再評価（直接デリートで良い）
+計算しているのがわかる表示
 評価値バー（一番重要なので）
 
 これでいったんはよいはず。
@@ -28,6 +35,7 @@ http://siv3d.jp/bbs/patio.cgi
 	駒の移動範囲チェック
 	二歩
 ２手差が真の評価？
+検索機能
 
 // 優先度低い
 タグカラー
