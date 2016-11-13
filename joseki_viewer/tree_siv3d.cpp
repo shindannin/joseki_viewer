@@ -4,12 +4,10 @@
 #include <algorithm>
 #include <numeric>
 
-#define DEBUG_DRAW_INFO 
-
 void TreeSiv3D::DrawScoreBar(int score, int maxScore, float cx, float cy, float w, float h)
 {
-	const float x = cx - w * 0.5f;
-	const float y = cy - h * 0.5f;
+	const int x = static_cast<int>(cx - w * 0.5f);
+	const int y = static_cast<int>(cy - h * 0.5f);
 	float blueRatio = 0.5f - 0.5f * score / maxScore;
 	
 	if (blueRatio < 0.f)
@@ -25,18 +23,16 @@ void TreeSiv3D::DrawScoreBar(int score, int maxScore, float cx, float cy, float 
 	Rect(x + w*blueRatio, y, w*(1.0f-blueRatio), h).draw(Palette::Red);
 }
 
-
+// 表示
 void TreeSiv3D::Draw()
 {
 	Tree::Draw();
 
-#ifdef DEBUG_DRAW_INFO
+	// デバッグ用座標と拡大縮小情報
 	if (mGuiSettings.checkBox(L"settings").checked(SHOW_DEBUG))
 	{
-		// デバッグ用 
 		mFont(L"Offset=(", mOffsetX, L",", mOffsetY, L") GridScale=", mGridScale).draw(WINDOW_W / 2 + 20.f, 20.0f, Palette::Orange);
 	}
-#endif
 
 	// 読んだ評価ソフト・読んだ手数・読んだ時間の表示
 	if (mEvaluator.IsActive())
@@ -46,6 +42,7 @@ void TreeSiv3D::Draw()
 //		mFont(L"評価ソフト=", wname, L" 読んだ手数=", mEvaluator.GetPonderNodes(), L" 読んだ時間=", mEvaluator.GetPonderTime()).draw(370, 8.0f, Palette::White);
 	}
 
+	// オプションの設定
 	{
 		String optionString;
 		if (mEvaluator.IsOptionRead())
@@ -59,7 +56,7 @@ void TreeSiv3D::Draw()
 		mGuiEvaluator.text(L"option_name").text = optionString;
 	}
 
-	// リンク
+	// 木のリンク
 	for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
 	{
 		const Node& node = mNodes[nodeID];
@@ -83,7 +80,7 @@ void TreeSiv3D::Draw()
 		}
 	}
 
-	// ノード
+	// 木のノード
 	for (int nodeID = 0; nodeID<SZ(mNodes); ++nodeID)
 	{
 		const Node& node = mNodes[nodeID];
@@ -104,13 +101,11 @@ void TreeSiv3D::Draw()
 		roundRect.draw(color);
 
 
-#ifdef DEBUG_DRAW_INFO
 		if (mGuiSettings.checkBox(L"settings").checked(SHOW_DEBUG))
 		{
 			// デバッグ用：表示場所の表示
 			mFont(centerX, L",", centerY).draw(centerX, centerY, Palette::Orange);
 		}
-#endif // DEBUG_DRAW_INFO
 		
 		// 評価値の表示
 		if (mGuiSettings.checkBox(L"settings").checked(SHOW_SCORE))
@@ -157,25 +152,22 @@ void TreeSiv3D::Draw()
 		{
 			mGuiScore.text(L"score").text = Format(L"評価値 ", node.mScore);
 			mGuiScore.text(L"tejunJap").text = AddNewLine(node.mTejunJap, 1);
-
-// 			mFont(node.mScore).draw(600, 100);
-// 			mFont(AddNewLine(node.mTejunJap, 1)).draw(600, 200);
-
 		}
 		else
 		{
 			mGuiScore.text(L"score").text = Format(L"未評価");
 			mGuiScore.text(L"tejunJap").text = L"";
-			// 			mFont(L"未評価").draw(600, 100);
 		}
 	}
 }
 
+// ノードの表示に使う図形を返す
 s3d::RoundRect TreeSiv3D::GetNodeShape(float centerX, float centerY)
 {
 	return s3d::RoundRect(centerX - 20, centerY - mNodeRadius, 40, mNodeRadius * 2, mNodeRadius);
 }
 
+// 現在選択中のノードが変更した瞬間に呼ばれる関数
 void TreeSiv3D::OnSelectedNodeIDChanged()
 {
 	Node& node = mNodes[GetSelectedNodeID()];
@@ -191,6 +183,7 @@ void TreeSiv3D::OnSelectedNodeIDChanged()
 	}
 }
 
+// メインループ
 void TreeSiv3D::Update()
 {
 	Tree::Update();
@@ -317,19 +310,12 @@ void TreeSiv3D::Update()
 			// TODO ここは、ちゃんと相対座標を決める手段がないので、無理。
 			IME::SetCompositionWindowPos(mGuiNode.getPos() + delta);
 		}
-
-
-
-		
 	}
 }
 
+// 評価ソフトを開く
 void Evaluator::Open()
 {
-	///////////////////////////////////
-	//
-	// クライアントを起動
-	//
 	const auto path = Dialog::GetOpen({ { L"実行ファイル (*.exe)", L"*.exe" } });
 
 	if (path)
@@ -388,14 +374,10 @@ void Evaluator::Open()
 	}
 }
 
+// 評価ソフトの初期設定オプションを開く
 void Evaluator::OpenOption()
 {
-	///////////////////////////////////
-	//
-	// クライアントを起動
-	//
 	const auto path = Dialog::GetOpen({ { L"テキストファイル (*.txt)", L"*.txt" } });
-
 	if (path)
 	{
 		mOptions.clear();
@@ -407,10 +389,9 @@ void Evaluator::OpenOption()
 			mOptions.push_back("setoption " + line.narrow()+"\n");
 		}
 	}
-
-
 }
 
+// 評価を終了する
 void Evaluator::Close()
 {
 	if (mServer != nullptr)
@@ -422,12 +403,12 @@ void Evaluator::Close()
 	}
 }
 
+// メインループ
 void Evaluator::Update()
 {
 	if (mServer)
 	{
-		// 毎フレーム呼ぶ必要はない！
-
+		// 評価ステートマシン
 		switch (mEStateEvaluation)
 		{
 		case EStateEvaluation_FindingNode:
@@ -467,6 +448,7 @@ void Evaluator::Update()
 	}
 }
 
+// 評価を開始する
 bool Evaluator::Go()
 {
 	assert(mEvaludatingNodeID != NG);
@@ -491,6 +473,7 @@ bool Evaluator::Go()
 	return false;
 }
 
+// 評価ソフトから、評価値と最善手を得る
 void Evaluator::ReceiveBestMoveAndScore()
 {
 	string readStr;
@@ -518,10 +501,26 @@ void Evaluator::ReceiveBestMoveAndScore()
 
 			for (int k = 0; k < SZ(tmp); ++k)
 			{
-				// TODO : ここのフォーマット、詰みの時は違う！
-				if (tmp[k] == "score")
+				assert(k + 2 < SZ(tmp));
+				if (tmp[k] == "score" && k + 2 < SZ(tmp))
 				{
-					score = stoi(tmp[k + 2]);
+					if (tmp[k + 1] == "cp")
+					{
+						score = stoi(tmp[k + 2]);
+					}
+					else if (tmp[k + 1] == "mate")
+					{
+//						const int mate = stoi(tmp[k + 2]);
+//						assert(mate!=0);
+//						if (mate > 0)
+//						{
+//							score =  100000000 - mate;
+//						}
+//						else if (mate < 0)
+//						{
+//							score = -100000000 - mate;
+//						}
+					}
 					isScoreFound = true;
 				}
 				else if (tmp[k] == "pv")

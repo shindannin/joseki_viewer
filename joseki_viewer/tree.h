@@ -1,3 +1,5 @@
+// tree.h : 棋譜の木についてのファイル。ここに書いてあるクラスは、Siv3Dには依存せず、単体テストも可能(unittest1.cpp)。
+
 #pragma once
 
 #include "board.h"
@@ -6,6 +8,7 @@
 
 #define MAX_SAVE_SIZE	(0x1000)
 
+// Link : 棋譜の木のリンク。１手を表す。
 struct Link
 {
 	// セーブする
@@ -29,6 +32,7 @@ struct Link
 	}
 };
 
+// Node : 棋譜の木のノード。局面を表す。１つのノードは、複数のリンク（手の分岐）を持つ。
 class Node
 {
 public:
@@ -92,6 +96,7 @@ public:
 	wstring			mTejunJap;
 };
 
+// 棋譜の木。複数のノードと、それぞれのノードが持つ複数のリンクから成る。
 class Tree
 {
 public:

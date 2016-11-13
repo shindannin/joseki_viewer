@@ -1,3 +1,5 @@
+// board.h : 将棋盤についてのファイル。ここに書いてあるクラスは、Siv3Dには依存せず、単体テストも可能(unittest1.cpp)。
+
 #pragma once
 
 #include <string>
@@ -16,11 +18,11 @@ const int NG = -1;
 
 enum ESengo
 {
-	E_SEN,
-	E_GO,
+	E_SEN,			// 先手
+	E_GO,			// 後手
 	NUM_SEN_GO,
 
-	E_NO_SENGO = -1,
+	E_NO_SENGO = -1,	// どちらでもない
 };
 
 enum EKomaType

@@ -1,3 +1,5 @@
+// tree_siv3d.h : Siv3Dに依存する棋譜の木分＋将棋盤以外のSiv3DのGUIなど。
+
 #pragma once
 
 #include <Siv3D.hpp>
@@ -5,12 +7,14 @@
 #include "tree.h"
 
 // siv3dではなくwindows依存のコード。
+// TODO : この部分は、Siv3Dライブラリに、機能追加されたはずなので、そちらを使用するようにする。
 #include <windows.h> 
 #include <tchar.h>
 #include <stdio.h> 
 #include <strsafe.h>
 namespace s3d
 {
+	// class Server : 標準入出力
 	class Server
 	{
 	private:
@@ -129,6 +133,7 @@ enum EStateEvaluation
 
 class Tree;
 
+// class Evaluator : 評価ソフトと評価設定
 class Evaluator
 {
 public:
@@ -156,9 +161,9 @@ public:
 	void Update();
 	void RequestCancel();
 
-	bool IsActive() const { return mServer!=nullptr; }
-	bool IsOptionRead() const { return !mOptions.empty(); }
-	long long GetPonderNodes() const { return mPonderNodes; }
+	bool IsActive() const { return mServer!=nullptr; }				// 評価ソフトを起動したか？
+	bool IsOptionRead() const { return !mOptions.empty(); }			// 評価ソフトの初期設定を、ファイルからすでに読み込んだか？
+	long long GetPonderNodes() const { return mPonderNodes; }	
 	long long GetPonderTime() const { return mPonderTime; }
 	const string& GetName() const { return mName; }
 
@@ -170,22 +175,22 @@ private:
 	void ReceiveBestMoveAndScore();
 	void WaitAndCancel();
 
-	int mEvaludatingNodeID;
-	Server* mServer;
-	EStateEvaluation mEStateEvaluation;
-	Tree* mTree;
-	Stopwatch mStopwatch;
-	vector <string> mOptions;
-	long long mPonderNodes;
-	long long mPonderTime;
-	string mName;
+	int mEvaludatingNodeID;				// 現在評価中のノードID
+	Server* mServer;					// 標準入出力
+	EStateEvaluation mEStateEvaluation;	//
+	Tree* mTree;						// Siv3Dに依存しない、棋譜の木
+	Stopwatch mStopwatch;				// 評価の経過時間を計測するストップウォッチ
+	vector <string> mOptions;			// 評価ソフトの初期設定オプション
+	long long mPonderNodes;				// 最善手を求めるのに、評価した手数
+	long long mPonderTime;				// 最善手を求めるのに、評価した時間。単位はミリ秒
+	string mName;						// 評価ソフトの名前（Aperyとか）
 
-	unsigned int mDurationMilliSec		            = 5000;
-	const unsigned int mDurationMilliSecStartMargin = 2000;
-	const unsigned int mDurationMilliSecMargin	    =  100;
+	int mDurationMilliSec		            = 5000; // 評価時間。単位はミリ秒
+	const int mDurationMilliSecStartMargin  = 2000;	// 評価ソフト起動時の待ち時間。単位はミリ秒
+	const int mDurationMilliSecMargin	    =  100; // 予備の待ち時間。単位はミリ秒
 };
 
-
+// TreeSiv3D : 将棋盤以外の部分すべて（右側のツリー表示と、左側の将棋盤以外）
 class TreeSiv3D : public Tree
 {
 public:
