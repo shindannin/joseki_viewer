@@ -36,13 +36,59 @@ struct Link
 class Node
 {
 public:
-	enum { SCORE_NOT_EVALUATED = 123456789 };
+	enum { SCORE_NOT_EVALUATED = 123456789 }; // •]‰¿‚ª‚³‚ê‚Ä‚¢‚È‚¢ó‘Ô
+	enum { SCORE_MATE          =  10000000 }; // xŽè‹l‚Ý‚ð•\‚·
 
 	Node();
 	void AddLink(int newNodeID, const string& te, const wstring* pTeJap = nullptr);
 	int HasLink(const string& te) const;
 	bool IsRoot() const { return mParentNodeID == NG; }
 	bool IsScoreEvaluated() const { return mScore != SCORE_NOT_EVALUATED;  }
+
+	static int ConvertMateToScore(int mate) 
+	{
+		assert(mate != 0);
+		if (mate > 0)
+		{
+			return SCORE_MATE + mate;
+		}
+		else if (mate < 0)
+		{
+			return -SCORE_MATE + mate;
+		}
+
+		return 0;
+	}
+
+	string ConverScoreToString() const
+	{
+		if (mScore == SCORE_NOT_EVALUATED)
+		{
+			return "";
+		}
+		else if (mScore >= SCORE_MATE)
+		{
+			return "M " + to_string(mScore - SCORE_MATE);
+		}
+		else if (mScore <= -SCORE_MATE)
+		{
+			return "M " + to_string(-mScore - SCORE_MATE);
+		}
+		else if (mScore > 0)
+		{
+			return to_string(mScore);
+		}
+		else if (mScore < 0)
+		{
+			return to_string(-mScore);
+		}
+		else
+		{
+			return to_string(mScore);
+		}
+
+		return "";
+	}
 
 	void Save(wfstream& wfs)
 	{

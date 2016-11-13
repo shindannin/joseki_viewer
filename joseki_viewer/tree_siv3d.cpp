@@ -38,8 +38,7 @@ void TreeSiv3D::Draw()
 	if (mEvaluator.IsActive())
 	{
 		wstring wname(mEvaluator.GetName().begin(), mEvaluator.GetName().end());
-		mGuiEvaluator.text(L"evaluator_name").text = Format(L"評価ソフト=", wname, L" 読んだ手数=", mEvaluator.GetPonderNodes(), L" 読んだ時間=", mEvaluator.GetPonderTime());
-//		mFont(L"評価ソフト=", wname, L" 読んだ手数=", mEvaluator.GetPonderNodes(), L" 読んだ時間=", mEvaluator.GetPonderTime()).draw(370, 8.0f, Palette::White);
+		mGuiEvaluator.text(L"evaluator_name").text = Format(L"評価ソフト ", wname, L"  読んだ手数 ", mEvaluator.GetPonderNodes(), L"手  読んだ時間 ", mEvaluator.GetPonderTime(), L"ミリ秒");
 	}
 
 	// オプションの設定
@@ -114,17 +113,20 @@ void TreeSiv3D::Draw()
 			{
 				//			DrawScoreBar(node.mScore, 2000, centerX, centerY, 80, 10);
 
+				string s = node.ConverScoreToString();
+				wstring ws(s.begin(), s.end());
+
 				if (node.mScore > 0)
 				{
-					mFontScore(node.mScore).drawCenter(centerX, centerY, Palette::Red);
+					mFontScore(ws).drawCenter(centerX, centerY, Palette::Red);
 				}
 				else if (node.mScore < 0)
 				{
-					mFontScore(-node.mScore).drawCenter(centerX, centerY, Palette::Blue);
+					mFontScore(ws).drawCenter(centerX, centerY, Palette::Blue);
 				}
 				else
 				{
-					mFontScore(node.mScore).drawCenter(centerX, centerY, Palette::Purple);
+					mFontScore(ws).drawCenter(centerX, centerY, Palette::Purple);
 				}
 			}
 		}
@@ -164,7 +166,7 @@ void TreeSiv3D::Draw()
 // ノードの表示に使う図形を返す
 s3d::RoundRect TreeSiv3D::GetNodeShape(float centerX, float centerY)
 {
-	return s3d::RoundRect(centerX - 20, centerY - mNodeRadius, 40, mNodeRadius * 2, mNodeRadius);
+	return s3d::RoundRect(centerX - 25, centerY - mNodeRadius, 50, mNodeRadius * 2, mNodeRadius);
 }
 
 // 現在選択中のノードが変更した瞬間に呼ばれる関数
@@ -408,7 +410,7 @@ void Evaluator::Update()
 {
 	if (mServer)
 	{
-		// 評価ステートマシン
+		// 評価の状態遷移
 		switch (mEStateEvaluation)
 		{
 		case EStateEvaluation_FindingNode:
@@ -510,16 +512,8 @@ void Evaluator::ReceiveBestMoveAndScore()
 					}
 					else if (tmp[k + 1] == "mate")
 					{
-//						const int mate = stoi(tmp[k + 2]);
-//						assert(mate!=0);
-//						if (mate > 0)
-//						{
-//							score =  100000000 - mate;
-//						}
-//						else if (mate < 0)
-//						{
-//							score = -100000000 - mate;
-//						}
+						const int mate = stoi(tmp[k + 2]);
+						score = Node::ConvertMateToScore(mate);
 					}
 					isScoreFound = true;
 				}
@@ -553,6 +547,7 @@ void Evaluator::ReceiveBestMoveAndScore()
 	}
 }
 
+// 標準入力から読み込んで、使わずに捨てる
 void Evaluator::WaitAndCancel()
 {
 	string readStr;
@@ -561,6 +556,7 @@ void Evaluator::WaitAndCancel()
 	}
 }
 
+// 評価中のときに、キャンセルして評価をやめる。
 void Evaluator::RequestCancel()
 {
 	// もし評価中であれば、評価をキャンセル
