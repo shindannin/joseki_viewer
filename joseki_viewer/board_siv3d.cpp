@@ -10,7 +10,7 @@ BoardSiv3D::BoardSiv3D()
 		mTexture[s].clear();
 		for (int k = 0; k < NUM_KOMA_TYPE; ++k)
 		{
-			String fileName(L"../joseki_viewer/pictures/");
+			String fileName(L"pictures/");
 			fileName += mFileName[k][s];
 			fileName += L".png";
 			mTexture[s].push_back(Texture(fileName));
@@ -19,9 +19,9 @@ BoardSiv3D::BoardSiv3D()
 	mKomaTextureWidth = mTexture[0][0].width;
 	mKomaTextureHeight = mTexture[0][0].height;
 
-	mTextureBackground = Texture(L"../joseki_viewer/pictures/background.jpg");
-	mTextureBoard = Texture(L"../joseki_viewer/pictures/ban_kaya_a.png");
-	mTextureGrid = Texture(L"../joseki_viewer/pictures/masu_dot.png");
+	mTextureBackground = Texture(L"pictures/background.jpg");
+	mTextureBoard = Texture(L"pictures/ban_kaya_a.png");
+	mTextureGrid = Texture(L"pictures/masu_dot.png");
 
 	mBoardTextureWidth = mTextureBoard.width;
 	mBoardTextureHeight = mTextureBoard.height;
