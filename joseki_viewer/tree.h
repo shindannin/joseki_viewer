@@ -90,6 +90,36 @@ public:
 		return "";
 	}
 
+	wstring ConverScoreToWString() const
+	{
+		if (mScore == SCORE_NOT_EVALUATED)
+		{
+			return L"";
+		}
+		else if (mScore >= SCORE_MATE)
+		{
+			return L"æè " + to_wstring(mScore - SCORE_MATE) + L"è‹l";
+		}
+		else if (mScore <= -SCORE_MATE)
+		{
+			return L"Œãè " + to_wstring(-mScore - SCORE_MATE) + L"è‹l";
+		}
+		else if (mScore > 0)
+		{
+			return L"æè " + to_wstring(mScore);
+		}
+		else if (mScore < 0)
+		{
+			return L"Œãè " + to_wstring(-mScore);
+		}
+		else
+		{
+			return L"ŒİŠp";
+		}
+
+		return L"";
+	}
+
 	void Save(wfstream& wfs)
 	{
 //		wfs << wstring(mState.begin(), mState.end()) << endl;

@@ -4,24 +4,25 @@
 #include <algorithm>
 #include <numeric>
 
-void TreeSiv3D::DrawScoreBar(int score, int maxScore, float cx, float cy, float w, float h)
-{
-	const int x = static_cast<int>(cx - w * 0.5f);
-	const int y = static_cast<int>(cy - h * 0.5f);
-	float blueRatio = 0.5f - 0.5f * score / maxScore;
-	
-	if (blueRatio < 0.f)
-	{
-		blueRatio = 0.f;
-	}
-	else if (blueRatio > 1.0f)
-	{
-		blueRatio = 1.f;
-	}
-
-	Rect(x, y, w*blueRatio, h).draw(Palette::Blue);
-	Rect(x + w*blueRatio, y, w*(1.0f-blueRatio), h).draw(Palette::Red);
-}
+// 評価値バー
+//void TreeSiv3D::DrawScoreBar(int score, int maxScore, float cx, float cy, float w, float h)
+//{
+//	const int x = static_cast<int>(cx - w * 0.5f);
+//	const int y = static_cast<int>(cy - h * 0.5f);
+//	float blueRatio = 0.5f - 0.5f * score / maxScore;
+//	
+//	if (blueRatio < 0.f)
+//	{
+//		blueRatio = 0.f;
+//	}
+//	else if (blueRatio > 1.0f)
+//	{
+//		blueRatio = 1.f;
+//	}
+//
+//	Rect(x, y, w*blueRatio, h).draw(Palette::Blue);
+//	Rect(x + w*blueRatio, y, w*(1.0f-blueRatio), h).draw(Palette::Red);
+//}
 
 // 表示
 void TreeSiv3D::Draw()
@@ -152,7 +153,7 @@ void TreeSiv3D::Draw()
 		const Node& node = mNodes[GetSelectedNodeID()];
 		if (node.IsScoreEvaluated())
 		{
-			mGuiScore.text(L"score").text = Format(L"評価値 ", node.mScore);
+			mGuiScore.text(L"score").text = Format(L"評価値 ", node.ConverScoreToWString());
 			mGuiScore.text(L"tejunJap").text = AddNewLine(node.mTejunJap, 1);
 		}
 		else
@@ -160,7 +161,14 @@ void TreeSiv3D::Draw()
 			mGuiScore.text(L"score").text = Format(L"未評価");
 			mGuiScore.text(L"tejunJap").text = L"";
 		}
+
+//		// 評価値バー
+//		if (node.IsScoreEvaluated())
+//		{
+//			DrawScoreBar(node.mScore, 2000, 400, 200, 400, 50);
+//		}
 	}
+
 }
 
 // ノードの表示に使う図形を返す

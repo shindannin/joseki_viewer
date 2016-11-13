@@ -126,9 +126,9 @@ namespace s3d
 
 enum EStateEvaluation
 {
-	EStateEvaluation_FindingNode,
-	EStateEvaluation_WaitingScore,
-	EStateEvaluation_WaitingCancel,
+	EStateEvaluation_FindingNode,	// Ÿ‚É•]‰¿‚·‚é‹Ç–Ê‚ğ’T‚µ‚Ä‚¢‚éÅ’†
+	EStateEvaluation_WaitingScore,	// •]‰¿’†
+	EStateEvaluation_WaitingCancel,	// •]‰¿’†‚¾‚Á‚½‚¯‚ÇƒLƒƒƒ“ƒZƒ‹‚µ‚½
 };
 
 class Tree;
@@ -304,7 +304,7 @@ private:
 		return (scaledY - mOffsetY) / mGridScale;;
 	}
 
-	void DrawScoreBar(int score, int maxScore, float cx, float cy, float w, float h);
+//	void DrawScoreBar(int score, int maxScore, float cx, float cy, float w, float h);
 	s3d::RoundRect GetNodeShape(float centerX, float centerY);
 
 	Font mFont;
