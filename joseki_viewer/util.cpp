@@ -44,7 +44,7 @@ wstring EasyEscape(const wstring& ws)
 wstring EasyUnescape(const wstring& ws)
 {
 	wstring ret;
-	for (int i=0;i<ws.size();++i)
+	for (int i=0;i<static_cast<int>(ws.size());++i)
 	{
 		if( ws[i]=='\\n')
 		{
@@ -88,10 +88,10 @@ wstring AddNewLine(const wstring& ws, int perNumTe)
 {
 	wstring ret;
 	int numTe = 0;
-	for (int i = 0; i < ws.size(); ++i)
+	for (int i = 0; i < static_cast<int>(ws.size()); ++i)
 	{
 		ret += ws[i];
-		if (i + 1 < ws.size() && (ws[i + 1] == L'Å£' || ws[i + 1] == L'Å¢'))
+		if (i + 1 < static_cast<int>(ws.size()) && (ws[i + 1] == L'Å£' || ws[i + 1] == L'Å¢'))
 		{
 			numTe++;
 			if (numTe%perNumTe == 0)
