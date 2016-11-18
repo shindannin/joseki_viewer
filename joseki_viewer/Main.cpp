@@ -21,7 +21,7 @@ using namespace s3d;
 
 void Main()
 {
-	Window::SetTitle(L"Siv3D 定跡ビューア");
+	Window::SetTitle(L"Siv3D 定跡ビューア Ver 0.01 (2016/11/14)");
 	Window::Resize(WINDOW_W, WINDOW_H);
 	const Font font(30);
 

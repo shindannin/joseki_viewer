@@ -1,4 +1,4 @@
-// tree_siv3d.h : Siv3Dに依存する棋譜の木分＋将棋盤以外のSiv3DのGUIなど。
+// tree_siv3d.h : Siv3Dに依存する棋譜の木＋将棋盤以外のSiv3DのGUIなど。
 
 #pragma once
 
@@ -186,7 +186,7 @@ private:
 	string mName;						// 評価ソフトの名前（Aperyとか）
 
 	int mDurationMilliSec		            = 5000; // 評価時間。単位はミリ秒
-	const int mDurationMilliSecStartMargin  = 2000;	// 評価ソフト起動時の待ち時間。単位はミリ秒
+	const int mDurationMilliSecStartMargin  = 2000;	// 評価ソフト起動時の待ち時間。単位はミリ秒 // TODO:こういう待ち方は正しくなさそう。
 	const int mDurationMilliSecMargin	    =  100; // 予備の待ち時間。単位はミリ秒
 };
 
