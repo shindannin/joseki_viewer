@@ -1,3 +1,8 @@
+以下の素材を使用しております。
+
+-------------------------------------------------------------------------
+将棋画像
+
 このディレクトリにある将棋画像は、駒職人1氏が提供しているものです。元のデータのURLは、http://mucho.girly.jp/bona/ にあります。
 
 -----
@@ -6,3 +11,7 @@
 Hi, I'm Koma-Shokunin 1 in Bonanza article thead, at Shogi / Chess board in 2 Channel BBS. Here I place some Shogi pieces and gameboard images, which I originally created for CSA Shogi for Win (modified version) by Mr. Mind. I remade these images aiming at easier implementation with freeware Shogi applications by enlarging and alpha-channelling them.
 -----
 
+
+-------------------------------------------------------------------------
+背景画像（手招きにゃんこ【青】）
+http://admin.japanese-pattern.info/2015/11/09/we070073_03
