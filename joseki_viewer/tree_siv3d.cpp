@@ -212,6 +212,8 @@ void TreeSiv3D::Update()
 		if (path.has_value())
 		{
 			Load(path.value().str());
+			Window::SetTitle(path.value().str());
+
 			InitializeAfterLoad();
 			CalculateVisualPos();
 		}
@@ -222,6 +224,7 @@ void TreeSiv3D::Update()
 		if (path.has_value())
 		{
 			Save(path.value().str());
+			Window::SetTitle(path.value().str());
 		}
 	}
 
