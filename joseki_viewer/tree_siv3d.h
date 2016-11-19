@@ -269,6 +269,8 @@ public:
 		mGuiSettings = GUI(style2);
 		mGuiSettings.setPos(1137, 0);
 		mGuiSettings.add(L"settings", GUICheckBox::Create({ L"評価値", L"指し手", L"タグ", L"選択ノードの固定", L"デバッグ" }, { SHOW_SCORE, SHOW_TE, SHOW_TAG, FIX_SELECTED_NODE }, true, widgetStyle2));
+
+		mTextureBackground = Texture(L"pictures/background.jpg");
 	}
 
 	virtual void Draw() override;
@@ -315,7 +317,7 @@ private:
 	GUI mGuiNode;
 	GUI mGuiScore;
 	GUI mGuiSettings;
-
+	Texture mTextureBackground;
 
 	float mOffsetX;
 	float mOffsetY;

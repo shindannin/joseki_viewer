@@ -19,7 +19,6 @@ BoardSiv3D::BoardSiv3D()
 	mKomaTextureWidth = mTexture[0][0].width;
 	mKomaTextureHeight = mTexture[0][0].height;
 
-	mTextureBackground = Texture(L"pictures/background.jpg");
 	mTextureBoard = Texture(L"pictures/ban_kaya_a.png");
 	mTextureGrid = Texture(L"pictures/masu_dot.png");
 
@@ -60,7 +59,6 @@ void BoardSiv3D::DrawCursor(const GridPos& gp, const Color& color) const
 
 void BoardSiv3D::Draw()
 {
-	mTextureBackground.draw(0, 0);
 	mTextureBoard.draw(mOffsetX, mOffsetY);
 	mTextureGrid.draw(mOffsetX, mOffsetY);
 
@@ -301,13 +299,18 @@ bool BoardSiv3D::Update(string& te, wstring& teJap)
 
 		case E_GRABBED:
 		{
-			GridPos gp;
+			GridPos gp; // 移動先のGridPos
 			if (GetGridPosFromMouse(gp) &&
 				gp != GetMoveFromPos() &&   // 移動先移動元と同じではダメ
 				GetMasu(gp).sengo != GetTeban()	// 自分の駒のあるところには動かせない。
 				)
 			{
 				// TODO : 合法手のチェック
+
+
+
+
+
 				
 
 

@@ -27,7 +27,7 @@
 // 表示
 void TreeSiv3D::Draw()
 {
-	Tree::Draw();
+	mTextureBackground.draw(0, 0);
 
 	// デバッグ用座標と拡大縮小情報
 	if (mGuiSettings.checkBox(L"settings").checked(SHOW_DEBUG))
@@ -69,6 +69,8 @@ void TreeSiv3D::Draw()
 			const float deX = ScaleX(destNode.mVisualX);
 			const float deY = ScaleY(destNode.mVisualY);
 
+//			if (stX < WINDOW_W / 2 || deX < WINDOW_W / 2) continue;
+
 			Line(stX, stY, deX, deY).draw(5, Color(255, 255, 255, 128));
 
 			if (mGuiSettings.checkBox(L"settings").checked(SHOW_TE))
@@ -86,6 +88,9 @@ void TreeSiv3D::Draw()
 		const Node& node = mNodes[nodeID];
 		const float centerX = ScaleX(node.mVisualX);
 		const float centerY = ScaleY(node.mVisualY);
+
+//		if (centerX < WINDOW_W / 2) continue;
+
 
 		// ノード背景の表示
 		Color color = Palette::White;
@@ -169,6 +174,7 @@ void TreeSiv3D::Draw()
 //		}
 	}
 
+	Tree::Draw();
 }
 
 // ノードの表示に使う図形を返す
@@ -259,10 +265,13 @@ void TreeSiv3D::Update()
 				const Node& node = mNodes[nodeID];
 				const float centerX = ScaleX(node.mVisualX);
 				const float centerY = ScaleY(node.mVisualY);
-				if (GetNodeShape(centerX, centerY).contains(Mouse::Pos()))
+				if (centerX >= WINDOW_W / 2) // 画面の左側にノードがあるときに、将棋盤とかぶって、誤クリックしないようにする。
 				{
-					SetSelectedNodeID(nodeID);
-					break;
+					if (GetNodeShape(centerX, centerY).contains(Mouse::Pos()))
+					{
+						SetSelectedNodeID(nodeID);
+						break;
+					}
 				}
 			}
 		}

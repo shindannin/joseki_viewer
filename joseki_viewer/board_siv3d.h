@@ -57,7 +57,6 @@ private:
 	vector <Texture> mTexture[NUM_SEN_GO];
 	Texture mTextureBoard;
 	Texture mTextureGrid;
-	Texture mTextureBackground;
 	Font mFont;
 
 	int mOffsetX;
