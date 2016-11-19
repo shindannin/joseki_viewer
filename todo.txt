@@ -14,65 +14,6 @@ http://play-siv3d.hateblo.jp/entry/ref/characterset
 http://www.geocities.jp/shogidokoro/usi.html
 
 
-更新履歴 2016/11/14 作成
-
-# アプリケーション
-
-**まだ開発中のバージョンです。合法手のチェック（駒がどこにでも動けてしまう）等、基本的な機能が抜けているので、ご注意ください！**
-
-![](https://github.com/shindannin/joseki_viewer/blob/master/introduction.png)
-
-## ダウンロード
-zip圧縮しているので、解凍してください。
-* [Windows 32ビット版](https://github.com/shindannin/joseki_viewer/raw/master/application.zip)
-* [Windows 64ビット版](https://github.com/shindannin/joseki_viewer/raw/master/application_x64.zip)
-
-## 動作環境
-* Windows専用で、Windows 7 SP1 / 8 / 8.1 / 10以降に対応しています。 
-* **Windows 7の方は、[DirectXエンドユーザー ランタイム](https://www.microsoft.com/en-us/download/details.aspx?displaylang=en&id=35) をインストールしてください。**
-* Siv3Dを使用してるので、[Siv3Dの動作環境](https://github.com/Siv3D/Reference-JP/wiki/%E5%8B%95%E4%BD%9C%E7%92%B0%E5%A2%83)に従います。
-* 評価ソフトは、各自ダウンロードしてください。動作確認は主に平岡 拓也氏の[Apery](http://hiraokatakuya.github.io/apery/)で行いました。
-* Windows 10でSmart Screenにより、保護されてしまう場合があります。無視して実行すれば動きますが、調査中です。
-
-## 操作方法
-* マウス左クリック：選択
-* マウスホイール：右側の木の拡大縮小
-* DELETEボタン（修正予定）：右側の木で選択したノードとそこから先の手をすべて消す
-* キーボード：タグや文字の入力
-
-## 簡単な流れ
-* まずは将棋盤を動かしてみます。マウスで駒を選択してクリック、普通の将棋ソフトと一緒です。
-* 左上の「定跡ファイルの保存」で保存できます。
-* 左下の小さいテキスト欄で、タグを入力できます。（注：左下の大きいテキストフィールドは、動作はしますが、操作性が悪いので、いったん消す予定です）
-* 右上のチェックボックスで表示物のON OFFができます。
-* 左上の「評価ソフトを開く」で、局面を評価します。評価は自動的に開始し、未評価の局面を順々に評価していきます。
-* （詳細設定）もし評価ソフトの初期設定をしたい場合は
- * 以下のようなかんじで、評価ソフトのパラメーターを羅列したテキストファイルを作ります。（ソフトにより異なります）
-<pre>
-`name Skill_Level value 20`
-`name Slow_Mover value 100`
-`name Threads value 1`
-</pre>
- * 「オプションを開く」でそのテキストファイルを選択します。
- * その後「評価ソフトを開く」で評価ソフトを選択して起動します。
-
-# ライセンス
-* MITライセンスです。  https://ja.wikipedia.org/wiki/MIT_License
-* ライブラリ Siv3Dを使っています。 http://play-siv3d.hateblo.jp/
-* 絵素材のライセンスは、 pictures\ReadMe.txt をご覧ください。
-
-# 開発環境
-お待ちください。
-
-# 開発予定
-
-## 方針
-* 現在のところMac OS版・.NET版・web版 等に移植する予定はありません。ただし、2017年予定の、Siv3DのMac OS対応バージョンがでたら、移植すると思います。
-* 棋譜管理ソフトは既にいろいろあるので、自作する意味はあまりないのですが、以下の理由で作りました。
- * 初手からの定跡の全体図を見やすくしたい
- * 自作であれば、カスタマイズしやすい。（そもそもは、本物の将棋盤を画像解析して、棋譜を入力できる用にする予定でした）
-* 将棋AIは作りたいですが、作りません。がまん。
-
 ## やることリスト（2016/11/14）
 ### ---------- 優先度高い ----------
 * 合法手チェック
