@@ -389,6 +389,8 @@ bool BoardSiv3D::Update(string& te, wstring& teJap)
 			break;
 		}
 	}
+
+/* 盤面ペースト機能は、現在のバージョンは、初期盤面からスタートなので合わない気がする…
 	else if ((Input::KeyControl + Input::KeyV).clicked)
 	{
 		// 盤面をペースト
@@ -423,6 +425,8 @@ bool BoardSiv3D::Update(string& te, wstring& teJap)
 			}
 		}
 	}
+*/
+
 
 	return isMoved;
 }
