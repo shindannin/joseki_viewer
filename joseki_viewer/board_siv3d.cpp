@@ -280,7 +280,10 @@ void BoardSiv3D::UpdateDecided(string& te, wstring& teJap, bool& isMoved)
 	teJap = DecideMove();
 	isMoved = true;
 	mInputState = E_IDLE;
-	mSoundKomaoto.play();
+	if (mSoundKomaoto)
+	{
+		mSoundKomaoto.play();
+	}
 }
 
 bool BoardSiv3D::Update(string& te, wstring& teJap)

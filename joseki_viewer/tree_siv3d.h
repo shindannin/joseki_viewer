@@ -271,6 +271,7 @@ public:
 		mGuiSettings.add(L"settings", GUICheckBox::Create({ L"評価値", L"指し手", L"タグ", L"選択ノードの固定", L"デバッグ" }, { SHOW_SCORE, SHOW_TE, SHOW_TAG, FIX_SELECTED_NODE }, true, widgetStyle2));
 
 		mTextureBackground = Texture(L"pictures/background.jpg");
+		mNodeSelectSound = Sound(L"sounds/decision22.mp3");
 	}
 
 	virtual void Draw() override;
@@ -318,6 +319,7 @@ private:
 	GUI mGuiScore;
 	GUI mGuiSettings;
 	Texture mTextureBackground;
+	Sound mNodeSelectSound;
 
 	float mOffsetX;
 	float mOffsetY;

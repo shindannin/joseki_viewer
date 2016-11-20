@@ -268,6 +268,17 @@ void TreeSiv3D::Update()
 					if (GetNodeShape(centerX, centerY).contains(Mouse::Pos()))
 					{
 						SetSelectedNodeID(nodeID);
+
+						if (mNodeSelectSound)
+						{
+							if (mNodeSelectSound.isPlaying())
+							{
+								// í‚é~ÇµÇƒã»ÇÃêÊì™Ç…ñﬂÇÈ
+								mNodeSelectSound.stop();
+							}
+							mNodeSelectSound.play();
+						}
+
 						break;
 					}
 				}
