@@ -257,9 +257,9 @@ public:
 
 
 		mGuiNode = GUI(GUIStyle::Default);
-		mGuiNode.setPos(0, 570);
-		mGuiNode.addln(L"summary", GUITextField::Create(30));
-		mGuiNode.addln(L"comment", GUITextArea::Create(4, 30));
+		mGuiNode.setPos(0, WINDOW_H - 56);
+		mGuiNode.addln(L"summary", GUITextField::Create(33));
+//		mGuiNode.addln(L"comment", GUITextArea::Create(4, 30));
 
 		mGuiScore = GUI(style);
 		mGuiScore.setPos(630, 100);
@@ -267,7 +267,7 @@ public:
 		mGuiScore.addln(L"tejunJap", GUIText::Create(L"", widgetStyle));
 		
 		mGuiSettings = GUI(style2);
-		mGuiSettings.setPos(1137, 0);
+		mGuiSettings.setPos(WINDOW_W - 142, 0);
 		mGuiSettings.add(L"settings", GUICheckBox::Create({ L"評価値", L"指し手", L"タグ", L"選択ノードの固定", L"デバッグ" }, { SHOW_SCORE, SHOW_TE, SHOW_TAG, FIX_SELECTED_NODE }, true, widgetStyle2));
 
 		mTextureBackground = Texture(L"pictures/background.jpg");

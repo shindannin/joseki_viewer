@@ -183,7 +183,7 @@ void TreeSiv3D::OnSelectedNodeIDChanged()
 {
 	Node& node = mNodes[GetSelectedNodeID()];
 	mGuiNode.textField(L"summary").setText(node.mSummary);
-	mGuiNode.textArea(L"comment").setText(node.mComment);
+//	mGuiNode.textArea(L"comment").setText(node.mComment);
 
 	if (mGuiSettings.checkBox(L"settings").checked(FIX_SELECTED_NODE))
 	{
@@ -315,18 +315,18 @@ void TreeSiv3D::Update()
 			IME::SetCompositionWindowPos(Point(rect.x + rect.w, rect.y));
 		}
 
-		if (mGuiNode.textArea(L"comment").hasChanged)
-		{
-			String tmp = mGuiNode.textArea(L"comment").text;
-			node.mComment = tmp.str();
-		}
-
-		if (mGuiNode.textArea(L"comment").active)
-		{
-			const Point delta(24, 56); // ウィンドウからコメント枠への相対座標
-			// TODO ここは、ちゃんと相対座標を決める手段がないので、無理。
-			IME::SetCompositionWindowPos(mGuiNode.getPos() + delta);
-		}
+//		if (mGuiNode.textArea(L"comment").hasChanged)
+//		{
+//			String tmp = mGuiNode.textArea(L"comment").text;
+//			node.mComment = tmp.str();
+//		}
+//
+//		if (mGuiNode.textArea(L"comment").active)
+//		{
+//			const Point delta(24, 56); // ウィンドウからコメント枠への相対座標
+//			// TODO ここは、ちゃんと相対座標を決める手段がないので、無理。
+//			IME::SetCompositionWindowPos(mGuiNode.getPos() + delta);
+//		}
 	}
 }
 
