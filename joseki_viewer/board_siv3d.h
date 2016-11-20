@@ -82,8 +82,6 @@ private:
 		{ 192, 192, 255, 255 },
 	};
 
-	void InitServer();
-
 	vector <Texture> mTexture[NUM_SEN_GO];
 	Texture mTextureBoard;
 	Texture mTextureGrid;

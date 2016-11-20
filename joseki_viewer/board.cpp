@@ -13,7 +13,6 @@ Board::Board()
 void Board::InitState()
 {
 	SetState("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
-	mScore = 0;
 }
 
 // 返り値 true : 指定したy座標は、teban（先手or後手）側にとって、敵陣である。
@@ -40,7 +39,7 @@ bool Board::IsBanjyo(int y, int x) const
 // 返り値 true : 絶対に成らなければならない
 bool Board::IsNarubeki(const GridPos& from, const GridPos& to, ESengo teban) const
 {
-	return (IsNareru(from, to, teban) && IsIkidomari(to.y, to.x, GetMasu(from).type, teban));
+	return (IsNareru(from, to, teban) && IsIkidomari(to.y, GetMasu(from).type, teban));
 }
 
 // 返り値 true : 成ることができる
@@ -587,7 +586,7 @@ void Board::GenerateValidMoveGridUtsu()
 			}
 
 			// 移動不可能な場所にも打てない
-			if (IsIkidomari(y, x, GetUtsuKomaType(), GetTeban()))
+			if (IsIkidomari(y, GetUtsuKomaType(), GetTeban()))
 			{
 				mValidMoveGrid[y][x] = false;
 			}
@@ -596,7 +595,7 @@ void Board::GenerateValidMoveGridUtsu()
 }
 
 // 行き止まりで、移動不可能
-bool Board::IsIkidomari(int y, int x, EKomaType type, ESengo teban) const
+bool Board::IsIkidomari(int y, EKomaType type, ESengo teban) const
 {
 	if (type == E_FU || type == E_KYO)
 	{

@@ -25,22 +25,22 @@ enum ESengo
 // 駒の種類。成駒は別の種類として扱われるので注意
 enum EKomaType
 {
-	E_OU,
-	E_HI,
-	E_KAKU,
-	E_KIN,
-	E_GIN,
-	E_KEI,
-	E_KYO,
-	E_FU,
+	E_OU,	// 玉
+	E_HI,	// 飛
+	E_KAKU,	// 角
+	E_KIN,	// 金
+	E_GIN,	// 銀
+	E_KEI,	// 桂
+	E_KYO,	// 香
+	E_FU,	// 歩
 	NUM_NARAZU_KOMA_TYPE,
 
-	E_RYU = NUM_NARAZU_KOMA_TYPE,
-	E_UMA,
-	E_NGIN,
-	E_NKEI,
-	E_NKYO,
-	E_TO,
+	E_RYU = NUM_NARAZU_KOMA_TYPE,	// 龍
+	E_UMA,	// 馬
+	E_NGIN,	// 成銀
+	E_NKEI,	// 成桂
+	E_NKYO,	// 成香
+	E_TO,	// と
 	NUM_KOMA_TYPE,
 
 	E_EMPTY = -1,
@@ -224,10 +224,6 @@ public:
 	}
 	ESengo GetTeban() const { return mTeban; }
 
-
-	int mScore;					// 評価値
-	vector <string> mYomisuji;
-
 protected:
 	bool IsNarubeki(const GridPos& from, const GridPos& to, ESengo teban) const;
 	bool IsNareru(const GridPos& from, const GridPos& to, ESengo teban) const;
@@ -268,7 +264,7 @@ private:
 	bool IsTekijin(int y, ESengo teban) const;
 	bool IsBanjyo(const GridPos& gp) const;
 	bool IsBanjyo(int y, int x) const;
-	bool IsIkidomari(int y, int x, EKomaType type, ESengo teban) const;
+	bool IsIkidomari(int y, EKomaType type, ESengo teban) const;
 
 	vector < vector <Masu> > mGrid;				// mGrid[y][x]	将棋盤座標(y,x)のマス情報
 	vector < vector <int> > mMochigoma;			// mMochigoma[ESengo][EKomaType] 持ち駒の数
