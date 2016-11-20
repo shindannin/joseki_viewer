@@ -16,15 +16,17 @@ template<class T> T SQSUM(T x, T y) { return x*x + y*y; }
 #define SZ(a) ((int)a.size())
 const int NG = -1;
 
+// 先・後
 enum ESengo
 {
 	E_SEN,			// 先手
 	E_GO,			// 後手
 	NUM_SEN_GO,
 
-	E_NO_SENGO = -1,	// どちらでもない
+	E_NO_SENGO = -1,	// どちらでもない（マスの状態で、使われる）
 };
 
+// 駒の種類。成駒は別の種類として扱われるので注意
 enum EKomaType
 {
 	E_OU,
@@ -48,33 +50,27 @@ enum EKomaType
 	E_EMPTY = -1,
 };
 
+// 現在の状態。
 enum EInputState
 {
-	E_IDLE,
-	E_GRABBED,
-	E_UTSU,
-	E_CHOICE,
+	E_IDLE,		// どの駒を動かすか選択中
+	E_GRABBED,	// 掴んだ駒をどこへ動かすか選択中
+	E_UTSU,		// 持ち駒をどこへ動かすか選択中
+	E_CHOICE,	// 成るかどうか選択中
 };
 
+// 将棋盤1マスごとの状態
 struct Masu
 {
 	Masu() : type(E_EMPTY), sengo(E_NO_SENGO) {}
-	EKomaType type;
-	ESengo sengo;
+	EKomaType type;	// 駒の種類
+	ESengo sengo;	// 駒がある場合は先手後手どちらの駒か、駒がない場合は、E_NO_SENGOになる。
 };
 
-
+// 将棋盤のサイズ。普通の将棋では当然 9
 const int BOARD_SIZE = 9;
 
-struct Koma
-{
-	string notation[NUM_SEN_GO];
-	wstring jap[NUM_SEN_GO];
-	EKomaType narigoma;
-	EKomaType motogoma;
-};
-
-
+// 将棋盤の座標。0-indexなので、(y,x)は(0,0)-(8,8)の範囲の値をとる
 struct GridPos
 {
 	GridPos() : x(0), y(0) {}
@@ -113,16 +109,44 @@ struct GridPos
 	{
 		return !(n == *this);
 	}
+
+	const GridPos operator+(const GridPos& rhs) const
+	{
+		GridPos tmp;
+		tmp.y = y + rhs.y;
+		tmp.x = x + rhs.x;
+		return tmp;
+	}
+
+	inline GridPos& operator+=(const GridPos& rhs)
+	{
+		y += rhs.y;
+		x += rhs.x;
+		return *this;
+	}
+
 	int x;
 	int y;
 };
 
+// 駒
+struct Koma
+{
+	string notation[NUM_SEN_GO];		// SFEN表記による駒の英語表記
+	wstring jap[NUM_SEN_GO];			// 駒の日本語表記
+	EKomaType narigoma;					// 成った後の、駒の種類
+	EKomaType motogoma;					// 成る前の、駒の種類
+	vector <GridPos> movableDirections;	// 無条件に移動可能な方向
+	vector <GridPos> flyingDirections;	// 途中に駒がない限り、移動可能な方向
+};
+
+// 1手分
 struct Move
 {
-	GridPos from;
-	GridPos to;
-	bool naru;
-	EKomaType utsuKomaType;
+	GridPos from;	// 移動元の座標
+	GridPos to;		// 移動先の座標
+	bool naru;		// 駒がなる場合はtrue
+	EKomaType utsuKomaType;	// 駒を打つ場合の駒の種類
 
 	Move()
 	{
@@ -140,7 +164,7 @@ struct Move
 	}
 };
 
-
+// 将棋盤＋駒。手番や状態も含んでいるので、このクラスだけで将棋を指すことは可能。
 class Board
 {
 public:
@@ -168,7 +192,6 @@ public:
 
 
 	void InitNextMove() { mNextMove.Init(); }
-	void RemoveCharsFromString(string &str, char* charsToRemove) const;
 
 	// setter, getter
 	void SetMoveFromPos(const GridPos& gp) { mNextMove.from = gp; }
@@ -205,29 +228,36 @@ public:
 	}
 	ESengo GetTeban() const { return mTeban; }
 
-	int mScore;
+
+	int mScore;					// 評価値
 	vector <string> mYomisuji;
 
 protected:
+	bool IsNarubeki(const GridPos& from, const GridPos& to, ESengo teban) const;
 	bool IsNareru(const GridPos& from, const GridPos& to, ESengo teban) const;
+
+	void GenerateValidMoveGridGrabbed();
+	void GenerateValidMoveGridUtsu();
+	bool IsValidMove(const GridPos& gp) const;
+
 
 	const vector <Koma> mKoma =
 	{
-		{ { "K", "k" },{ L"玉", L"玉" }, E_EMPTY, E_OU }, // 他のソフトにあわせて両方玉にしてます
-		{ { "R", "r" },{ L"飛", L"飛" }, E_RYU  , E_HI },
-		{ { "B", "b" },{ L"角", L"角" }, E_UMA, E_KAKU },
-		{ { "G", "g" },{ L"金", L"金" }, E_EMPTY, E_KIN },
-		{ { "S", "s" },{ L"銀", L"銀" }, E_NGIN, E_GIN },
-		{ { "N", "n" },{ L"桂", L"桂" }, E_NKEI, E_KEI },
-		{ { "L", "l" },{ L"香", L"香" }, E_NKYO, E_KYO },
-		{ { "P", "p" },{ L"歩", L"歩" }, E_TO, E_FU },
+		{ { "K", "k" },{ L"玉", L"玉" }, E_EMPTY, E_OU,  { {-1, -1}, {-1,  0}, {-1, +1}, { 0, -1}, { 0, +1}, {+1, -1}, {+1,  0}, {+1, +1} }, {} }, // 他のソフトにあわせて両方玉にしてます
+		{ { "R", "r" },{ L"飛", L"飛" }, E_RYU  , E_HI,  {}, { {-1,  0}, { 0, -1}, { 0, +1},{+1,  0} } },
+		{ { "B", "b" },{ L"角", L"角" }, E_UMA, E_KAKU,  {}, { {-1, -1}, {-1, +1}, {+1, -1},{+1, +1} } },
+		{ { "G", "g" },{ L"金", L"金" }, E_EMPTY, E_KIN, { {-1, -1}, {-1,  0}, {-1, +1}, { 0, -1}, { 0, +1}, {+1,  0} }, {} },
+		{ { "S", "s" },{ L"銀", L"銀" }, E_NGIN, E_GIN,  { {-1, -1}, {-1,  0}, {-1, +1}, {+1, -1}, {+1, +1} }, {} },
+		{ { "N", "n" },{ L"桂", L"桂" }, E_NKEI, E_KEI,  { {-2, -1}, {-2, +1} }, {} },
+		{ { "L", "l" },{ L"香", L"香" }, E_NKYO, E_KYO,  {}, { {-1,  0} } },
+		{ { "P", "p" },{ L"歩", L"歩" }, E_TO, E_FU,     { {-1,  0} }, {} },
 
-		{ { "+R", "+r" },{ L"龍", L"龍" }, E_EMPTY, E_HI },
-		{ { "+B", "+b" },{ L"馬", L"馬" }, E_EMPTY, E_KAKU },
-		{ { "+S", "+s" },{ L"成銀", L"成銀" }, E_EMPTY, E_GIN },
-		{ { "+N", "+n" },{ L"成桂", L"成桂" }, E_EMPTY, E_KEI },
-		{ { "+L", "+l" },{ L"成香", L"成香" },  E_EMPTY, E_KYO },
-		{ { "+P", "+p" },{ L"と", L"と" }, E_EMPTY, E_FU },
+		{ { "+R", "+r" },{ L"龍", L"龍" }, E_EMPTY, E_HI,       { {-1, -1}, {-1,  0}, {-1, +1}, { 0, -1}, { 0, +1}, {+1, -1}, {+1,  0}, {+1, +1} }, { {-1,  0}, { 0, -1}, { 0, +1},{+1,  0} } },
+		{ { "+B", "+b" },{ L"馬", L"馬" }, E_EMPTY, E_KAKU,     { {-1, -1}, {-1,  0}, {-1, +1}, { 0, -1}, { 0, +1}, {+1, -1}, {+1,  0}, {+1, +1} }, { {-1, -1}, {-1, +1}, {+1, -1},{+1, +1} } },
+		{ { "+S", "+s" },{ L"成銀", L"成銀" }, E_EMPTY, E_GIN,  { {-1, -1}, {-1,  0}, {-1, +1}, { 0, -1}, { 0, +1}, {+1,  0} }, {} },
+		{ { "+N", "+n" },{ L"成桂", L"成桂" }, E_EMPTY, E_KEI,  { {-1, -1}, {-1,  0}, {-1, +1}, { 0, -1}, { 0, +1}, {+1,  0} }, {} },
+		{ { "+L", "+l" },{ L"成香", L"成香" },  E_EMPTY, E_KYO, { {-1, -1}, {-1,  0}, {-1, +1}, { 0, -1}, { 0, +1}, {+1,  0} }, {} },
+		{ { "+P", "+p" },{ L"と", L"と" }, E_EMPTY, E_FU,       { {-1, -1}, {-1,  0}, {-1, +1}, { 0, -1}, { 0, +1}, {+1,  0} }, {} },
 	};
 
 	const wstring mKomaMark[NUM_SEN_GO] = { L"▲", L"△" };
@@ -242,11 +272,13 @@ private:
 	bool IsTekijin(int y, ESengo teban) const;
 	bool IsBanjyo(const GridPos& gp) const;
 	bool IsBanjyo(int y, int x) const;
+	bool IsIkidomari(int y, int x, EKomaType type, ESengo teban) const;
 
-	vector < vector <Masu> > mGrid;
-	vector < vector <int> > mMochigoma;
-	ESengo mTeban;
+	vector < vector <Masu> > mGrid;				// mGrid[y][x]	将棋盤座標(y,x)のマス情報
+	vector < vector <int> > mMochigoma;			// mMochigoma[ESengo][EKomaType] 持ち駒の数
+	ESengo mTeban;								// 現在の手番
+	vector < vector <bool> > mValidMoveGrid;	// mValidMoveGrid[y][x] 将棋盤座標(y,x)へ駒を移動できたり打ったりできるかどうか。
 
-	Move mNextMove;
-	vector <Move> mMoves;
+	Move mNextMove;								// 次の手
+	vector <Move> mMoves;						// 初手から、現在までの指し手
 };

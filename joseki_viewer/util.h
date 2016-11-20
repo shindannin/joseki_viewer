@@ -18,3 +18,4 @@ extern void GetLineTrim(wfstream& wfs, wstring& ws);
 extern void Trim(wstring& ws);
 extern void Trim(string& s);
 extern wstring AddNewLine(const wstring& ws, int perNumTe);
+extern void RemoveCharsFromString(string &str, char* charsToRemove);

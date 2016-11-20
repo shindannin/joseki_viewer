@@ -7,6 +7,7 @@
 Board::Board()
 {
 	InitState();
+	mValidMoveGrid = vector <vector <bool> > (BOARD_SIZE, vector <bool> (BOARD_SIZE) );
 }
 
 void Board::InitState()
@@ -15,6 +16,7 @@ void Board::InitState()
 	mScore = 0;
 }
 
+// 返り値 true : 指定したy座標は、teban（先手or後手）側にとって、敵陣である。
 bool Board::IsTekijin(int y, ESengo teban) const
 {
 	if (teban == E_SEN && INRANGE(y, 0, 2)) return true;
@@ -23,18 +25,25 @@ bool Board::IsTekijin(int y, ESengo teban) const
 	return false;
 }
 
+// 返り値 true : 指定したGridPos gpは、将棋盤上にある
 bool Board::IsBanjyo(const GridPos& gp) const
 {
 	return IsBanjyo(gp.y, gp.x);
 }
 
+// 返り値 true : 指定した座標(y,x)は、将棋盤上にある
 bool Board::IsBanjyo(int y, int x) const
 {
 	return INRANGE(y, 0, BOARD_SIZE - 1) && INRANGE(x, 0, BOARD_SIZE - 1);
 }
 
+// 返り値 true : 絶対に成らなければならない
+bool Board::IsNarubeki(const GridPos& from, const GridPos& to, ESengo teban) const
+{
+	return (IsNareru(from, to, teban) && IsIkidomari(to.y, to.x, GetMasu(from).type, teban));
+}
 
-
+// 返り値 true : 成ることができる
 bool Board::IsNareru(const GridPos& from, const GridPos& to, ESengo teban) const
 {
 	const EKomaType k = mGrid[from.y][from.x].type;
@@ -60,6 +69,8 @@ bool Board::IsNareru(const GridPos& from, const GridPos& to, ESengo teban) const
 	return true;
 }
 
+// 手が決定した後の処理。駒をとったり手番を進めたりする。
+// 返り値  : 日本語表記の手
 wstring Board::DecideMove()
 {
 	// 指し手の日本語名の作成
@@ -148,7 +159,6 @@ wstring Board::DecideMove()
 
 // PSN形式の手を、SFEN形式の手に変換。
 // PSN形式は、先頭に駒の表記と、駒をとる取らない"-x"がついている。
-
 string Board::GetTeFromPSN(const string& tePSN) const
 {
 	// 駒を打ったときの、表記法は一緒。、
@@ -498,10 +508,135 @@ string Board::GetState() const
 }
 
 
-
-void Board::RemoveCharsFromString(string &str, char* charsToRemove) const
+// 駒を動かす際に、駒の動かせる場所（移動先）を、mValidMoveGridに生成する。
+void Board::GenerateValidMoveGridGrabbed()
 {
-	for (unsigned int i = 0; i < strlen(charsToRemove); ++i) {
-		str.erase(remove(str.begin(), str.end(), charsToRemove[i]), str.end());
+	for (int y = 0; y < BOARD_SIZE; ++y)
+	{
+		for (int x = 0; x < BOARD_SIZE; ++x)
+		{
+			mValidMoveGrid[y][x] = false;
+		}
 	}
+
+	const Masu& masu = GetMasu(mNextMove.from);
+
+	const vector <GridPos>& md = mKoma[masu.type].movableDirections;
+	for (GridPos delta : md)
+	{
+		if (GetTeban() == E_GO)
+		{
+			delta.y = -delta.y;
+		}
+
+		const GridPos nextMoveTo = mNextMove.from + delta;
+		if (IsBanjyo(nextMoveTo) &&
+			GetMasu(nextMoveTo).sengo != GetTeban())// 自分の駒のあるところには動かせない。
+		{
+			mValidMoveGrid[nextMoveTo.y][nextMoveTo.x] = true;
+		}
+	}
+
+	const vector <GridPos>& fd = mKoma[masu.type].flyingDirections;
+	for (GridPos delta : fd)
+	{
+		if (GetTeban() == E_GO)
+		{
+			delta.y = -delta.y;
+		}
+		GridPos nextMoveTo = mNextMove.from + delta;
+
+		while (IsBanjyo(nextMoveTo) && GetMasu(nextMoveTo).sengo != GetTeban())
+		{
+			mValidMoveGrid[nextMoveTo.y][nextMoveTo.x] = true;
+
+			if (GetMasu(nextMoveTo).sengo != GetTeban() && GetMasu(nextMoveTo).sengo != E_NO_SENGO)
+			{
+				break;
+			}
+			nextMoveTo += delta;
+		}
+	}
+}
+
+// 駒を打つ際に、駒を打てる場所を、mValidMoveGridに生成する。
+void Board::GenerateValidMoveGridUtsu()
+{
+	for (int y = 0; y < BOARD_SIZE; ++y)
+	{
+		for (int x = 0; x < BOARD_SIZE; ++x)
+		{
+			mValidMoveGrid[y][x] = true;
+
+			if (GetMasu(y, x).type != E_EMPTY) // 空きます以外には打てない
+			{
+				mValidMoveGrid[y][x] = false;
+			}
+
+			// 二歩チェック
+			if (GetUtsuKomaType()==E_FU)
+			{
+				for (int yy = 0; yy < BOARD_SIZE; ++yy)
+				{
+					if (GetMasu(yy, x).sengo == GetTeban() && GetMasu(yy, x).type == E_FU)
+					{
+						mValidMoveGrid[y][x] = false;
+						break;
+					}
+				}
+			}
+
+			// 移動不可能な場所にも打てない
+			if (IsIkidomari(y, x, GetUtsuKomaType(), GetTeban()))
+			{
+				mValidMoveGrid[y][x] = false;
+			}
+		}
+	}
+}
+
+// 行き止まりで、移動不可能
+bool Board::IsIkidomari(int y, int x, EKomaType type, ESengo teban) const
+{
+	if (type == E_FU || type == E_KYO)
+	{
+		if (teban == E_SEN)
+		{
+			if (y == 0)
+			{
+				return true;
+			}
+		}
+		else if (teban == E_GO)
+		{
+			if (y == BOARD_SIZE - 1)
+			{
+				return true;
+			}
+		}
+	}
+	else if (type == E_KEI)
+	{
+		if (teban == E_SEN)
+		{
+			if (y <= 1)
+			{
+				return true;
+			}
+		}
+		else if (teban == E_GO)
+		{
+			if (y >= BOARD_SIZE - 2)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool Board::IsValidMove(const GridPos& gp) const
+{
+	return mValidMoveGrid[gp.y][gp.x];
 }

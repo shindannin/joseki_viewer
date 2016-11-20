@@ -69,8 +69,6 @@ void TreeSiv3D::Draw()
 			const float deX = ScaleX(destNode.mVisualX);
 			const float deY = ScaleY(destNode.mVisualY);
 
-//			if (stX < WINDOW_W / 2 || deX < WINDOW_W / 2) continue;
-
 			Line(stX, stY, deX, deY).draw(5, Color(255, 255, 255, 128));
 
 			if (mGuiSettings.checkBox(L"settings").checked(SHOW_TE))
@@ -88,9 +86,6 @@ void TreeSiv3D::Draw()
 		const Node& node = mNodes[nodeID];
 		const float centerX = ScaleX(node.mVisualX);
 		const float centerY = ScaleY(node.mVisualY);
-
-//		if (centerX < WINDOW_W / 2) continue;
-
 
 		// ƒm[ƒh”wŒi‚Ì•\Ž¦
 		Color color = Palette::White;

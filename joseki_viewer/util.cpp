@@ -1,7 +1,8 @@
 #include "util.h"
 #include <fstream>
-
-#define WINDOW_SIZE_W (960.f)
+#include <vector>
+#include <string>
+#include <algorithm> 
 
 void Split1(const string& str, vector<string>& out, const char splitter)
 {
@@ -103,4 +104,11 @@ wstring AddNewLine(const wstring& ws, int perNumTe)
 	}
 
 	return ret;
+}
+
+void RemoveCharsFromString(string &str, char* charsToRemove)
+{
+	for (unsigned int i = 0; i < strlen(charsToRemove); ++i) {
+		str.erase(remove(str.begin(), str.end(), charsToRemove[i]), str.end());
+	}
 }

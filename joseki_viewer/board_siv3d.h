@@ -52,6 +52,36 @@ private:
 		{ L"Sto", L"Gto" },
 	};
 
+	const Color cursorColor[NUM_SEN_GO] = 
+	{
+		{ 128, 0, 0, 127 },
+		{ 0, 0, 128, 127 },
+	};
+
+	const Color grabbedColor[NUM_SEN_GO] =
+	{
+		{ 255, 0, 0, 127 },
+		{ 0, 0, 255, 127 },
+	};
+
+	const Color nariColor[NUM_SEN_GO] =
+	{
+		{ 255, 0, 0, 192 },
+		{ 0, 0, 255, 192 },
+	};
+
+	const Color narazuColor[NUM_SEN_GO] =
+	{
+		{ 128, 128, 0, 192 },
+		{ 0, 128, 128, 192 },
+	};
+
+	const Color fontColor[NUM_SEN_GO] =
+	{
+		{ 255, 192, 192, 255 },
+		{ 192, 192, 255, 255 },
+	};
+
 	void InitServer();
 
 	vector <Texture> mTexture[NUM_SEN_GO];

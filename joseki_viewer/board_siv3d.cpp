@@ -72,14 +72,14 @@ void BoardSiv3D::Draw()
 		GridPos gp;
 		if (GetGridPosFromMouse(gp))
 		{
-			DrawCursor(gp, { 128, 0, 0, 127 });
+			DrawCursor(gp, cursorColor[GetTeban()]);
 		}
 	}
 
 	// つかんだ駒のマス
 	if (mInputState == E_GRABBED || mInputState == E_CHOICE)
 	{
-		DrawCursor(GetMoveFromPos(), { 255, 0, 0, 127 });
+		DrawCursor(GetMoveFromPos(), grabbedColor[GetTeban()]);
 	}
 
 	//----- 持ち駒 -----
@@ -107,9 +107,9 @@ void BoardSiv3D::Draw()
 	//----- 手番 -----
 	{
 		wstring name[2] = { L"先手番", L"後手番" };
+		const Rect rect = mFont(name[GetTeban()]).draw(leftX + tebanOffestX * mKomaTextureWidth, topY);
+		rect.draw(grabbedColor[GetTeban()]);
 		mFont(name[GetTeban()]).draw(leftX + tebanOffestX * mKomaTextureWidth, topY);
-
-//		mFont(mScore).draw(leftX + tebanOffestX * mKomaTextureWidth, topY + 30);
 	}
 
 	//----- 盤面 -----
@@ -126,6 +126,15 @@ void BoardSiv3D::Draw()
 				}
 			}
 
+			if (mInputState == E_GRABBED || mInputState == E_UTSU)
+			{
+				GridPos gp(y, x);
+				if (IsValidMove(GridPos(y, x)))
+				{
+					DrawCursor(gp, cursorColor[GetTeban()]);
+				}
+			}
+
 			if (GetMasu(y,x).type != E_EMPTY)
 			{
 				DrawKoma(GetMasu(y,x), y, x);
@@ -135,8 +144,7 @@ void BoardSiv3D::Draw()
 
 	// つかんだ駒
 
-	// TODO : ここ、もうちょっとリファクタリングできそう。
-	if (mInputState == E_GRABBED || mInputState == E_CHOICE)
+	if (mInputState == E_GRABBED)
 	{
 		const Masu& masu = GetMasu(GetMoveFromPos());
 		mTexture[masu.sengo][masu.type].draw(Mouse::Pos().x - mKomaTextureWidth / 2, Mouse::Pos().y - mKomaTextureHeight / 2);
@@ -169,21 +177,28 @@ void BoardSiv3D::DrawKoma(int sengo, int type, int y, int x, int maisu, bool isC
 	{
 		const EKomaType nariType = mKoma[type].narigoma;
 
+		{
+			const int drawX = static_cast<int>(leftX + (BOARD_SIZE-1-x)*mKomaTextureWidth);
+			const int drawY = static_cast<int>(topY + y*mKomaTextureHeight);
+			mTexture[sengo][nariType].draw(drawX, drawY);
+		}
+
 		NariOffsetY(y);
 
 		{
 			const int drawX = static_cast<int>(leftX + (BOARD_SIZE - 1.5f - x)*mKomaTextureWidth);
 			const int drawY = static_cast<int>(topY + y*mKomaTextureHeight);
-			Rect(drawX, drawY, mKomaTextureWidth, mKomaTextureHeight).draw({ 128, 128, 0, 192 });
+			Rect(drawX, drawY, mKomaTextureWidth, mKomaTextureHeight).draw(narazuColor[GetTeban()]);
 			mTexture[sengo][type].draw(drawX, drawY);
 		}
 
 		{
 			const int drawX = static_cast<int>(leftX + (BOARD_SIZE - 0.5f - x)*mKomaTextureWidth);
 			const int drawY = static_cast<int>(topY + y*mKomaTextureHeight);
-			Rect(drawX, drawY, mKomaTextureWidth, mKomaTextureHeight).draw({ 255, 0, 0, 192 });
+			Rect(drawX, drawY, mKomaTextureWidth, mKomaTextureHeight).draw(nariColor[GetTeban()]);
 			mTexture[sengo][nariType].draw(drawX, drawY);
 		}
+
 	}
 	else
 	{
@@ -275,13 +290,14 @@ bool BoardSiv3D::Update(string& te, wstring& teJap)
 		case E_IDLE:
 		{
 			// 駒をつかむ
-			GridPos gp;
+			GridPos gp; // 移動元のGridPos
 			if (GetGridPosFromMouse(gp))
 			{
 				// 自分の駒だけ！
 				if (GetMasu(gp).sengo == GetTeban() && GetMasu(gp).type != E_EMPTY)
 				{
 					SetMoveFromPos(gp);
+					GenerateValidMoveGridGrabbed();
 					mInputState = E_GRABBED;
 				}
 			}
@@ -291,6 +307,7 @@ bool BoardSiv3D::Update(string& te, wstring& teJap)
 				if (CalcUtsuKomaType(k))
 				{
 					SetUtsuKomaType(k);
+					GenerateValidMoveGridUtsu();
 					mInputState = E_UTSU;
 				}
 			}
@@ -301,22 +318,19 @@ bool BoardSiv3D::Update(string& te, wstring& teJap)
 		{
 			GridPos gp; // 移動先のGridPos
 			if (GetGridPosFromMouse(gp) &&
-				gp != GetMoveFromPos() &&   // 移動先移動元と同じではダメ
-				GetMasu(gp).sengo != GetTeban()	// 自分の駒のあるところには動かせない。
+				IsValidMove(gp)
 				)
 			{
-				// TODO : 合法手のチェック
-
-
-
-
-
-				
-
-
 				// 成りのチェック
 				SetMoveToPos(gp);
-				if (IsNareru(GetMoveFromPos(), gp, GetTeban()))
+
+				if (IsNarubeki( GetMoveFromPos(), gp, GetTeban()))
+				{
+					// 行き止まりなので、強制的に成る（歩・香車・桂馬）
+					SetNaru(true);
+					UpdateDecided(te, teJap, isMoved);
+				}
+				else if (IsNareru(GetMoveFromPos(), gp, GetTeban()))
 				{
 					// 成り選択画面へ
 					mInputState = E_CHOICE;
@@ -326,19 +340,15 @@ bool BoardSiv3D::Update(string& te, wstring& teJap)
 					UpdateDecided(te, teJap, isMoved);
 				}
 			}
-
-
-			// TODO:変なところで駒を離したらキャンセル
 		}
 		break;
 
 		case E_UTSU:
 		{
 			GridPos gp;
-			if (GetGridPosFromMouse(gp) && GetMasu(gp).type == E_EMPTY)
+			if (GetGridPosFromMouse(gp) && IsValidMove(gp))
 			{
 				SetMoveToPos(gp);
-
 				UpdateDecided(te, teJap, isMoved);
 			}
 		}
