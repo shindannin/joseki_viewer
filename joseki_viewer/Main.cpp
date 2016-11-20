@@ -34,12 +34,6 @@ void Main()
 
 		tree->Update();
 		tree->Draw();
-
-		if (Input::KeyEscape.clicked)
-		{
-			System::Exit();
-		}
-
 	}
 	
 	delete tree;

@@ -86,6 +86,7 @@ private:
 	Texture mTextureBoard;
 	Texture mTextureGrid;
 	Font mFont;
+	Sound mSoundKomaoto;
 
 	int mOffsetX;
 	int mOffsetY;

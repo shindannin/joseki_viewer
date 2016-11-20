@@ -32,6 +32,9 @@ BoardSiv3D::BoardSiv3D()
 
 	mInputState = E_IDLE;
 
+	mSoundKomaoto = Sound(L"sounds/komaoto5.wav");
+
+
 	SetOffset(100, 100);
 }
 
@@ -277,6 +280,7 @@ void BoardSiv3D::UpdateDecided(string& te, wstring& teJap, bool& isMoved)
 	teJap = DecideMove();
 	isMoved = true;
 	mInputState = E_IDLE;
+	mSoundKomaoto.play();
 }
 
 bool BoardSiv3D::Update(string& te, wstring& teJap)
