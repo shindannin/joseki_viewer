@@ -14,6 +14,359 @@ http://play-siv3d.hateblo.jp/entry/ref/characterset
 http://www.geocities.jp/shogidokoro/usi.html
 
 
+
+>1:usi
+<1:id name Apery_WCSC26
+<1:id author Hiraoka Takuya
+<1:option name Best_Book_Move type check default false
+<1:option name Book_File type string default book/20150503/book.bin
+<1:option name Byoyomi_Margin type spin default 500 min 0 max 2147483647
+<1:option name Clear_Hash type button
+<1:option name Emergency_Base_Time type spin default 200 min 0 max 30000
+<1:option name Emergency_Move_Horizon type spin default 40 min 0 max 50
+<1:option name Emergency_Move_Time type spin default 70 min 0 max 5000
+<1:option name Eval_Dir type string default 20160307
+<1:option name Inc_Margin type spin default 4500 min 0 max 2147483647
+<1:option name Max_Book_Ply type spin default 32767 min 0 max 32767
+<1:option name Max_Random_Score_Diff type spin default 0 min 0 max 32600
+<1:option name Max_Random_Score_Diff_Ply type spin default 32767 min 0 max 32767
+<1:option name Min_Book_Ply type spin default 32767 min 0 max 32767
+<1:option name Min_Book_Score type spin default -180 min -32601 max 32601
+<1:option name Minimum_Thinking_Time type spin default 1500 min 0 max 2147483647
+<1:option name MultiPV type spin default 1 min 1 max 594
+<1:option name OwnBook type check default true
+<1:option name Skill_Level type spin default 20 min 0 max 20
+<1:option name Slow_Mover type spin default 100 min 10 max 1000
+<1:option name Threads type spin default 8 min 1 max 64
+<1:option name Use_Sleeping_Threads type check default false
+<1:option name USI_Hash type spin default 256 min 1 max 65536
+<1:option name USI_Ponder type check default true
+<1:option name Write_Synthesized_Eval type check default false
+<1:usiok
+>1:setoption name USI_Ponder value false
+>1:setoption name USI_Hash value 256
+>1:setoption name Best_Book_Move value false
+>1:setoption name Book_File value book/20150503/book.bin
+>1:setoption name Byoyomi_Margin value 500
+>1:setoption name Emergency_Base_Time value 200
+>1:setoption name Emergency_Move_Horizon value 40
+>1:setoption name Emergency_Move_Time value 70
+>1:setoption name Eval_Dir value 20160307
+>1:setoption name Inc_Margin value 4500
+>1:setoption name Max_Book_Ply value 32767
+>1:setoption name Max_Random_Score_Diff value 0
+>1:setoption name Max_Random_Score_Diff_Ply value 32767
+>1:setoption name Min_Book_Ply value 32767
+>1:setoption name Min_Book_Score value -180
+>1:setoption name Minimum_Thinking_Time value 1500
+>1:setoption name MultiPV value 1
+>1:setoption name OwnBook value true
+>1:setoption name Skill_Level value 20
+>1:setoption name Slow_Mover value 100
+>1:setoption name Threads value 8
+>1:setoption name Use_Sleeping_Threads value true
+>1:setoption name USI_Hash value 256
+>1:setoption name USI_Ponder value true
+>1:setoption name Write_Synthesized_Eval value false
+>1:isready
+<1:readyok
+>1:usinewgame
+>1:position startpos
+>1:go btime 0 wtime 0 byoyomi 4000
+<1:info string optimum_search_time = 3500
+<1:info string maximum_search_time = 3500
+<1:info string book_ply 32767
+<1:info score cp 0 pv 2g2f
+<1:info nodes 0 time 45
+<1:bestmove 2g2f ponder None
+>1:position startpos moves 2g2f
+>1:go btime 0 wtime 0 byoyomi 4000
+<1:info string optimum_search_time = 3500
+<1:info string maximum_search_time = 3500
+<1:info string book_ply 32767
+<1:info score cp 0 pv 8c8d
+<1:info nodes 0 time 27
+<1:bestmove 8c8d ponder None
+>1:position startpos moves 2g2f 3c3d
+>1:go btime 0 wtime 0 byoyomi 4000
+<1:info string optimum_search_time = 3500
+<1:info string maximum_search_time = 3500
+<1:info string book_ply 32767
+<1:info score cp 0 pv 2f2e
+<1:info nodes 0 time 53
+<1:bestmove 2f2e ponder None
+>1:position startpos moves 2g2f 3c3d 6i7h
+>1:go btime 0 wtime 0 byoyomi 4000
+<1:info string optimum_search_time = 3500
+<1:info string maximum_search_time = 3500
+<1:info string book_ply 32767
+<1:info score cp 0 pv 8b4b
+<1:info nodes 0 time 4
+<1:bestmove 8b4b ponder None
+>1:position startpos moves 2g2f 3c3d 6i7h 4c4d
+>1:go btime 0 wtime 0 byoyomi 4000
+<1:info string optimum_search_time = 3500
+<1:info string maximum_search_time = 3500
+<1:info string book_ply 32767
+<1:info depth 1 seldepth 3 score cp 107 nodes 239 nps 7468 time 32 multipv 1 pv  7g7f
+<1:info depth 2 seldepth 4 score cp 37 nodes 736 nps 23000 time 32 multipv 1 pv  7g7f 8b4b
+<1:info depth 3 seldepth 4 score cp 70 nodes 1391 nps 43468 time 32 multipv 1 pv  7g7f 8b4b 2f2e
+<1:info depth 4 seldepth 5 score cp -16 nodes 2508 nps 76000 time 33 multipv 1 pv  7g7f 8b4b 2f2e 3a3b
+<1:info depth 5 seldepth 8 score cp 1 nodes 3590 nps 108787 time 33 multipv 1 pv  7g7f 8b4b 2f2e 3a3b 3i4h 5a6b
+<1:info depth 6 seldepth 8 score cp -13 nodes 8940 nps 262941 time 34 multipv 1 pv  2f2e 2b3c 3i4h 3a3b 7g7f 3b4c 5g5f 8b4b
+<1:info depth 7 seldepth 10 score cp -76 nodes 15334 nps 438114 time 35 multipv 1 pv  7g7f 3a3b 3i4h 3b4c 2f2e 2b3c 5g5f 8b2b
+<1:info depth 8 seldepth 10 score cp -52 nodes 23355 nps 648750 time 36 multipv 1 pv  7g7f 3a3b 3i4h 3b4c 5i6i 8b3b 7i6h 5a6b
+<1:info depth 9 seldepth 12 score cp -87 nodes 54862 nps 1306238 time 42 multipv 1 pv  7g7f 3a3b 3i4h 3b4c 2f2e 2b3c 5g5f 8b4b 7i6h 5a6b 5i6i 6b7b
+<1:info depth 16 seldepth 27 score cp -236 nodes 6091031 nps 6969143 time 874 multipv 1 pv  9g9f 3a3b 3i4h 8b4b 5i6i 5a6b 5g5f 6b7b 2f2e 7b8b 7i6h 9a9b 2e2d 2c2d 2h2d 2b3c
+<1:info depth 17 seldepth 27 score cp -246 nodes 8820760 nps 6950953 time 1269 multipv 1 pv  5g5f 8b4b 7i6h 5a6b 3i4h 6b7b 5i6i 3a3b 9g9f 7b8b 2f2e 2b3c 6i7i 9a9b 8h9g 4a5b 7i8h 8b9a 9g7e 7a8b
+<1:info depth 20 seldepth 29 score cp -112 nodes 21219342 nps 6250174 time 3395 multipv 1 pv  7g7f 8b4b 5i6i 2b3c 3i4h 3a3b 8h7g 3b4c 7i8h 4c5d 8g8f 4d4e 6i7i 4e4f 4g4f 4b4f 7g3c+ 2a3c B*2b
+<1:info depth 21 seldepth 29 score cp -112 nodes 21789440 nps 6220222 time 3503 multipv 1 pv  7g7f 8b4b 5i6i 2b3c 3i4h 3a3b 8h7g 3b4c 7i8h 4c5d 8g8f 4d4e 6i7i 4e4f 4g4f 4b4f 7g3c+ 2a3c B*2b
+<1:info nodes 21789440 time 3503
+<1:bestmove 7g7f ponder 8b4b
+>1:position startpos moves 2g2f 3c3d 6i7h 4c4d 2f2e
+>1:go btime 0 wtime 0 byoyomi 4000
+<1:info string optimum_search_time = 3500
+<1:info string maximum_search_time = 3500
+<1:info string book_ply 32767
+<1:info depth 1 seldepth 3 score cp -55 nodes 202 nps 101000 time 2 multipv 1 pv  2b3c 3i4h 8b4b 5g5f 5a6b 4h5g 3a3b 7g7f 6b7b 5i6i 7b8b 8h7g 9a9b 7i8h 8b9a 8g8f 7a8b 8h8g 6a7a 6i7i 3b4c 7i8h
+<1:info depth 2 seldepth 5 score cp 111 nodes 480 nps 240000 time 2 multipv 1 pv  2b3c 3i4h 8b2b 7g7f 5a6b 7i6h 6b7b
+<1:info depth 3 seldepth 5 score cp 111 nodes 1004 nps 502000 time 2 multipv 1 pv  2b3c 3i4h 8b4b 5g5f 5a6b 4h5g 3a3b 7g7f 6b7b 5i6i 7b8b 8h7g 9a9b 7i8h 8b9a 8g8f 7a8b 8h8g 6a7a 6i7i 3b4c 7i8h
+<1:info depth 4 seldepth 6 score cp 116 nodes 1752 nps 876000 time 2 multipv 1 pv  2b3c 3i4h 3a3b 3g3f 8b4b 7g7f 5a6b
+<1:info depth 5 seldepth 7 score cp 205 nodes 3935 nps 1311666 time 3 multipv 1 pv  2b3c 3i4h 3a3b 7i6h 8b4b 5i6i 5a6b 5g5f 6b7b 4h5g 7b8b 6i7i 9a9b 7g7f 8b9a 8h7g 7a8b 7i8h 6a7a
+<1:info depth 6 seldepth 9 score cp 205 nodes 4535 nps 1511666 time 3 multipv 1 pv  2b3c 3i4h 3a3b 7i6h 3b4c 5i6i 8b2b 7g7f 5a6b 6i7i 6b7b 5g5f 7b8b 8h7g 4c5d 7i8h 5d6e
+<1:info depth 7 seldepth 9 score cp 206 nodes 5511 nps 1837000 time 3 multipv 1 pv  2b3c 3i4h 3a3b 7i6h 3b4c 5i6i 8b2b 5g5f 5a6b 7g7f 6b7b 6i7i 7b8b 8h7g 4c5d 7i8h 5d6e
+<1:info depth 8 seldepth 12 score cp 206 nodes 8571 nps 2857000 time 3 multipv 1 pv  2b3c 3i4h 3a3b 7i6h 8b4b 5i6i 5a6b 5g5f 6b7b 4h5g 7b8b 6i7i 9a9b 7g7f 8b9a 8h7g 7a8b 7i8h 6a7a
+<1:info depth 9 seldepth 12 score cp 227 nodes 10594 nps 2648500 time 4 multipv 1 pv  2b3c 3i4h 3a3b 7i6h 3b4c 5i6i 8b2b 7g7f 5a6b 6i7i 6b7b 5g5f 7b8b 8h7g 4c5d 7i8h 5d6e
+<1:info depth 18 seldepth 26 score cp 218 nodes 1566436 nps 5119071 time 306 multipv 1 pv  2b3c 7g7f 8b2b 7i6h 5a6b 5i6i 3a3b 6i7i 3b4c 3i4h 4a5b 8h7g 7a7b 7i8h 6b7a 9g9f 9c9d 5g5f 6c6d 4h5g 7a8b 5g4f
+<1:info depth 20 seldepth 27 score cp 207 nodes 2784891 nps 5274414 time 528 multipv 1 pv  2b3c 7g7f 8b2b 7i6h 5a6b 5i6i 3a3b 6i7i 3b4c 3i4h 7a7b 8h7g 6b7a 7i8h 4a5b 6g6f 9c9d 6h6g 6c6d 9g9f 7c7d 5g5f 4c5d 4h5g 8a7c
+<1:info depth 22 seldepth 29 score cp 186 nodes 8897857 nps 5373102 time 1656 multipv 1 pv  2b3c 7g7f 8b2b 5i6i 5a6b 8h7g 7a7b 7i6h 3a4b 6i7i 6b7a 3i4h 4a5b 5g5f 4b4c 7i8h 6c6d 4h5g 2c2d 2e2d 2b2d 2h2d 3c2d R*2b R*2h 4i3i
+<1:info depth 23 seldepth 34 score cp 166 lowerbound nodes 18882476 nps 5432242 time 3476 multipv 1 pv  2b3c 7g7f 8b2b 3i4h 3a3b 5i6i 7a7b 8h7g 5a6b 7i8h 6b7a 8g8f 2c2d 2e2d 2b2d 2h2d 3c2d 7g4d 2d3c 4d5c+ 7a8b R*2h 4a5b 5c7e
+<1:info depth 23 seldepth 34 score cp 166 nodes 19009605 nps 5423567 time 3505 multipv 1 pv  2b3c 7g7f 8b2b 3i4h 3a3b 5i6i 7a7b 8h7g 5a6b 7i8h 6b7a 8g8f 2c2d 2e2d 2b2d 2h2d 3c2d 7g4d 2d3c 4d5c+ 7a8b R*2h 4a5b 5c7e
+<1:info nodes 19009607 time 3505
+<1:bestmove 2b3c ponder 7g7f
+>1:position startpos moves 2g2f 3c3d 6i7h 4c4d 2f2e 2b3c
+>1:go btime 0 wtime 0 byoyomi 4000
+<1:info string optimum_search_time = 3500
+<1:info string maximum_search_time = 3500
+<1:info string book_ply 32767
+<1:info depth 1 seldepth 2 score cp 4 nodes 158 nps 0 time 0 multipv 1 pv  7g7f 8b2b 3i4h 3a3b 5i6i 3b4c 8h7g 4a5b 8g8f 5a6b 7i8h 6b7b 8h8g 7b8b 6i7i
+<1:info depth 2 seldepth 5 score cp 4 nodes 419 nps 0 time 0 multipv 1 pv  7g7f 8b2b 3i4h 3a3b 5i6i 3b4c 8h7g 4a5b 8g8f 5a6b 7i8h 6b7b 8h8g 7b8b 6i7i
+<1:info depth 3 seldepth 6 score cp -13 nodes 1125 nps 1125000 time 1 multipv 1 pv  7g7f 3a3b 3i4h 3b4c 8h7g 8b2b 5i6i 4a5b 8g8f 5a6b 7i8h 6b7b 8h8g 7b8b 6i7i
+<1:info depth 4 seldepth 6 score cp -72 nodes 2509 nps 2509000 time 1 multipv 1 pv  7g7f 8b2b 3i4h 3a3b 5i6i 3b4c 8h7g 4a5b 8g8f 5a6b 7i8h 6b7b 8h8g 7b8b 6i7i
+<1:info depth 5 seldepth 7 score cp -183 nodes 5580 nps 5580000 time 1 multipv 1 pv  7g7f 8b2b 3i4h 3a3b 5i6i 3b4c 8h7g 4a5b 8g8f 5a6b 7i8h 6b7b 8h8g 7b8b 6i7i
+<1:info depth 6 seldepth 10 score cp -168 nodes 12285 nps 6142500 time 2 multipv 1 pv  3i4h 8b2b 5i6i 3a3b 7g7f 3b4c 8h7g 4a5b 8g8f 5a6b 7i8h 6b7b 8h8g 7b8b 6i7i
+<1:info depth 7 seldepth 11 score cp -178 nodes 15398 nps 7699000 time 2 multipv 1 pv  7g7f 8b2b 5i6i 3a3b 8h7g 3b4c 3i4h 4a5b 8g8f 5a6b 7i8h 6b7b 8h8g 7b8b 6i7i
+<1:info depth 8 seldepth 12 score cp -166 nodes 17228 nps 8614000 time 2 multipv 1 pv  7g7f 8b2b 5i6i 3a3b 8h7g 3b4c 3i4h 4a5b 8g8f 5a6b 7i8h 6b7b 8h8g 7b8b 6i7i
+<1:info depth 9 seldepth 12 score cp -173 nodes 24848 nps 6212000 time 4 multipv 1 pv  7g7f 8b2b 5i6i 5a6b 3i4h 7a7b 8h7g 3a3b 7i8h 6b7a 8g8f 2c2d 2e2d 2b2d 2h2d 3c2d 7g4d 2a3c 4d5c+ 7a8b 5c4d R*2h 4i3i
+<1:info depth 23 seldepth 36 score cp -113 nodes 15977585 nps 4565024 time 3500 multipv 1 pv  7g7f 8b2b 5i6i 3a3b 8h7g 3b4c 3i4h 5a6b 7i8h 4c5d 8g8f 6b7b 8h8g 7b8b 6i7i
+<1:info nodes 15977585 time 3500
+<1:bestmove 7g7f ponder 8b2b
+>1:position startpos moves 2g2f 3c3d 6i7h 4c4d 2f2e 2b3c 3i3h
+>1:go btime 0 wtime 0 byoyomi 4000
+<1:info string optimum_search_time = 3500
+<1:info string maximum_search_time = 3500
+<1:info string book_ply 32767
+<1:info depth 1 seldepth 4 score cp 170 nodes 130 nps 2500 time 52 multipv 1 pv  3a3b
+<1:info depth 2 seldepth 12 score cp 270 nodes 20977 nps 374589 time 56 multipv 1 pv  3a3b 7i6h 8b4b 7g7f 5a6b 5i6i 3b4c 6i7i 6b7b 9g9f 4c5d 9f9e 7b8b
+<1:info depth 3 seldepth 12 score cp 270 nodes 21205 nps 378660 time 56 multipv 1 pv  3a3b 7i6h 8b4b 7g7f 5a6b 5i6i 3b4c 6i7i 6b7b 9g9f 4c5d 9f9e 7b8b
+<1:info depth 4 seldepth 12 score cp 270 nodes 21366 nps 381535 time 56 multipv 1 pv  3a3b 7i6h 8b4b 7g7f 5a6b 5i6i 3b4c 6i7i 6b7b 9g9f 4c5d 9f9e 7b8b
+<1:info depth 5 seldepth 12 score cp 270 nodes 21535 nps 384553 time 56 multipv 1 pv  3a3b 7i6h 8b4b 7g7f 5a6b 5i6i 3b4c 6i7i 6b7b 9g9f 4c5d 9f9e 7b8b
+<1:info depth 6 seldepth 12 score cp 270 nodes 21706 nps 387607 time 56 multipv 1 pv  3a3b 7i6h 8b4b 7g7f 5a6b 5i6i 3b4c 6i7i 6b7b 9g9f 4c5d 9f9e 7b8b
+<1:info depth 7 seldepth 12 score cp 270 nodes 21936 nps 391714 time 56 multipv 1 pv  3a3b 7i6h 8b4b 7g7f 5a6b 5i6i 3b4c 6i7i 6b7b 9g9f 4c5d 9f9e 7b8b
+<1:info depth 8 seldepth 12 score cp 270 nodes 22239 nps 397125 time 56 multipv 1 pv  3a3b 7i6h 8b4b 7g7f 5a6b 5i6i 3b4c 6i7i 6b7b 9g9f 4c5d 9f9e 7b8b
+<1:info depth 9 seldepth 12 score cp 272 nodes 40224 nps 681762 time 59 multipv 1 pv  8b4b 7i6h 5a6b 5i6i 6b7b 7g7f 3a3b 6i7i 7b8b 9g9f 9a9b
+<1:info depth 18 seldepth 24 score cp 304 nodes 1125078 nps 3906520 time 288 multipv 1 pv  8b4b 5i6i 5a6b 7i6h 7a7b 9g9f 6b7a 6i7i 3a3b 9f9e 3b4c 7g7f 4c5d 3g3f 5d6e 7f7e 4a5b 3h3g 6e7f 4i5h
+<1:info depth 20 seldepth 29 score cp 307 nodes 2169476 nps 4356377 time 498 multipv 1 pv  8b4b 5i6i 5a6b 7i6h 7a7b 7g7f 6b7a 3g3f 3a3b 3h3g 4a5b 6i7i 3b4c 9g9f 9c9d 3g2f 4d4e 8h3c+ 2a3c 5g5f B*4d 6h7g
+<1:info depth 22 seldepth 29 score cp 313 nodes 3278786 nps 4424812 time 741 multipv 1 pv  8b4b 5i6i 5a6b 7i6h 7a7b 6i7i 3a3b 9g9f 6b7a 9f9e 3b4c 7g7f 4c5d 3g3f 5d6e 7f7e 6c6d 3h3g 4a5b 4i5h 7a8b 6g6f 6e5d 5h6g 4d4e 6g7f
+<1:info depth 23 seldepth 30 score cp 313 nodes 4646742 nps 4371347 time 1063 multipv 1 pv  8b4b 5i6i 5a6b 7i6h 7a7b 6i7i 3a3b 9g9f 9c9d 7g7f 3b4c 3g3f 6b7a 3h3g 4a5b 3g4f 7a8b 4i5h 6c6d 8h7g 5b6c 3f3e 3d3e 4f3e P*3d
+<1:info depth 24 seldepth 32 score cp 313 nodes 8265658 nps 4269451 time 1936 multipv 1 pv  8b4b 5i6i 5a6b 7i6h 7a7b 6i7i 3a3b 9g9f 9c9d 7g7f 3b4c 3g3f 6b7a 3h3g 4a5b 3g4f 7a8b 4i5h 6c6d 8h7g 5b6c 3f3e 3d3e 4f3e P*3d 2e2d
+<1:info depth 25 seldepth 33 score cp 294 nodes 11906850 nps 4192552 time 2840 multipv 1 pv  8b4b 5i6i 5a6b 7i6h 7a7b 6i7i 3a3b 3g3f 3b4c 3h3g 6b7a 7g7f 4c5d 9g9f 5d6e 7f7e 7a8b 9f9e 4a5b 4i5h 6c6d 6g6f 6e5d 5h6g 4d4e 6g7f 5b6c 6h6g
+<1:info depth 26 seldepth 34 score cp 294 nodes 14493922 nps 4139937 time 3501 multipv 1 pv  8b4b 5i6i 5a6b 7i6h 7a7b 6i7i 3a3b 3g3f 3b4c 3h3g 6b7a 7g7f 4c5d 9g9f 5d6e 7f7e 7a8b 9f9e 4a5b 4i5h 6c6d 6g6f 6e5d 5h6g 4d4e 6g7f 5b6c 6h6g
+<1:info nodes 14493922 time 3501
+<1:bestmove 8b4b ponder 5i6i
+>1:position startpos moves 2g2f 3c3d 6i7h 4c4d 2f2e 2b3c 3i3h 8b4b
+>1:go btime 0 wtime 0 byoyomi 4000
+<1:info string optimum_search_time = 3500
+<1:info string maximum_search_time = 3500
+<1:info string book_ply 32767
+<1:info depth 1 seldepth 3 score cp -271 nodes 109 nps 0 time 0 multipv 1 pv  3g3f 5a6b 3h3g 3a3b 5i6i 7a7b 7i6h 6b7a 6i7i 9c9d 3f3e 3d3e 3g2f 3e3f 2h3h
+<1:info depth 2 seldepth 6 score cp -207 nodes 630 nps 0 time 0 multipv 1 pv  3g3f 3a3b 3h3g 5a6b 5i6i 7a7b 7i6h 6b7a 6i7i 9c9d 3f3e 3d3e 3g2f 3e3f 2h3h
+<1:info depth 3 seldepth 7 score cp -214 nodes 1319 nps 0 time 0 multipv 1 pv  3g3f 3a3b 3h3g 3b4c 7i6h 5a6b 5i6i 6b7b 6i7i 4c5d 5g5f 7b8b 3g2f 5d4e 3f3e 3d3e 2f3e 4e5f P*3d
+<1:info depth 4 seldepth 7 score cp -214 nodes 2445 nps 0 time 0 multipv 1 pv  3g3f 3a3b 3h3g 7a7b 5i6i 5a6b 7i6h 6b7a 6i7i 9c9d 3f3e 3d3e 3g2f 3e3f 2h3h
+<1:info depth 5 seldepth 7 score cp -276 nodes 4050 nps 0 time 0 multipv 1 pv  3g3f 5a6b 3h3g 6b7b 7i6h 7b8b 5i6i 3a3b 6i7i 7a7b 9g9f 3b4c 9f9e 4a5b 3g4f 4d4e 4f4e 3c5e 2h1h 4c5d 4e5f
+<1:info depth 6 seldepth 8 score cp -294 nodes 5679 nps 5679000 time 1 multipv 1 pv  7i6h 7a7b 5i6i 5a6b 6i7i 3a3b 3g3f 3b4c 3h3g 6b7a 7g7f 4c5d 9g9f 5d6e 7f7e 7a8b 9f9e 4a5b 4i5h 6c6d 6g6f 6e5d 5h6g 4d4e 6g7f 5b6c 6h6g 1c1d 8h7g 7c7d
+<1:info depth 7 seldepth 8 score cp -294 nodes 6309 nps 6309000 time 1 multipv 1 pv  7i6h 7a7b 5i6i 5a6b 6i7i 3a3b 3g3f 3b4c 3h3g 6b7a 7g7f 4c5d 9g9f 5d6e 7f7e 7a8b 9f9e 4a5b 4i5h 6c6d 6g6f 6e5d 5h6g 4d4e 6g7f 5b6c 6h6g 1c1d 8h7g 7c7d
+<1:info depth 8 seldepth 8 score cp -294 nodes 7102 nps 7102000 time 1 multipv 1 pv  7i6h 7a7b 5i6i 5a6b 6i7i 3a3b 3g3f 3b4c 3h3g 6b7a 7g7f 4c5d 9g9f 5d6e 7f7e 7a8b 9f9e 4a5b 4i5h 6c6d 6g6f 6e5d 5h6g 4d4e 6g7f 5b6c 6h6g 1c1d 8h7g 7c7d
+<1:info depth 9 seldepth 8 score cp -294 nodes 7796 nps 7796000 time 1 multipv 1 pv  7i6h 7a7b 5i6i 5a6b 6i7i 3a3b 3g3f 3b4c 3h3g 6b7a 7g7f 4c5d 9g9f 5d6e 7f7e 7a8b 9f9e 4a5b 4i5h 6c6d 6g6f 6e5d 5h6g 4d4e 6g7f 5b6c 6h6g 1c1d 8h7g 7c7d
+<1:info depth 24 seldepth 34 score cp -294 nodes 926227 nps 4268327 time 217 multipv 1 pv  7i6h 7a7b 5i6i 5a6b 6i7i 3a3b 3g3f 3b4c 3h3g 6b7a 7g7f 4c5d 9g9f 5d6e 7f7e 7a8b 9f9e 4a5b 4i5h 6c6d 6g6f 6e5d 5h6g 4d4e 6g7f 5b6c 6h6g 1c1d 8h7g 7c7d 7e7d 6c7d 3f3e
+<1:info depth 25 seldepth 35 score cp -294 nodes 2190973 nps 3817026 time 574 multipv 1 pv  7i6h 7a7b 5i6i 5a6b 6i7i 3a3b 3g3f 3b4c 3h3g 6b7a 7g7f 4c5d 9g9f 5d6e 7f7e 7a8b 9f9e 4a5b 4i5h 6c6d 6g6f 6e5d 5h6g 4d4e 6g7f 5b6c 6h6g 1c1d 8h7g 7c7d 7e7d 6c7d 3f3e
+<1:info depth 26 seldepth 40 score cp -294 nodes 14014717 nps 3995073 time 3508 multipv 1 pv  7i6h 7a7b 5i6i 5a6b 6i7i 3a3b 3g3f 3b4c 3h3g 6b7a 7g7f 4c5d 9g9f 5d6e 7f7e 7a8b 9f9e 4a5b 4i5h 6c6d 6g6f 6e5d 5h6g 4d4e 6g7f 5b6c 6h6g 1c1d 8h7g 7c7d 7e7d 6c7d 3f3e
+<1:info nodes 14014717 time 3508
+<1:bestmove 7i6h ponder 7a7b
+>1:position startpos moves 2g2f 3c3d 6i7h 4c4d 2f2e 2b3c 3i3h 8b4b 3h2g
+>1:go btime 0 wtime 0 byoyomi 4000
+<1:info string optimum_search_time = 3500
+<1:info string maximum_search_time = 3500
+<1:info string book_ply 32767
+<1:info depth 1 seldepth 3 score cp 223 nodes 244 nps 122000 time 2 multipv 1 pv  3a3b
+<1:info depth 2 seldepth 4 score cp 267 nodes 534 nps 267000 time 2 multipv 1 pv  3a3b 2g2f 5a6b
+<1:info depth 3 seldepth 6 score cp 311 nodes 2198 nps 732666 time 3 multipv 1 pv  5a6b 5i6i 6b7b 7i6h 7b8b 6i7i 3a3b 9g9f 9a9b 7g7f 8b9a
+<1:info depth 4 seldepth 7 score cp 330 nodes 3468 nps 1156000 time 3 multipv 1 pv  5a6b 5i6i 6b7b 7i6h 3a3b 6i7i 3b4c 9g9f 4c5d 2g2f 5d6e 3g3f 4d4e
+<1:info depth 5 seldepth 7 score cp 344 nodes 4697 nps 1565666 time 3 multipv 1 pv  5a6b 5i6i 3a3b 7i6h 7a7b 7g7f 6b7a 9g9f 9c9d 2g3f 3b4c 6i7i 4a5b
+<1:info depth 6 seldepth 8 score cp 366 nodes 9015 nps 2253750 time 4 multipv 1 pv  5a6b 7i6h 3a3b 5i6i 7a7b 7g7f 6b7a 2g3f 3b4c 6i7i 7a8b
+<1:info depth 7 seldepth 9 score cp 345 nodes 15314 nps 3828500 time 4 multipv 1 pv  5a6b 7i6h 3a3b 5i6i 7a7b 2g3f 6b7a 7g7f 3b4c 6i7i 7a8b
+<1:info depth 8 seldepth 14 score cp 345 nodes 20913 nps 4182600 time 5 multipv 1 pv  5a6b 7i6h 3a3b 5i6i 7a7b 7g7f 6b7a 6i7i 3b4c 2g2f 4a5b 3g3f 4d4e 8h3c+ 2a3c 2f3g 4c5d 2e2d 2c2d 2h2d
+<1:info depth 9 seldepth 14 score cp 326 nodes 31232 nps 4461714 time 7 multipv 1 pv  5a6b 7i6h 3a3b 5i6i 7a7b 7g7f 6b7a 6i7i 3b4c 2g2f 4a5b 3g3f 4d4e 8h3c+ 2a3c 2f3g 4c5d 2e2d 2c2d 2h2d
+<1:info depth 18 seldepth 27 score cp 392 nodes 3069568 nps 6006982 time 511 multipv 1 pv  5a6b 5i6i 3a3b 7i6h 6b7b 6i7i 7b8b 7g7f 9a9b 2g2f 8b9a 3g3f 7a8b 9g9f 4d4e 8h3c+ 3b3c 2f3g 6a7a 9f9e 3c4d 6h7g 4a5b
+<1:info depth 19 seldepth 31 score cp 423 nodes 5944033 nps 5292994 time 1123 multipv 1 pv  5a6b 5i6i 3a3b 7i6h 6b7b 7g7f 9a9b 6i7i 7b8b 5g5f 8b9a 2g2f 7a8b 3g3f 6a7a 3f3e 4d4e 3e3d 3c8h+ 7i8h 4e4f
+<1:info depth 20 seldepth 31 score cp 418 nodes 7109176 nps 5155312 time 1379 multipv 1 pv  5a6b 7i6h 6b7b 2g2f 3a3b 4i5h 9c9d 5i6i 9d9e 7g7f 7b8b 6i7i 7a7b 3g3f 4d4e 2f3g 4a5b 1g1f 3c8h+ 7i8h 3b3c
+<1:info depth 21 seldepth 31 score cp 411 nodes 10286310 nps 4716327 time 2181 multipv 1 pv  5a6b 7i6h 6b7b 5g5f 3a3b 7g7f 7b8b 2g2f 4d4e 8h3c+ 3b3c 6h5g 3c4d 5i6i 9a9b 3g3f 5c5d 4i5h 8b9a 6i7i 7a8b 7i8h 6a7a
+<1:info depth 22 seldepth 31 score cp 411 nodes 14474964 nps 4305462 time 3362 multipv 1 pv  5a6b 7i6h 6b7b 5g5f 7b8b 7g7f 3a3b 2g2f 4d4e 8h3c+ 3b3c 6h5g 3c4d 5i6i 5c5d 6i7i 5d5e 5f5e 4d5e
+<1:info depth 23 seldepth 32 score cp 411 nodes 14906119 nps 4255243 time 3503 multipv 1 pv  5a6b 7i6h 6b7b 5g5f 7b8b 7g7f 3a3b 2g2f 4d4e 8h3c+ 3b3c 6h5g 3c4d 5i6i 5c5d 6i7i 5d5e 5f5e 4d5e
+<1:info nodes 14906119 time 3503
+<1:bestmove 5a6b ponder 7i6h
+>1:position startpos moves 2g2f 3c3d 6i7h 4c4d 2f2e 2b3c 3i3h 8b4b 3h2g 5a6b
+>1:go btime 0 wtime 0 byoyomi 4000
+<1:info string optimum_search_time = 3500
+<1:info string maximum_search_time = 3500
+<1:info string book_ply 32767
+<1:info depth 1 seldepth 4 score cp -347 nodes 178 nps 4341 time 41 multipv 1 pv  7i6h 6b7b 5g5f 7b8b 7g7f 3a3b 2g2f 4d4e 8h3c+ 3b3c 6h5g 3c4d 5i6i 5c5d 6i7i 5d5e 5f5e 4d5e
+<1:info depth 2 seldepth 8 score cp -260 nodes 1619 nps 39487 time 41 multipv 1 pv  2g3f 6b7b 5i6i 3a3b 7g7f 7b8b 7i6h 9a9b 6i7i 8b9a 9g9f 3b4c 9f9e 4a5b
+<1:info depth 3 seldepth 8 score cp -371 nodes 2068 nps 50439 time 41 multipv 1 pv  2g3f 6b7b 5i6i 3a3b 7g7f 7b8b 7i6h 9a9b 6i7i 8b9a 9g9f 3b4c 9f9e 4a5b
+<1:info depth 4 seldepth 8 score cp -371 nodes 2396 nps 58439 time 41 multipv 1 pv  2g3f 6b7b 5i6i 3a3b 7g7f 7b8b 7i6h 9a9b 6i7i 8b9a 9g9f 3b4c 9f9e 4a5b
+<1:info depth 5 seldepth 9 score cp -383 nodes 4557 nps 111146 time 41 multipv 1 pv  2g3f 6b7b 5i6i 3a3b 7i6h 7b8b 6i7i 9a9b 9g9f 8b9a 8h9g 4a5b 7i8h 3b4c
+<1:info depth 6 seldepth 12 score cp -358 nodes 10116 nps 240857 time 42 multipv 1 pv  2g3f 3a3b 5i6i 6b7b 7i6h 7b8b 6i7i 9a9b 9g9f 8b9a 8h9g 4a5b 7i8h 3b4c
+<1:info depth 7 seldepth 16 score cp -372 nodes 17477 nps 406441 time 43 multipv 1 pv  2g3f 3a3b 5i6i 7a7b 7g7f 6b7a 7i6h 3b4c 6i7i 4a5b 9g9f 9c9d 4i5h 4c5d 5g5f 6c6d
+<1:info depth 8 seldepth 16 score cp -373 nodes 24404 nps 567534 time 43 multipv 1 pv  2g3f 3a3b 5i6i 3b4c 7i6h 7a7b 6i7i 6b7a 9g9f 4a5b 7g7f 9c9d 4i5h 4c5d 5g5f 6c6d
+<1:info depth 9 seldepth 20 score cp -411 nodes 34221 nps 760466 time 45 multipv 1 pv  7i6h 6b7b 7g7f 3a3b 5g5f 7b8b 2g2f 3b4c 5i6i 9a9b 3g3f 8b9a 3f3e 4b3b 2h3h 3c2b 3e3d 4c3d 6i7i 7a8b P*3c 3b3c 8h4d
+<1:info depth 22 seldepth 34 score cp -401 nodes 3989164 nps 3724709 time 1071 multipv 1 pv  7i6h 6b7b 5i6i 3a3b 6i7i 7b8b 2g2f 9a9b 5g5f 3b4c 3g3f 4b3b 2h3h 8b9a 3f3e 3c2b 3e3d 4c3d 7g7f 7a8b P*3c 3b3c 8h4d 3d4c 4d3c+ 2b3c 6h7g B*2g
+<1:info depth 23 seldepth 34 score cp -401 nodes 7493040 nps 3737177 time 2005 multipv 1 pv  7i6h 6b7b 5i6i 3a3b 6i7i 7b8b 2g2f 9a9b 7g7f 8b9a 3g3f 7a8b 8h6f 6a7a 3f3e 4d4e 3e3d 3c6f 6g6f 4e4f
+<1:info depth 24 seldepth 34 score cp -401 nodes 12743681 nps 3633784 time 3507 multipv 1 pv  7i6h 6b7b 5i6i 3a3b 6i7i 7b8b 2g2f 9a9b 7g7f 8b9a 3g3f 7a8b 3f3e 4d4e 8h3c+ 3b3c 3e3d 3c3d B*5e P*3c 4i5h 6a7a 5e3g 3d4c 9g9f 4c4d 9f9e
+<1:info nodes 12743681 time 3507
+<1:bestmove 7i6h ponder 6b7b
+>1:position startpos moves 2g2f 3c3d 6i7h 4c4d 2f2e 2b3c 3i3h 8b4b 3h2g 5a6b 2g2f
+>1:go btime 0 wtime 0 byoyomi 4000
+<1:info string optimum_search_time = 3500
+<1:info string maximum_search_time = 3500
+<1:info string book_ply 32767
+<1:info depth 1 seldepth 5 score cp 466 nodes 946 nps 78833 time 12 multipv 1 pv  6b7b 7g7f 4d4e 8h3c+ 2a3c 5i6i 3a3b
+<1:info depth 2 seldepth 7 score cp 514 nodes 1433 nps 119416 time 12 multipv 1 pv  6b7b 5i6i 3a3b 7i6h 4d4e 4i5h 4e4f 4g4f 4b4f P*4g 4f4b 6i7i 3b4c 7g7f
+<1:info depth 3 seldepth 7 score cp 514 nodes 2702 nps 225166 time 12 multipv 1 pv  6b7b 5i6i 3a3b 7i6h 4d4e 4i5h 4e4f 4g4f 4b4f P*4g 4f4b 6i7i 3b4c 7g7f
+<1:info depth 4 seldepth 8 score cp 505 nodes 5351 nps 445916 time 12 multipv 1 pv  6b7b 7i6h 4d4e 5i6i 4e4f 4g4f 4b4f
+<1:info depth 5 seldepth 12 score cp 505 nodes 20153 nps 1439500 time 14 multipv 1 pv  6b7b 5i6i 3a3b 7i6h 4d4e 4i5h 4e4f 4g4f 4b4f P*4g 4f4b 6i7i 3b4c 7g7f
+<1:info depth 6 seldepth 14 score cp 431 nodes 38646 nps 2273294 time 17 multipv 1 pv  6b7b 7i6h 4d4e 4i5h 3a3b 5g5f 7b8b 6h5g 3b4c 5i6i 9a9b 3g3f 8b9a 6i7i 7a8b 3f3e 4b3b 3e3d 3c4d 7g7f 3b3d P*3e 3d3b
+<1:info depth 7 seldepth 15 score cp 431 nodes 41892 nps 2464235 time 17 multipv 1 pv  4d4e 7i6h 6b7b 4i5h 3a3b 5g5f 7b8b 6h5g 3b4c 5i6h 9a9b 7g7f 4c4d 3g3f 8b9a
+<1:info depth 8 seldepth 15 score cp 431 nodes 42205 nps 2344722 time 18 multipv 1 pv  4d4e 7i6h 6b7b 4i5h 3a3b 5g5f 7b8b 6h5g 3b4c 5i6h 9a9b 7g7f 4c4d 3g3f 8b9a
+<1:info depth 9 seldepth 15 score cp 431 nodes 42675 nps 2370833 time 18 multipv 1 pv  4d4e 7i6h 6b7b 4i5h 3a3b 5g5f 7b8b 6h5g 3b4c 5i6h 9a9b 7g7f 4c4d 3g3f 8b9a
+<1:info depth 17 seldepth 26 score cp 440 nodes 1221645 nps 4169436 time 293 multipv 1 pv  4d4e 5g5f 7a7b 7i6h 6b7a 6h5g 3a3b 5i6i 4a5b 3g3f 3b4c 6i7i 4c4d 7g7f 7c7d 4i5h 6c6d 9g9f 5b6c 2i3g 9c9d
+<1:info depth 18 seldepth 26 score cp 398 nodes 2955416 nps 4127675 time 716 multipv 1 pv  3a3b 5g5f 4d4e 7i6h 6b7b 6h5g 3b4c 3g3f 5c5d 5i6i 5d5e 5f5e 3c5e 2i3g 4b5b P*5f 5e4d 6i7i 2a3c
+<1:info depth 20 seldepth 32 score cp 388 nodes 5440533 nps 4106062 time 1325 multipv 1 pv  3a3b 5g5f 3b4c 7i6h 6b7b 5i6i 7b8b 3g3f 4d4e 3f3e 3d3e 2f3e P*3d 2e2d 2c2d 3e2d 3c2d 2h2d
+<1:info depth 21 seldepth 32 score cp 382 nodes 6588336 nps 4041923 time 1630 multipv 1 pv  3a3b 5g5f 3b4c 7i6h 6b7b 5i6i 7b8b 3g3f 4d4e 3f3e 3d3e 2f3e P*3d 2e2d 2c2d 3e2d 3c2d 2h2d
+<1:info depth 22 seldepth 34 score cp 382 nodes 7554237 nps 3963398 time 1906 multipv 1 pv  3a3b 5g5f 3b4c 7i6h 6b7b 5i6i 7b8b 3g3f 4d4e 3f3e 3d3e 2f3e P*3d 2e2d 2c2d 3e2d 3c2d 2h2d
+<1:info depth 23 seldepth 34 score cp 382 nodes 13331210 nps 3804569 time 3504 multipv 1 pv  3a3b 5g5f 3b4c 7i6h 6b7b 5i6i 7b8b 3g3f 4d4e 3f3e 3d3e 2f3e P*3d 2e2d 2c2d 3e2d 3c2d 2h2d
+<1:info nodes 13331210 time 3504
+<1:bestmove 3a3b ponder 5g5f
+>1:position startpos moves 2g2f 3c3d 6i7h 4c4d 2f2e 2b3c 3i3h 8b4b 3h2g 5a6b 2g2f 1c1d
+>1:go btime 0 wtime 0 byoyomi 4000
+<1:info string optimum_search_time = 3500
+<1:info string maximum_search_time = 3500
+<1:info string book_ply 32767
+<1:info depth 1 seldepth 4 score cp -180 nodes 235 nps 8703 time 27 multipv 1 pv  5i6i 6b7b 7i6h
+<1:info depth 2 seldepth 6 score cp -180 nodes 480 nps 17777 time 27 multipv 1 pv  5i6i 6b7b 7i6h 4d4e 4i5h
+<1:info depth 3 seldepth 16 score cp -217 nodes 70678 nps 1723853 time 41 multipv 1 pv  5i6i 4d4e 3g3f 4e4f 4g4f 4b4f
+<1:info depth 4 seldepth 16 score cp -244 nodes 72233 nps 1761780 time 41 multipv 1 pv  5i6i 6b7b 7i6h 3a3b 5g5f 4d4e 6h5g 4a5b 8h7i 7b8b
+<1:info depth 5 seldepth 16 score cp -293 nodes 75006 nps 1829414 time 41 multipv 1 pv  3g3f 4d4e 2f3g 3a3b 7g7f 3b4c 8h3c+ 2a3c 7i6h 6b7b 5i6i
+<1:info depth 6 seldepth 16 score cp -293 nodes 75529 nps 1842170 time 41 multipv 1 pv  3g3f 4d4e 2f3g 3a3b 7g7f 3b4c 8h3c+ 2a3c 7i6h 6b7b 5i6i
+<1:info depth 7 seldepth 16 score cp -293 nodes 76022 nps 1854195 time 41 multipv 1 pv  3g3f 4d4e 2f3g 3a3b 7g7f 3b4c 8h3c+ 2a3c 7i6h 6b7b 5i6i
+<1:info depth 8 seldepth 16 score cp -293 nodes 77985 nps 1856785 time 42 multipv 1 pv  3g3f 4d4e 2f3g 3a3b 7g7f 3b4c 8h3c+ 2a3c 7i6h 6b7b 5i6i
+<1:info depth 9 seldepth 16 score cp -293 nodes 80604 nps 1919142 time 42 multipv 1 pv  3g3f 4d4e 2f3g 3a3b 7g7f 3b4c 8h3c+ 2a3c 7i6h 6b7b 5i6i
+<1:info depth 16 seldepth 28 score cp -193 nodes 1092357 nps 3859918 time 283 multipv 1 pv  3g3f 4d4e 2f3g 3a3b 7g7f 6b7b 5i6i 9c9d 8h3c+ 3b3c 7i6h 9d9e 6i7i 7b8b 4i5h 7a7b 6g6f 4a5b 6h7g 6c6d 7i8h 7c7d
+<1:info depth 19 seldepth 28 score cp -177 nodes 3278661 nps 4013048 time 817 multipv 1 pv  3g3f 6b7b 7g7f 3a3b 5i6i 4a5b 7i6h 9c9d 6i7i 9d9e 5g5f 3b4c 3f3e 4b3b 2h3h 3c2b 8h7g 7b8b 3e3d 4c3d P*3c 3b3c 7g4d
+<1:info depth 20 seldepth 31 score cp -177 nodes 5698529 nps 3845161 time 1482 multipv 1 pv  3g3f 6b7b 7g7f 3a3b 5i6i 4a5b 7i6h 4d4e 8h3c+ 2a3c 2f3g B*5e 8i7g 5e3g+ 2i3g 4e4f 4g4f 4b4f 4i4h S*3i
+<1:info depth 21 seldepth 31 score cp -177 nodes 6694608 nps 3827677 time 1749 multipv 1 pv  3g3f 6b7b 7g7f 3a3b 5i6i 7b8b 7i6h 4d4e 2f3g 3c8h+ 7h8h 7a7b 6i7i 9c9d B*2b B*3c 2b3c+ 3b3c 8h7h 4a3b 7i8h 3c4d 5g5f
+<1:info depth 22 seldepth 31 score cp -193 nodes 8457942 nps 3755746 time 2252 multipv 1 pv  3g3f 6b7b 7g7f 3a3b 5i6i 7b8b 7i6h 4d4e 2f3g 3c8h+ 7h8h B*3c 6h7g 9a9b 8h7h 8b9a 6i7i 7a8b 7i8h 6a7a 4i5h 7c7d 5g5f 6c6d B*6c
+<1:info depth 23 seldepth 35 score cp -193 nodes 12737983 nps 3636306 time 3503 multipv 1 pv  3g3f 6b7b 7g7f 3a3b 5i6i 7b8b 7i6h 4d4e 2f3g 3c8h+ 7h8h B*3c 6h7g 9a9b 8h7h 8b9a 6i7i 7a8b 7i8h 6a7a 4i5h 7c7d 5g5f 6c6d B*6c
+<1:info nodes 12737983 time 3503
+<1:bestmove 3g3f ponder 6b7b
+>1:position startpos moves 2g2f 3c3d 6i7h 4c4d 2f2e 2b3c 3i3h 8b4b 3h2g 5a6b 2g2f 1c1d 1g1f
+>1:go btime 0 wtime 0 byoyomi 4000
+<1:info string optimum_search_time = 3500
+<1:info string maximum_search_time = 3500
+<1:info string book_ply 32767
+<1:info depth 1 seldepth 3 score cp 363 nodes 116 nps 0 time 0 multipv 1 pv  6b7b 7g7f 4d4e
+<1:info depth 2 seldepth 4 score cp 448 nodes 930 nps 0 time 0 multipv 1 pv  3a3b 9g9f
+<1:info depth 3 seldepth 5 score cp 485 nodes 2242 nps 0 time 0 multipv 1 pv  3a3b 5i6i 6b7b 7i6h 7b8b
+<1:info depth 4 seldepth 6 score cp 466 nodes 2892 nps 0 time 0 multipv 1 pv  3a3b 9g9f 6b7b 7g7f 3b4c
+<1:info depth 5 seldepth 9 score cp 485 nodes 5338 nps 0 time 0 multipv 1 pv  4d4e 5i6i 4e4f 4g4f 4b4f
+<1:info depth 6 seldepth 10 score cp 544 nodes 9315 nps 4657500 time 2 multipv 1 pv  4d4e 5i6i 4e4f 4g4f 4b4f 4i5h 3a3b
+<1:info depth 7 seldepth 10 score cp 472 nodes 17886 nps 5962000 time 3 multipv 1 pv  4d4e 4i5h 6b7b 5i6i 3a3b 7i6h 4e4f 4g4f 4b4f P*4g
+<1:info depth 8 seldepth 12 score cp 472 nodes 21460 nps 5365000 time 4 multipv 1 pv  4d4e 4i5h 6b7b 5i6i 3a3b 7i6h 4e4f 4g4f 4b4f P*4g
+<1:info depth 9 seldepth 12 score cp 480 nodes 37020 nps 5288571 time 7 multipv 1 pv  3a3b 7i6h 4d4e 4i5h 7a7b 5i6i 6b7a 6i7i 4e4f 4g4f 4b4f
+<1:info depth 16 seldepth 24 score cp 490 nodes 887246 nps 4224980 time 210 multipv 1 pv  4d4e 4i5h 3a3b 7i6h 6b7b 5i6i 4e4f 4g4f 4b4f P*4g
+<1:info depth 18 seldepth 27 score cp 422 nodes 3809715 nps 4256664 time 895 multipv 1 pv  3a3b 7i6h 4d4e 4i5h 6b7b 5i6i 9c9d 6g6f 3b4c 7g7f 4c5d 6h6g 7b8b 9g9f 7a7b 6g5f 4e4f 4g4f 4b4f P*4g
+<1:info depth 20 seldepth 31 score cp 391 nodes 14075981 nps 4015971 time 3505 multipv 1 pv  3a3b 7i6h 4d4e 5g5f 5c5d 6h5g 6b7b 5i6i 3b4c 9g9f 5d5e 5f5e 4b5b 6i7i 4c4d 8h9g 7b8b 7i8h 9c9d 5g5f 4d5e P*5c 5e5f 5c5b+ 4a5b R*3a
+<1:info nodes 14075981 time 3505
+<1:info depth 20 seldepth 31 score cp 393 nodes 14075981 nps 4015971 time 3505 multipv 1 pv  6b7b 5g5f 7b8b 7i6h 3a3b 3g3f 3b4c 7g7f 9a9b 3f3e 8b9a 3e3d 4c3d 2h3h P*3f 6h5g 4d4e 8h3c+ 2a3c 3h3f
+<1:bestmove 6b7b ponder 5g5f
+>1:position startpos moves 2g2f 3c3d 6i7h 4c4d 2f2e 2b3c 3i3h 8b4b 3h2g 5a6b 2g2f 1c1d 1g1f 6b7b
+>1:go btime 0 wtime 0 byoyomi 4000
+<1:info string optimum_search_time = 3500
+<1:info string maximum_search_time = 3500
+<1:info string book_ply 32767
+<1:info depth 1 seldepth 3 score cp -456 nodes 389 nps 194500 time 2 multipv 1 pv  5i6i 4d4e 4i5h 9c9d 9g9f 7b8b 7i6h 3a3b 6i7i 7a7b 7g7f 3c8h+ 7i8h 4e4f 4g4f 4b4f P*4h B*4d B*7g 4f2f 2h2f 4d2f 7g1a+ R*2h
+<1:info depth 2 seldepth 4 score cp -455 nodes 843 nps 421500 time 2 multipv 1 pv  5g5f 7b8b 7i6h 3a3b 3g3f 3b4c 7g7f 9a9b 3f3e 8b9a 3e3d 4c3d 2h3h P*3f 6h5g 4d4e 8h3c+ 2a3c 3h3f
+<1:info depth 3 seldepth 5 score cp -452 nodes 1540 nps 513333 time 3 multipv 1 pv  7i6h 4d4e 5i6i 4e4f 4g4f 4b4f
+<1:info depth 4 seldepth 6 score cp -452 nodes 2171 nps 723666 time 3 multipv 1 pv  7i6h 4d4e 5i6i 3a3b 4i5h 7b8b 9g9f 9c9d 6i7i 7a7b 7g7f 3c8h+ 7i8h 4e4f 4g4f 4b4f P*4h B*4d B*7g 4f2f 2h2f 4d2f 7g1a+ R*2h
+<1:info depth 5 seldepth 7 score cp -423 nodes 5628 nps 1876000 time 3 multipv 1 pv  7i6h 4d4e 4i5h 3a3b 5i6i 7b8b 6i7i 7a7b 9g9f 9c9d 7g7f 3c8h+ 7i8h 4e4f 4g4f 4b4f P*4h B*4d B*7g 4f2f 2h2f 4d2f 7g1a+ R*2h
+<1:info depth 6 seldepth 8 score cp -423 nodes 6152 nps 2050666 time 3 multipv 1 pv  7i6h 4d4e 4i5h 3a3b 5i6i 7b8b 6i7i 7a7b 9g9f 9c9d 7g7f 3c8h+ 7i8h 4e4f 4g4f 4b4f P*4h B*4d B*7g 4f2f 2h2f 4d2f 7g1a+ R*2h
+<1:info depth 7 seldepth 8 score cp -423 nodes 6659 nps 2219666 time 3 multipv 1 pv  7i6h 4d4e 4i5h 3a3b 5i6i 7b8b 6i7i 7a7b 9g9f 9c9d 7g7f 3c8h+ 7i8h 4e4f 4g4f 4b4f P*4h B*4d B*7g 4f2f 2h2f 4d2f 7g1a+ R*2h
+<1:info depth 8 seldepth 10 score cp -406 nodes 15858 nps 3964500 time 4 multipv 1 pv  5g5f 7b8b 7i6h 3a3b 5i6i 3b4c 7g7f 7a7b 6i7i
+<1:info depth 9 seldepth 14 score cp -398 nodes 21931 nps 4386200 time 5 multipv 1 pv  5g5f 7b8b 3g3f 4d4e 3f3e 4e4f 3e3d 3c2b 4g4f 4b4f 7i6h 4f5f 5i6i 3a3b 6i7i 2b5e
+<1:info depth 17 seldepth 29 score cp -390 nodes 2177706 nps 4584644 time 475 multipv 1 pv  7i6h 3a3b 5g5f 7b8b 6h5g 4a5b 3g3f 3b4c 3f3e 4b3b 7g7f 7a7b 3e3d 4c3d 2h3h 3c2b P*3c 3b3c 8h4d 3d4c 4d3c+ 2b3c
+<1:info depth 20 seldepth 30 score cp -398 nodes 3010782 nps 4338302 time 694 multipv 1 pv  7i6h 3a3b 5g5f 7b8b 3g3f 4d4e 6h5g 3b4c 5i6i 5c5d 2i3g 4c4d 7g7f 7a7b 6i7i 9c9d 9g9f 5d5e 4i5h 5e5f 5g5f 4b5b 5f4e 4d4e 3g4e 3c8h+ 7i8h B*6d
+<1:info depth 22 seldepth 31 score cp -398 nodes 5306871 nps 3978164 time 1334 multipv 1 pv  7i6h 3a3b 5g5f 3b4c 3g3f 7b8b 6h5g 4d4e 5i6i 5c5d 2i3g 4c4d 7g7f 7a7b 6i7i 9c9d 9g9f 5d5e 4i5h 5e5f 5g5f 4b5b 5f4e 4d4e 3g4e 3c8h+ 7i8h B*6d P*5c
+<1:info depth 23 seldepth 31 score cp -398 nodes 7228028 nps 3861126 time 1872 multipv 1 pv  7i6h 3a3b 5g5f 3b4c 3g3f 7b8b 6h5g 4d4e 5i6i 9a9b 4i5h 8b9a 7h6h 7a8b 6i7h 6a7a 9g9f 4a5b 2i3g 4c4d 9f9e 5c5d 7g7f 5b6b
+<1:info depth 24 seldepth 33 score cp -398 nodes 12978343 nps 3697533 time 3510 multipv 1 pv  7i6h 3a3b 5g5f 3b4c 3g3f 7b8b 6h5g 4d4e 5i6i 9a9b 4i5h 8b9a 7h6h 7a8b 6i7h 6a7a 9g9f 4a5b 2i3g 4c4d 9f9e 5c5d 7g7f 5b6b
+<1:info nodes 12978343 time 3510
+<1:bestmove 7i6h ponder 3a3b
+>1:position startpos moves 2g2f 3c3d 6i7h 4c4d 2f2e 2b3c 3i3h 8b4b 3h2g 5a6b 2g2f 1c1d 1g1f 6b7b 3g3f
+>1:go btime 0 wtime 0 byoyomi 4000
+<1:info string optimum_search_time = 3500
+<1:info string maximum_search_time = 3500
+<1:info string book_ply 32767
+<1:info depth 1 seldepth 4 score cp 503 nodes 269 nps 8966 time 30 multipv 1 pv  4d4e 2f3g 3a3b 7g7f 3b4c 8h3c+ 2a3c 2e2d 2c2d 2h2d 7b8b 7i6h
+<1:info depth 2 seldepth 18 score cp 554 nodes 80200 nps 1782222 time 45 multipv 1 pv  3a3b 3f3e 3b4c 1f1e 1d1e 3e3d 4c3d 2h3h P*3e 2f3e 3d3e 3h3e 4d4e
+<1:info depth 3 seldepth 18 score cp 542 nodes 81392 nps 1769391 time 46 multipv 1 pv  3a3b 5i6i 4d4e 7i6h 4e4f 4g4f 4b4f
+<1:info depth 4 seldepth 18 score cp 534 nodes 82954 nps 1803347 time 46 multipv 1 pv  3a3b 2i3g 3b4c 3f3e 4d4e 3g4e 3c5e
+<1:info depth 5 seldepth 18 score cp 463 nodes 91878 nps 1914125 time 48 multipv 1 pv  3a3b 3f3e 3b4c 5i6i 4d4e 7i6h 3c5e
+<1:info depth 6 seldepth 18 score cp 601 nodes 117917 nps 2267634 time 52 multipv 1 pv  4d4e 7g7f 4e4f 4g4f 4b4f 2f3g 4f4g+ 4i5h 4g4c
+<1:info depth 7 seldepth 18 score cp 481 nodes 122639 nps 2313943 time 53 multipv 1 pv  4d4e 7g7f 4e4f 4g4f 4b4f 2f3g 4f4g+ 4i5h 4g4c
+<1:info depth 8 seldepth 18 score cp 572 nodes 132932 nps 2416945 time 55 multipv 1 pv  4d4e 7g7f 4e4f 4g4f 4b4f 2f3g 4f4g+ 4i5h 4g4c
+<1:info depth 9 seldepth 18 score cp 444 nodes 152153 nps 2623327 time 58 multipv 1 pv  3a3b 3f3e 3b4c 5i6i 4d4e 5g5f 5c5d 7i6h 5d5e 3e3d 4c3d 2h3h P*3g 3h3g
+<1:info depth 15 seldepth 24 score cp 368 nodes 1399161 nps 4127318 time 339 multipv 1 pv  4d4e 2f3g 3a3b 7g7f 3b4c 8h3c+ 2a3c 2e2d 2c2d 2h2d P*2b 7i6h 4a3b 2d2h 4c5d 5i6i B*4d 6h7g
+<1:info depth 17 seldepth 29 score cp 391 nodes 4059049 nps 4254768 time 954 multipv 1 pv  4d4e 2f3g 3a3b 7g7f 9c9d 8h3c+ 3b3c 5i6i 7b8b 7i6h 9d9e 6i7i 4a5b 6h7g 6c6d 7i8h 7a7b 4i5h 5b6c 6g6f 7c7d
+<1:info depth 18 seldepth 29 score cp 390 nodes 5192319 nps 4160512 time 1248 multipv 1 pv  4d4e 2f3g 3a3b 7g7f 9c9d 8h3c+ 3b3c 5i6i 9d9e 7i6h 7b8b 6i7i 4a5b 7i8h 7a7b 6g6f 6c6d 6h6g 5b6c 8i7g 7c7d 4i5h
+>1:quit
+<1:info depth 20 seldepth 30 score cp 370 nodes 7333247 nps 4092213 time 1792 multipv 1 pv  4d4e 2f3g 9c9d 7g7f 3a3b 8h3c+ 3b3c 5i6i 9d9e 7i6h 7b8b 6i7i 4a5b 7i8h 7a7b 6g6f 6c6d 6h6g 5b6c 4i5h 5c5d 8i7g
+<1:info nodes 7333248 time 1792
+<1:bestmove 4d4e ponder 2f3g
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## やることリスト（2016/11/20）
 ### ---------- 優先度高い ----------
 * kifフォーマットの読み込み
@@ -23,6 +376,7 @@ http://www.geocities.jp/shogidokoro/usi.html
 * 拡縮率が小さいとき、表示位置を変更
 
 ### ---------- 優先度普通 ----------
+* メニューはtree3dから分離して、treeとboardはメニューを見るようにて、サウンドオンオフ・移動範囲オンオフなどを追加。
 * 計算しているのがわかる表示
 * オプションの部分の挙動わかりづらい
 * 先手（赤）後手（青）をもっと明示的に

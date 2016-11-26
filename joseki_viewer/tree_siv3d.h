@@ -234,7 +234,10 @@ public:
 		widgetStyle2.color = Color(0, 0, 0, 255);
 
 		GUIStyle style3 = style;
-		style3.background.color = Color(255, 0, 0, 64);
+		style3.background.color = Color(0, 255, 0, 64);
+
+		GUIStyle style4 = style;
+		style4.background.color = Color(255, 0, 0, 64);
 
 		mGuiFile = GUI(style2);
 //		mGuiFile.setTitle(L"メニュー");
@@ -269,6 +272,13 @@ public:
 		mGuiSettings = GUI(style2);
 		mGuiSettings.setPos(WINDOW_W - 142, 0);
 		mGuiSettings.add(L"settings", GUICheckBox::Create({ L"評価値", L"指し手", L"タグ", L"選択ノードの固定", L"デバッグ" }, { SHOW_SCORE, SHOW_TE, SHOW_TAG, FIX_SELECTED_NODE }, true, widgetStyle2));
+
+		mGuiDelete = GUI(style4);
+		mGuiDelete.setPos(WINDOW_W - 70, 131);
+		mGuiDelete.setTitle(L"削除 [DEL]キー");
+		mGuiDelete.addln(L"delete_score", GUIButton::Create(L"評価値１つ", false, widgetStyle2));
+		mGuiDelete.addln(L"delete_all_score", GUIButton::Create(L"評価値全て", false, widgetStyle2));
+		mGuiDelete.addln(L"delete_all_node", GUIButton::Create(L"局面全て", false, widgetStyle2));
 
 		mTextureBackground = Texture(L"pictures/background.jpg");
 		mNodeSelectSound = Sound(L"sounds/decision22.mp3");
@@ -318,6 +328,7 @@ private:
 	GUI mGuiNode;
 	GUI mGuiScore;
 	GUI mGuiSettings;
+	GUI mGuiDelete;
 	Texture mTextureBackground;
 	Sound mNodeSelectSound;
 

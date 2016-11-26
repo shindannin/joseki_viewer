@@ -312,3 +312,8 @@ void Tree::DeleteSelectedNode()
 	SetSelectedNodeID(newSelectedNodeID);
 	CalculateVisualPos();
 }
+
+void Tree::ResetSelectedScore()
+{
+	mNodes[mSelectedNodeID].ResetScore();
+}

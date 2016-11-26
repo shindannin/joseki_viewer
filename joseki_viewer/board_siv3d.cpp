@@ -183,7 +183,7 @@ void BoardSiv3D::DrawKoma(int sengo, int type, int y, int x, int maisu, bool isC
 		{
 			const int drawX = static_cast<int>(leftX + (BOARD_SIZE-1-x)*mKomaTextureWidth);
 			const int drawY = static_cast<int>(topY + y*mKomaTextureHeight);
-			mTexture[sengo][nariType].draw(drawX, drawY);
+			mTexture[sengo][type].draw(drawX, drawY);
 		}
 
 		NariOffsetY(y);

@@ -299,8 +299,25 @@ void TreeSiv3D::Update()
 			mOffsetY -= invScaledRightCenterY * diffGridScale;
 		}
 
-		// ƒm[ƒh‚Ìíœ
+		// íœ
 		if (Input::KeyDelete.clicked)
+		{
+			const bool nextFlip = !mGuiDelete.button(L"delete_score").enabled;
+
+			mGuiDelete.button(L"delete_score").enabled = nextFlip;
+			mGuiDelete.button(L"delete_all_score").enabled = nextFlip;
+			mGuiDelete.button(L"delete_all_node").enabled = nextFlip;
+		}
+		else if (mGuiDelete.button(L"delete_score").pushed)
+		{
+			mEvaluator.RequestCancel();
+			ResetSelectedScore();
+		}
+		else if (mGuiDelete.button(L"delete_all_score").pushed)
+		{
+
+		}
+		else if (mGuiDelete.button(L"delete_all_node").pushed)
 		{
 			mEvaluator.RequestCancel();
 			DeleteSelectedNode();
@@ -516,8 +533,8 @@ void Evaluator::ReceiveBestMoveAndScore()
 		for (int i = SZ(vs) - 1; i >= 0; --i)
 		{
 			const string& lastInfo = vs[i];
-// 			std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
-// 			Print(wsTmp);
+ 			std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
+ 			Print(wsTmp);
 
 			vector <string> tmp;
 			Split1(lastInfo, tmp, ' ');

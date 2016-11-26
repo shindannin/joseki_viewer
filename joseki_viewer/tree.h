@@ -44,6 +44,7 @@ public:
 	int HasLink(const string& te) const;
 	bool IsRoot() const { return mParentNodeID == NG; }
 	bool IsScoreEvaluated() const { return mScore != SCORE_NOT_EVALUATED;  }
+	void ResetScore() { mScore = SCORE_NOT_EVALUATED; } 
 
 	static int ConvertMateToScore(int mate) 
 	{
@@ -234,6 +235,7 @@ protected:
 	void DfsVisualPos(int nodeID, float y, float x);
 	void DfsState(int nodeID);
 	void DeleteSelectedNode();
+	void ResetSelectedScore();
 
 	// ÉZÅ[ÉuÇ∑ÇÈ
 	int mVersion;
