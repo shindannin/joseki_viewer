@@ -128,7 +128,6 @@ enum EStateEvaluation
 {
 	EStateEvaluation_FindingNode,	// 次に評価する局面を探している最中
 	EStateEvaluation_WaitingScore,	// 評価中
-	EStateEvaluation_WaitingCancel,	// 評価中だったけどキャンセルした
 };
 
 class Tree;
@@ -143,16 +142,26 @@ public:
 
 	Evaluator(Tree* tree) : mTree(tree)
 	{
-		mEvaludatingNodeID = NG;
-		mServer = nullptr;
-		mEStateEvaluation = EStateEvaluation_FindingNode;
-		mPonderNodes = 0LL;
-		mPonderTime = 0LL;
+		Init();
 	}
 
 	~Evaluator()
 	{
 		Close();
+	}
+
+	void Init()
+	{
+		mEvaludatingNodeID = NG;
+		mServer = nullptr;
+		mEStateEvaluation = EStateEvaluation_FindingNode;
+		mStopwatch.reset();
+		mPollingStopwatch.reset();
+		mPonderNodes = 0LL;
+		mPonderTime = 0LL;
+		mReadLogs.clear();
+
+		mPollingStopwatch.restart();
 	}
 
 	void Open();
@@ -166,28 +175,35 @@ public:
 	long long GetPonderNodes() const { return mPonderNodes; }	
 	long long GetPonderTime() const { return mPonderTime; }
 	const string& GetName() const { return mName; }
+	bool IsNodeEvaluating(int nodeID) const { return mEStateEvaluation == EStateEvaluation_WaitingScore && mEvaludatingNodeID==nodeID; } // 現在評価しているノードであるならtrue
 
 	int GetDurationSec() const { return mDurationMilliSec/1000; }
 	void SetDurationSec(int sec) { mDurationMilliSec = sec * 1000; }
 
 private:
+	void OpenSub(const FilePath& newEvaluatorPath);
 	bool Go();
-	void ReceiveBestMoveAndScore();
-	void WaitAndCancel();
+	bool ReceiveBestMoveAndScore();
+	bool UpdateReadFromStdio();
+	bool IsBestMoveReceived() const { return SZ(mReadLogs)>=1 && mReadLogs.back().find("bestmove") != string::npos; }
+	bool IsUSIOKReceived() const { return SZ(mReadLogs) >= 1 && mReadLogs.back().find("usiok") != string::npos; }
+	bool IsReadyOKReceived() const { return SZ(mReadLogs) >= 1 && mReadLogs.back().find("readyok") != string::npos; }
 
 	int mEvaludatingNodeID;				// 現在評価中のノードID
 	Server* mServer;					// 標準入出力
 	EStateEvaluation mEStateEvaluation;	//
 	Tree* mTree;						// Siv3Dに依存しない、棋譜の木
 	Stopwatch mStopwatch;				// 評価の経過時間を計測するストップウォッチ
+	Stopwatch mPollingStopwatch;		// 評価の経過時間を計測するストップウォッチ
 	vector <string> mOptions;			// 評価ソフトの初期設定オプション
 	long long mPonderNodes;				// 最善手を求めるのに、評価した手数
 	long long mPonderTime;				// 最善手を求めるのに、評価した時間。単位はミリ秒
 	string mName;						// 評価ソフトの名前（Aperyとか）
+	FilePath mEvaluatorPath;			// 評価ソフトのファイルパス
+	vector <string> mReadLogs;
 
 	int mDurationMilliSec		            = 5000; // 評価時間。単位はミリ秒
-	const int mDurationMilliSecStartMargin  = 2000;	// 評価ソフト起動時の待ち時間。単位はミリ秒 // TODO:こういう待ち方は正しくなさそう。
-	const int mDurationMilliSecMargin	    =  100; // 予備の待ち時間。単位はミリ秒
+	const int mDurationMilliSecPolling	    =  500;
 };
 
 // TreeSiv3D : 将棋盤以外の部分すべて（右側のツリー表示と、左側の将棋盤以外）
@@ -216,7 +232,7 @@ public:
 
 		GUIStyle style = GUIStyle::Default;
 		style.font = mFont;
-		style.background.color = Color(0, 0, 255, 64);
+		style.background.color = Color(255, 0, 255, 64);
 		style.padding.bottom = 0;
 		style.padding.top = 0;
 		style.padding.left = 0;
@@ -234,10 +250,10 @@ public:
 		widgetStyle2.color = Color(0, 0, 0, 255);
 
 		GUIStyle style3 = style;
-		style3.background.color = Color(0, 255, 0, 64);
+		style3.background.color = Color(255, 0, 255, 64);
 
 		GUIStyle style4 = style;
-		style4.background.color = Color(255, 0, 0, 64);
+		style4.background.color = Color(255, 0, 255, 64);
 
 		mGuiFile = GUI(style2);
 //		mGuiFile.setTitle(L"メニュー");
@@ -275,7 +291,7 @@ public:
 
 		mGuiDelete = GUI(style4);
 		mGuiDelete.setPos(WINDOW_W - 70, 131);
-		mGuiDelete.setTitle(L"削除 [DEL]キー");
+		mGuiDelete.setTitle(L"削除 [Delete]キー");
 		mGuiDelete.addln(L"delete_score", GUIButton::Create(L"評価値１つ", false, widgetStyle2));
 		mGuiDelete.addln(L"delete_all_score", GUIButton::Create(L"評価値全て", false, widgetStyle2));
 		mGuiDelete.addln(L"delete_all_node", GUIButton::Create(L"局面全て", false, widgetStyle2));

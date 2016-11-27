@@ -192,7 +192,7 @@ void Tree::SetSelectedNodeID(int nodeID)
 
 void Tree::InitializeAfterLoad()
 {
-	mBoard->InitState();
+	mBoard->Init();
 
 	const int rootNodeID = GetRootNodeID();
 	DfsState(rootNodeID);
@@ -238,7 +238,24 @@ void Tree::UpdateNode(int nodeID, int score, const string& tejun)
 	node.mTejunJap = tmpBoard.MoveByTejun(tejun);
 }
 
+// nodeIDの子孫のノードを、再帰でnewNodeIDsに列挙する。
 void Tree::DfsCalcNewNodeID(int nodeID, vector <int>& newNodeIDs)
+{
+	newNodeIDs.push_back(nodeID);
+
+	const Node& node = mNodes[nodeID];
+
+	for (int i = 0; i < SZ(node.mLinks); ++i)
+	{
+		const Link& link = node.mLinks[i];
+
+		const int nextNodeID = link.destNodeID;
+		DfsCalcNewNodeID(nextNodeID, newNodeIDs);
+	}
+}
+
+// nodeIDの子孫のノードの中で、現在選択中ノードの子孫以外を、再帰でnewNodeIDsに列挙する。
+void Tree::DfsCalcNewNodeIDExceptSelected(int nodeID, vector <int>& newNodeIDs)
 {
 	if (nodeID == mSelectedNodeID)
 	{
@@ -254,11 +271,11 @@ void Tree::DfsCalcNewNodeID(int nodeID, vector <int>& newNodeIDs)
 		const Link& link = node.mLinks[i];
 
 		const int nextNodeID = link.destNodeID;
-		DfsCalcNewNodeID(nextNodeID, newNodeIDs);
+		DfsCalcNewNodeIDExceptSelected(nextNodeID, newNodeIDs);
 	}
 }
 
-void Tree::DeleteSelectedNode()
+void Tree::DeleteSelectedAncientNode()
 {
 	const int rootNodeID = GetRootNodeID();
 	if (rootNodeID == mSelectedNodeID)
@@ -267,7 +284,7 @@ void Tree::DeleteSelectedNode()
 	}
 
 	vector <int> newNodeIDs;
-	DfsCalcNewNodeID(rootNodeID, newNodeIDs);
+	DfsCalcNewNodeIDExceptSelected(rootNodeID, newNodeIDs);
 
 	vector <int> invNewNodeIDs(SZ(mNodes), NG);
 	for (int i = 0; i < SZ(newNodeIDs); ++i)
@@ -317,3 +334,16 @@ void Tree::ResetSelectedScore()
 {
 	mNodes[mSelectedNodeID].ResetScore();
 }
+
+void Tree::ResetSelectedAncientScore()
+{
+	vector <int> newNodeIDs;
+	DfsCalcNewNodeID(mSelectedNodeID, newNodeIDs);
+
+	for (int nodeID : newNodeIDs)
+	{
+		mNodes[nodeID].ResetScore();
+	}
+}
+
+

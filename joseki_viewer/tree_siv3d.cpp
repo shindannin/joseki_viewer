@@ -98,6 +98,11 @@ void TreeSiv3D::Draw()
 		{
 			color = Palette::Orange;
 		}
+		else if (mEvaluator.IsNodeEvaluating(nodeID))
+		{
+			color = Palette::Lightgreen;
+		}
+
 		roundRect.draw(color);
 
 
@@ -207,10 +212,11 @@ void TreeSiv3D::Update()
 		if (path.has_value())
 		{
 			Load(path.value().str());
-			Window::SetTitle(path.value().str());
+			Window::SetTitle(GetVersionTitle(path.value().str()));
 
 			InitializeAfterLoad();
 			CalculateVisualPos();
+			mEvaluator.RequestCancel();
 		}
 	}
 	else if (mGuiFile.button(L"kifu_save").pushed)
@@ -219,7 +225,7 @@ void TreeSiv3D::Update()
 		if (path.has_value())
 		{
 			Save(path.value().str());
-			Window::SetTitle(path.value().str());
+			Window::SetTitle(GetVersionTitle(path.value().str()));
 		}
 	}
 
@@ -315,12 +321,13 @@ void TreeSiv3D::Update()
 		}
 		else if (mGuiDelete.button(L"delete_all_score").pushed)
 		{
-
+			mEvaluator.RequestCancel();
+			ResetSelectedAncientScore();
 		}
 		else if (mGuiDelete.button(L"delete_all_node").pushed)
 		{
 			mEvaluator.RequestCancel();
-			DeleteSelectedNode();
+			DeleteSelectedAncientNode();
 		}
 	}
 
@@ -365,57 +372,7 @@ void Evaluator::Open()
 
 	if (path)
 	{
-		if (mServer != nullptr)
-		{
-			Close();
-		}
-		mServer = new Server(path.value(), false);
-	}
-
-	if (mServer)
-	{
-		if (mServer->write("usi\n"))
-		{
-			std::string readStr;
-
-			System::Sleep(mDurationMilliSecStartMargin);
-
-			if (mServer->read(readStr))
-			{
-				// 
-				vector <string> vs;
-				Split1(readStr, vs, '\n');
-
-				for (const string& s : vs)
-				{
-					vector <string> tmp;
-					Split1(s, tmp, ' ');
-					Trim(tmp.back());
-
-					if (SZ(tmp)==3 && tmp[0] == "id" && tmp[1] == "name")
-					{
-						mName = tmp[2];
-						break;
-					}
-				}
-
-				vector <string> options = mOptions;
-				options.push_back("isready\n");
-				string allOptions = accumulate(options.begin(), options.end(), string());
-				if (mServer->write(allOptions))
-				{
-					System::Sleep(mDurationMilliSecStartMargin);
-					if (mServer->read(readStr))
-					{
-// 						std::wstring wsTmp(readStr.begin(), readStr.end());
-// 						Print(wsTmp);
-						if (mServer->write("usinewgame\r\n"))
-						{
-						}
-					}
-				}
-			}
-		}
+		OpenSub(path.value());
 	}
 }
 
@@ -434,6 +391,82 @@ void Evaluator::OpenOption()
 			mOptions.push_back("setoption " + line.narrow()+"\n");
 		}
 	}
+
+	OpenSub(mEvaluatorPath);
+}
+
+void Evaluator::OpenSub(const FilePath& newEvaluatorPath)
+{
+	// 現在、ノードを評価中であれば読み捨て
+	RequestCancel();
+
+	// 現在の評価ソフトがあれば、同じものを選んでいたとしても、閉じる
+	if (mServer != nullptr)
+	{
+		Close();
+	}
+
+	if (newEvaluatorPath != L"")
+	{
+		mEvaluatorPath = newEvaluatorPath;
+
+		mServer = new Server(mEvaluatorPath, false);
+
+		if (mServer->write("usi\n"))
+		{
+			// usiokを受け取るまで待つ。
+			while (!IsUSIOKReceived())
+			{
+				UpdateReadFromStdio();
+			}
+
+			// 評価ソフト名を受け取る
+			for (const string& s : mReadLogs)
+			{
+				vector <string> tmp;
+				Split1(s, tmp, ' ');
+				Trim(tmp.back());
+
+				if (SZ(tmp) == 3 && tmp[0] == "id" && tmp[1] == "name")
+				{
+					mName = tmp[2];
+					break;
+				}
+			}
+			mReadLogs.clear();
+
+			// オプションを送る
+			vector <string> options = mOptions;
+			options.push_back("isready\n");
+			string allOptions = accumulate(options.begin(), options.end(), string());
+			if (mServer->write(allOptions))
+			{
+				// usiokを受け取るまで待つ。
+				while (!IsReadyOKReceived())
+				{
+					UpdateReadFromStdio();
+				}
+				mReadLogs.clear();
+
+				// スタート！
+				if (mServer->write("usinewgame\n"))
+				{
+				}
+				else
+				{
+					assert(0);
+				}
+			}
+			else
+			{
+				assert(0);
+			}
+		}
+		else
+		{
+			assert(0);
+		}
+	}
 }
 
 // 評価を終了する
@@ -441,6 +474,7 @@ void Evaluator::Close()
 {
 	if (mServer != nullptr)
 	{
+		// この時点で読み捨ては終了してるはず。
 		mServer->write("quit\n");
 
 		delete mServer;
@@ -453,6 +487,7 @@ void Evaluator::Update()
 {
 	if (mServer)
 	{
+
 		// 評価の状態遷移
 		switch (mEStateEvaluation)
 		{
@@ -465,24 +500,19 @@ void Evaluator::Update()
 				{
 					mEStateEvaluation = EStateEvaluation_WaitingScore;
 					mStopwatch.restart();
+					mPollingStopwatch.restart();
 				}
 			}
 		}
 		break;
 
 		case EStateEvaluation_WaitingScore:
-			if (mStopwatch.ms() > mDurationMilliSec) // 時間経過したら受け取りに
+			if (UpdateReadFromStdio())
 			{
-				ReceiveBestMoveAndScore();
-				mEStateEvaluation = EStateEvaluation_FindingNode;
-			}
-			break;
-
-		case EStateEvaluation_WaitingCancel:
-			if (mStopwatch.ms() > mDurationMilliSec) // 時間経過したら受け取りに
-			{
-				WaitAndCancel();
-				mEStateEvaluation = EStateEvaluation_FindingNode;
+				if (ReceiveBestMoveAndScore())
+				{
+					mEStateEvaluation = EStateEvaluation_FindingNode;
+				}
 			}
 			break;
 
@@ -511,100 +541,131 @@ bool Evaluator::Go()
 
 	if (mServer != nullptr && mServer->write(writeStr))
 	{
-		writeStr = "go btime 0 wtime 0 byoyomi " + to_string(mDurationMilliSec + mDurationMilliSecMargin) + "\n";
+		writeStr = "go btime 0 wtime 0 byoyomi " + to_string(mDurationMilliSec) + "\n";
 		return mServer->write(writeStr);
 	}
 
 	return false;
 }
 
-// 評価ソフトから、評価値と最善手を得る
-void Evaluator::ReceiveBestMoveAndScore()
+void Evaluator::RequestCancel()
 {
-	string readStr;
-	if (mServer->read(readStr))
+	if (mEStateEvaluation == EStateEvaluation_WaitingScore)
 	{
-		assert(mEvaludatingNodeID != NG);
-
-
-		vector <string> vs;
-		Split1(readStr, vs, '\n');
-
-		for (int i = SZ(vs) - 1; i >= 0; --i)
+		if (mServer)
 		{
-			const string& lastInfo = vs[i];
- 			std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
- 			Print(wsTmp);
-
-			vector <string> tmp;
-			Split1(lastInfo, tmp, ' ');
-			Trim(tmp.back());
-
-			bool isScoreFound = false;
-			int score = 0;
-			string tejun;
-
-			for (int k = 0; k < SZ(tmp); ++k)
+			if (mServer->write("stop\n"))
 			{
-				assert(k + 2 < SZ(tmp));
-				if (tmp[k] == "score" && k + 2 < SZ(tmp))
+				while (!IsBestMoveReceived())
 				{
-					if (tmp[k + 1] == "cp")
-					{
-						score = stoi(tmp[k + 2]);
-					}
-					else if (tmp[k + 1] == "mate")
-					{
-						const int mate = stoi(tmp[k + 2]);
-						score = Node::ConvertMateToScore(mate);
-					}
-					isScoreFound = true;
+					UpdateReadFromStdio();
 				}
-				else if (tmp[k] == "pv")
-				{
-					for (int x = k+1; x < SZ(tmp); ++x)
-					{
-						tejun += tmp[x];
-						if (x < SZ(tmp) - 1)
-						{
-							tejun += " ";
-						}
-					}
-				}
-				else if (tmp[k] == "nodes")
-				{
-					mPonderNodes = stoll(tmp[k + 1]);
-				}
-				else if (tmp[k] == "time")
-				{
-					mPonderTime = stoll(tmp[k + 1]);
-				}
-			}
-
-			if (isScoreFound)
-			{
-				mTree->UpdateNode(mEvaludatingNodeID, score, tejun);
-				break;
 			}
 		}
 	}
+
+	mEStateEvaluation = EStateEvaluation_FindingNode;
+	mReadLogs.clear();
 }
 
-// 標準入力から読み込んで、使わずに捨てる
-void Evaluator::WaitAndCancel()
+// 定期的に、評価ソフトから、標準入力経由で、何かを受け取ったか確認する。
+// 更新があったらtrueを返す。
+bool Evaluator::UpdateReadFromStdio()
 {
-	string readStr;
-	if (mServer->read(readStr))
+	if (mPollingStopwatch.ms() > mDurationMilliSecPolling) // 時間経過したら受け取りに
 	{
+		string readStr;
+		if (mServer->read(readStr))
+		{
+			vector <string> vs;
+			Split1(readStr, vs, '\n');
+
+			for(const string& s : vs)
+			{
+				mReadLogs.push_back(s);
+			}
+			return true;
+		}
+
+		mPollingStopwatch.restart();
 	}
+
+	return false;
 }
 
-// 評価中のときに、キャンセルして評価をやめる。
-void Evaluator::RequestCancel()
+
+// 評価ソフトから、評価値と最善手を得る
+bool Evaluator::ReceiveBestMoveAndScore()
 {
-	// もし評価中であれば、評価をキャンセル
-	if (mEStateEvaluation == EStateEvaluation_WaitingScore)
+	assert(mEvaludatingNodeID != NG);
+
+	if (!IsBestMoveReceived())
 	{
-		mEStateEvaluation = EStateEvaluation_WaitingCancel;
+		return false;
 	}
+
+	bool isScoreFound = false;
+
+	for (int i = SZ(mReadLogs) - 2; i >= 0; --i) // 最後の行はbestmoveなので、-2からチェックで正しい
+	{
+		const string& lastInfo = mReadLogs[i];
+// 		std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
+// 		Print(wsTmp);
+
+		vector <string> tmp;
+		Split1(lastInfo, tmp, ' ');
+		Trim(tmp.back());
+
+		int score = 0;
+		string tejun;
+
+		assert(tmp[0]=="info");
+
+		for (int k = 0; k < SZ(tmp); ++k)
+		{
+			if (tmp[k] == "score" && k + 2 < SZ(tmp))
+			{
+				if (tmp[k + 1] == "cp")
+				{
+					score = stoi(tmp[k + 2]);
+				}
+				else if (tmp[k + 1] == "mate")
+				{
+					const int mate = stoi(tmp[k + 2]);
+					score = Node::ConvertMateToScore(mate);
+				}
+				isScoreFound = true;
+			}
+			else if (tmp[k] == "pv")
+			{
+				for (int x = k+1; x < SZ(tmp); ++x)
+				{
+					tejun += tmp[x];
+					if (x < SZ(tmp) - 1)
+					{
+						tejun += " ";
+					}
+				}
+			}
+			else if (tmp[k] == "nodes")
+			{
+				mPonderNodes = stoll(tmp[k + 1]);
+			}
+			else if (tmp[k] == "time")
+			{
+				mPonderTime = stoll(tmp[k + 1]);
+			}
+		}
+
+		if (isScoreFound)
+		{
+			mTree->UpdateNode(mEvaludatingNodeID, score, tejun);
+			break;
+		}
+	}
+
+	assert(isScoreFound);
+
+	mReadLogs.clear();
+	return true;
 }

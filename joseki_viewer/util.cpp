@@ -112,3 +112,9 @@ void RemoveCharsFromString(string &str, char* charsToRemove)
 		str.erase(remove(str.begin(), str.end(), charsToRemove[i]), str.end());
 	}
 }
+
+wstring GetVersionTitle(const wstring& jsvPathStr)
+{
+	wstring ret = VERSION_TITLE + jsvPathStr;
+	return ret;
+}

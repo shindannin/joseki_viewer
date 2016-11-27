@@ -10,6 +10,13 @@ Board::Board()
 	mValidMoveGrid = vector <vector <bool> > (BOARD_SIZE, vector <bool> (BOARD_SIZE) );
 }
 
+void Board::Init()
+{
+	InitState();
+	InitValidMoveGrid();
+	mNextMove.Init();
+}
+
 void Board::InitState()
 {
 	SetState("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
@@ -506,6 +513,16 @@ string Board::GetState() const
 	return ret;
 }
 
+void Board::InitValidMoveGrid()
+{
+	for (int y = 0; y < BOARD_SIZE; ++y)
+	{
+		for (int x = 0; x < BOARD_SIZE; ++x)
+		{
+			mValidMoveGrid[y][x] = false;
+		}
+	}
+}
 
 // 駒を動かす際に、駒の動かせる場所（移動先）を、mValidMoveGridに生成する。
 void Board::GenerateValidMoveGridGrabbed()

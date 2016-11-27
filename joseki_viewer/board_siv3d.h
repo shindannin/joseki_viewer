@@ -14,6 +14,7 @@ public:
 	virtual ~BoardSiv3D() override;
 	virtual void Draw() override;
 	virtual bool Update(string& te, wstring& teJap) override;
+	virtual void Init() override;
 
 	void DrawCursor(const GridPos& gp, const Color& color) const;
 	void DrawKoma(const Masu& masu, int y, int x) const;

@@ -170,6 +170,7 @@ public:
 	virtual bool Update(string& /* te */, wstring& /* teJap */) { return false; };
 	virtual int CalcBestMoveAndScore() { return 0; }
 
+	virtual void Init();
 	void InitState();
 
 	wstring MoveByTejun(const string& tejun);
@@ -261,6 +262,7 @@ protected:
 	const wstring mJapNaru = { L"ê¨" };
 
 private:
+	void InitValidMoveGrid();
 	bool IsTekijin(int y, ESengo teban) const;
 	bool IsBanjyo(const GridPos& gp) const;
 	bool IsBanjyo(int y, int x) const;

@@ -87,8 +87,6 @@ public:
 		{
 			return to_string(mScore);
 		}
-
-		return "";
 	}
 
 	wstring ConverScoreToWString() const
@@ -117,8 +115,6 @@ public:
 		{
 			return L"å›äp";
 		}
-
-		return L"";
 	}
 
 	void Save(wfstream& wfs)
@@ -234,8 +230,9 @@ protected:
 	float DfsWidth(int nodeID);
 	void DfsVisualPos(int nodeID, float y, float x);
 	void DfsState(int nodeID);
-	void DeleteSelectedNode();
+	void DeleteSelectedAncientNode();
 	void ResetSelectedScore();
+	void ResetSelectedAncientScore();
 
 	// ÉZÅ[ÉuÇ∑ÇÈ
 	int mVersion;
@@ -245,6 +242,7 @@ protected:
 	Board* mBoard;
 
 private:
+	void DfsCalcNewNodeIDExceptSelected(int nodeID, vector <int>& newNodeIDs);
 	void DfsCalcNewNodeID(int nodeID, vector <int>& newNodeIDs);
 	int mSelectedNodeID;
 };

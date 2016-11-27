@@ -42,6 +42,11 @@ BoardSiv3D::~BoardSiv3D()
 {
 }
 
+void BoardSiv3D::Init()
+{
+	Board::Init();
+	mInputState = E_IDLE;
+}
 
 int BoardSiv3D::GetGridLeftX() const
 {
