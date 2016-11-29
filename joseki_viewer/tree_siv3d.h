@@ -200,10 +200,10 @@ private:
 	long long mPonderTime;				// 最善手を求めるのに、評価した時間。単位はミリ秒
 	string mName;						// 評価ソフトの名前（Aperyとか）
 	FilePath mEvaluatorPath;			// 評価ソフトのファイルパス
-	vector <string> mReadLogs;
+	vector <string> mReadLogs;			// 評価ソフトから受け取ったログ
 
 	int mDurationMilliSec		            = 5000; // 評価時間。単位はミリ秒
-	const int mDurationMilliSecPolling	    =  500;
+	const int mDurationMilliSecPolling	    =  500;	// 定期的に評価ソフトに問い合わせる時間間隔。単位はミリ秒
 };
 
 // TreeSiv3D : 将棋盤以外の部分すべて（右側のツリー表示と、左側の将棋盤以外）
@@ -259,6 +259,7 @@ public:
 //		mGuiFile.setTitle(L"メニュー");
 		mGuiFile.addln(L"kifu_load", GUIButton::Create(L"定跡ファイルを開く", widgetStyle2));
 		mGuiFile.addln(L"kifu_save", GUIButton::Create(L"定跡ファイルを保存", widgetStyle2));
+		mGuiFile.addln(L"kif_format_load", GUIButton::Create(L"kifファイルを開く", widgetStyle2));
 
 		mGuiEvaluator = GUI(style3);
 		mGuiEvaluator.setPos(200, 0);

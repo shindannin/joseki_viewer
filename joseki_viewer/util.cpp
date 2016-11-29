@@ -22,6 +22,25 @@ void Split1(const string& str, vector<string>& out, const char splitter)
 	} while (next != string::npos);
 }
 
+void Split1(const wstring& str, vector<wstring>& out, const wchar_t splitter)
+{
+	out.clear();
+	wstring::size_type st = 0;
+	wstring::size_type next = 0;
+	wstring tmp = str;
+	do
+	{
+		next = tmp.find(splitter, st); // tmp.find_first_of("+-",st); 複数の文字で分けたいとき
+		wstring word = tmp.substr(st, next - st);
+		if (word.length() >= 1) // 空文字列ありのときは消す
+		{
+			out.push_back(word);
+		}
+		st = next + 1;
+	} while (next != wstring::npos);
+}
+
+
 // 以下のエスケープシーケンスがてきと～。例えば文字列にバックスラッシュが入ったら失敗しそうなので直す。
 // 改行エスケープ、コメントをセーブ可能にする。
 wstring EasyEscape(const wstring& ws)

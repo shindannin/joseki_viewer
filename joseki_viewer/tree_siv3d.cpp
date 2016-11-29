@@ -228,8 +228,19 @@ void TreeSiv3D::Update()
 			Window::SetTitle(GetVersionTitle(path.value().str()));
 		}
 	}
+	else if (mGuiFile.button(L"kif_format_load").pushed)
+	{
+		const auto path = Dialog::GetOpen({ { L"kifƒtƒ@ƒCƒ‹ (*.kif)", L"*.kif" } });
+		if (path.has_value())
+		{
+			LoadKif(path.value().str());
+			Window::SetTitle(GetVersionTitle(path.value().str()));
 
-	if (mGuiEvaluator.button(L"evaluator_load").pushed)
+			CalculateVisualPos();
+			mEvaluator.RequestCancel();
+		}
+	}
+	else if (mGuiEvaluator.button(L"evaluator_load").pushed)
 	{
 		mEvaluator.Open();
 	}

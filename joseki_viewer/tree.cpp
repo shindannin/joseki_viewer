@@ -45,7 +45,7 @@ int Node::HasLink(const string& te) const
 
 Tree::Tree(Board* board)
 {
-	mVersion = 1;
+	mVersion = VERSION_DATA;
 	mNodes.clear();
 	mNodes.push_back(Node());
 	mBoard = board; // 外でnew deleteするので、ポインタ渡すだけ
@@ -140,6 +140,7 @@ float Tree::DfsWidth(int nodeID)
 	return node.mWidth;
 }
 
+// ノードの座標を再帰で求める。
 void Tree::DfsVisualPos(int nodeID, float y, float x)
 {
 	Node& node = mNodes[nodeID];

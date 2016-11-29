@@ -204,6 +204,131 @@ string Board::GetTejunFromPSN(const string& tejunPSN) const
 	return ret;
 }
 
+string Board::GetTejunFromKif(const vector <wstring>& kifStrings) const
+{
+	string ret;
+
+	// 同　銀とかあるので、kifStringsは連続であることが重要。
+	int tesuu = 1;
+	int douX = NG; // 同　銀のために、前回の場所を保存しておく。
+	int douY = NG;
+
+	vector <string> vecTe;
+	for (const wstring& kifStr : kifStrings)
+	{
+		string te;
+		vector <wstring> splitted;
+		Split1(kifStr, splitted);
+		string head(splitted[0].begin(), splitted[0].end());
+		const int firstChunk = strtol(head.c_str(), NULL, 10);
+
+		if (firstChunk == tesuu)
+		{
+			const wstring& kifTe = splitted[1];
+			if (kifTe == L"投了")
+			{
+				break;
+			}
+
+			int x = 0;
+			int y = 0;
+
+			if (mJapDou[0] == kifTe[0]) // 「同」
+			{
+				x = douX;
+				y = douY;
+			}
+			else
+			{
+				// 「７」
+				for (x = 0; x < BOARD_SIZE; ++x)
+				{
+					if(mJapX[x][0]==kifTe[0]) break;
+				}
+				assert(x != BOARD_SIZE);
+
+				// 「六」
+				for (y = 0; y < BOARD_SIZE; ++y)
+				{
+					if (mJapY[y][0] == kifTe[1]) break;
+				}
+				assert(y != BOARD_SIZE);
+			}
+			
+			// "R*1f 7f7g P*6h 7h6h 5h6h 7g6h N*7e 6g7g L*8a L*8f 1f1h+ 2c1c 8a8c 8f8c+"
+
+			const ESengo sengo = ((tesuu%2)==1) ? E_SEN : E_GO;
+
+			bool komaFound = false;
+			for (int i=0;i<NUM_KOMA_TYPE;++i)
+			{
+				const Koma& km = mKoma[i];
+				const wstring& jap = km.jap[sengo];
+				const int japLen = SZ(jap);
+				
+				if( jap==kifTe.substr(2, japLen) )
+				{
+					int cur = 2+japLen;
+					if (kifTe[cur]==mJapUtsu[0])
+					{
+						// 打
+						te += km.notation[E_SEN]; // 駒を打つときは、先手後手によらず常に大文字
+						te += "*";
+						te += string(1, static_cast<char>('1' + x));
+						te += string(1, static_cast<char>('a' + y));
+					}
+					else
+					{
+						bool naru = false;
+						if (kifTe[cur] == mJapNaru[0])
+						{
+							// 成
+							naru = true;
+							cur++;
+						}
+
+						// 移動先
+						cur++; // (をスキップ
+						const int destX = kifTe[cur] - '1';
+						const int destY = kifTe[cur+1] - '1';
+
+						te += string(1, static_cast<char>('1' + destX));
+						te += string(1, static_cast<char>('a' + destY));
+						te += string(1, static_cast<char>('1' + x));
+						te += string(1, static_cast<char>('a' + y));
+						if (naru)
+						{
+							te += "+";
+						}
+					}
+
+					komaFound = true;
+					break;
+				}
+			}
+
+			assert(komaFound);
+
+			douX = x;
+			douY = y;
+
+			vecTe.push_back(te);
+			tesuu++;
+		}
+	}
+
+	for (int i = 0; i < SZ(vecTe); ++i)
+	{
+		ret += vecTe[i];
+		if (i < SZ(vecTe) - 1)
+		{
+			ret += " ";
+		}
+	}
+
+	return ret;
+}
+
 string Board::GetTeFromMove(const Move& mv) const
 {
 	string te;
@@ -298,6 +423,8 @@ wstring Board::MoveByTe(const string& te)
 	mNextMove = GetMoveFromTe(te);
 	return DecideMove();
 }
+
+
 
 void Board::SetState(const string& state)
 {

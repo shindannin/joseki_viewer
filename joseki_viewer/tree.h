@@ -169,6 +169,38 @@ public:
 	wstring			mTejunJap;
 };
 
+struct KifHeader
+{
+	void Save(wfstream& wfs)
+	{
+		wfs << mKaishiNichiji << endl;
+		wfs << mKisen << endl;
+		wfs << mMochijikan << endl;
+		wfs << mTeaiWari << endl;
+		wfs << mSente << endl;
+		wfs << mGote << endl;
+	}
+
+	void Load(wfstream& wfs)
+	{
+		wstring ws;
+
+		GetLineTrim(wfs, ws); mKaishiNichiji = ws;
+		GetLineTrim(wfs, ws); mKisen = ws;
+		GetLineTrim(wfs, ws); mMochijikan = ws;
+		GetLineTrim(wfs, ws); mTeaiWari = ws;
+		GetLineTrim(wfs, ws); mSente = ws;
+		GetLineTrim(wfs, ws); mGote = ws;
+	}
+
+	wstring mKaishiNichiji;
+	wstring mKisen;
+	wstring mMochijikan;
+	wstring mTeaiWari;
+	wstring mSente;
+	wstring mGote;
+};
+
 // 棋譜の木。複数のノードと、それぞれのノードが持つ複数のリンクから成る。
 class Tree
 {
@@ -192,7 +224,9 @@ public:
 		wfstream wfs;
 		wfs.open(path, std::fstream::out);
 
-		wfs << mVersion << endl;
+		wfs << VERSION_DATA << endl; // mVersion
+		mKifHeader.Save(wfs);
+
 		wfs << SZ(mNodes) << endl;
 		for (int i = 0; i < SZ(mNodes); ++i)
 		{
@@ -210,6 +244,11 @@ public:
 		wstring ws;
 		GetLineTrim(wfs, ws);	mVersion = stoi(ws);
 
+		if (mVersion >= 2)
+		{
+			mKifHeader.Load(wfs);
+		}
+
 		int numNodes = 0;
 		GetLineTrim(wfs, ws);	numNodes = stoi(ws);
 
@@ -218,6 +257,65 @@ public:
 		for (int i = 0; i < SZ(mNodes); ++i)
 		{
 			mNodes[i].Load(wfs);
+		}
+
+		wfs.close();
+	}
+
+	void LoadKif(const wstring& path)
+	{
+		wfstream wfs;
+		wfs.open(path, std::fstream::in);
+
+		vector <wstring> vws;
+		{
+			wstring ws;
+			while (getline(wfs, ws))
+			{
+				vws.push_back(ws);
+			}
+		}
+
+		// ヘッダーのセット（てきとー）
+		for (const wstring& ws : vws)
+		{
+			if (ws.find(L"開始日時：") == 0)
+			{
+				mKifHeader.mKaishiNichiji = ws.substr(SZ(wstring(L"開始日時：")));
+			}
+			else if (ws.find(L"棋戦：") == 0)
+			{
+				mKifHeader.mKisen = ws.substr(SZ(wstring(L"棋戦：")));
+			}
+			else if (ws.find(L"持ち時間：") == 0)
+			{
+				mKifHeader.mMochijikan = ws.substr(SZ(wstring(L"持ち時間：")));
+			}
+			else if (ws.find(L"手合割：") == 0)
+			{
+				mKifHeader.mTeaiWari = ws.substr(SZ(wstring(L"手合割：")));
+			}
+			else if (ws.find(L"先手：") == 0)
+			{
+				mKifHeader.mSente = ws.substr(SZ(wstring(L"先手：")));
+			}
+			else if (ws.find(L"後手：") == 0)
+			{
+				mKifHeader.mGote = ws.substr(SZ(wstring(L"後手：")));
+			}
+		}
+
+		mBoard->Init();
+		const string tejun = mBoard->GetTejunFromKif(vws);
+		{
+			vector <string> vs;
+			Split1(tejun, vs);
+
+			for (const string& te : vs)
+			{
+				wstring	teJap = mBoard->MoveByTe(te);
+				AddLink(te, &teJap);
+			}
 		}
 
 		wfs.close();
@@ -237,6 +335,7 @@ protected:
 	// セーブする
 	int mVersion;
 	vector <Node> mNodes;
+	KifHeader mKifHeader;
 
 	// セーブしない
 	Board* mBoard;

@@ -176,6 +176,7 @@ public:
 	wstring MoveByTejun(const string& tejun);
 	wstring MoveByTe(const string& te);
 
+
 	wstring DecideMove();
 
 	void SetState(const string& state);
@@ -184,6 +185,7 @@ public:
 
 	string GetTeFromPSN(const string& tePSN) const;
 	string GetTejunFromPSN(const string& tejunPSN) const;
+	string GetTejunFromKif(const vector <wstring>& kifStrings) const;
 	string GetTeFromMove(const Move& mv) const;
 	Move GetMoveFromTe(const string& te) const;
 
