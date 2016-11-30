@@ -37,6 +37,7 @@ class Node
 {
 public:
 	enum { SCORE_NOT_EVALUATED = 123456789 }; // •]‰¿‚ª‚³‚ê‚Ä‚¢‚È‚¢ó‘Ô
+	enum { SCORE_RESIGN        = 999999999 }; // •]‰¿‚ª‚³‚ê‚Ä‚¢‚È‚¢ó‘Ô
 	enum { SCORE_MATE          =  10000000 }; // xŽè‹l‚Ý‚ð•\‚·
 
 	Node();
@@ -44,12 +45,18 @@ public:
 	int HasLink(const string& te) const;
 	bool IsRoot() const { return mParentNodeID == NG; }
 	bool IsScoreEvaluated() const { return mScore != SCORE_NOT_EVALUATED;  }
+	bool IsResign() const { return mScore == SCORE_RESIGN; }
 	void ResetScore() { mScore = SCORE_NOT_EVALUATED; } 
 
 	static int ConvertMateToScore(int mate) 
 	{
-		assert(mate != 0);
-		if (mate > 0)
+		// mate = 0 ‚Í“Š—¹
+
+		if (mate == 0)
+		{
+			return SCORE_RESIGN;
+		}
+		else if (mate > 0)
 		{
 			return SCORE_MATE + mate;
 		}
@@ -66,6 +73,10 @@ public:
 		if (mScore == SCORE_NOT_EVALUATED)
 		{
 			return "";
+		}
+		else if (mScore == SCORE_RESIGN)
+		{
+			return "MATE";
 		}
 		else if (mScore >= SCORE_MATE)
 		{
@@ -94,6 +105,10 @@ public:
 		if (mScore == SCORE_NOT_EVALUATED)
 		{
 			return L"";
+		}
+		else if (mScore == SCORE_RESIGN)
+		{
+			return L"“Š—¹";
 		}
 		else if (mScore >= SCORE_MATE)
 		{
@@ -171,6 +186,17 @@ public:
 
 struct KifHeader
 {
+	void Init()
+	{
+		mKaishiNichiji.clear();
+		mKisen.clear();
+		mMochijikan.clear();
+		mTeaiWari.clear();
+		mSente.clear();
+		mGote.clear();
+	}
+
+
 	void Save(wfstream& wfs)
 	{
 		wfs << mKaishiNichiji << endl;
@@ -210,6 +236,7 @@ public:
 	virtual void Draw();
 	virtual void Update();
 	virtual void OnSelectedNodeIDChanged() {};
+	void Init();
 	void AddLink(const string& te, const wstring* pTeJap = nullptr);
 	void CalculateVisualPos();
 	int GetNextEvaludatedNodeID() const;
@@ -264,6 +291,8 @@ public:
 
 	void LoadKif(const wstring& path)
 	{
+		Init();
+
 		wfstream wfs;
 		wfs.open(path, std::fstream::in);
 

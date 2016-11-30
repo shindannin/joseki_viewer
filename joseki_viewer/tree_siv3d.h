@@ -215,6 +215,7 @@ public:
 		SHOW_SCORE,			// "評価値" 
 		SHOW_TE,			// "指し手"
 		SHOW_TAG,			// "タグ"
+		SMALL_NODE,			// "小さいノード"
 		FIX_SELECTED_NODE,	// "選択ノードの固定"
 		SHOW_DEBUG,			// "デバッグ"
 	};
@@ -224,10 +225,10 @@ public:
 	{
 		mOffsetX = RIGHT_CENTER_X;
 		mOffsetY = RIGHT_CENTER_Y;
-		mNodeRadius = 8.f;
 		mGridScale = 40.f;
-		mFont = Font(10, L"メイリオ");
+		mFont = Font(8, L"メイリオ");
 		mFontScore = Font(10, L"Segoe WP Black");
+		mFontScoreSmall = Font(5, L"MS UI Gothic", FontStyle::Bitmap); // L"Consolas");
 		mFontGuiDefault = GUIManager::GetDefaultFont();
 
 		GUIStyle style = GUIStyle::Default;
@@ -248,6 +249,7 @@ public:
 
 		WidgetStyle widgetStyle2 = widgetStyle;
 		widgetStyle2.color = Color(0, 0, 0, 255);
+		widgetStyle2.margin = Margin(2);
 
 		GUIStyle style3 = style;
 		style3.background.color = Color(255, 0, 255, 64);
@@ -256,49 +258,56 @@ public:
 		style4.background.color = Color(255, 0, 255, 64);
 
 		mGuiFile = GUI(style2);
-//		mGuiFile.setTitle(L"メニュー");
+		mGuiFile.setTitle(L"ファイル");
 		mGuiFile.addln(L"kifu_load", GUIButton::Create(L"定跡ファイルを開く", widgetStyle2));
 		mGuiFile.addln(L"kifu_save", GUIButton::Create(L"定跡ファイルを保存", widgetStyle2));
 		mGuiFile.addln(L"kif_format_load", GUIButton::Create(L"kifファイルを開く", widgetStyle2));
 
 		mGuiEvaluator = GUI(style3);
-		mGuiEvaluator.setPos(200, 0);
+		mGuiEvaluator.setTitle(L"評価ソフト");
+		mGuiEvaluator.setPos(144, 0);
 		mGuiEvaluator.add(L"evaluator_load", GUIButton::Create(L"評価ソフトを開く", widgetStyle2));
 		mGuiEvaluator.addln(L"evaluator_name", GUIText::Create(L"", widgetStyle));
 		mGuiEvaluator.add(L"option_load", GUIButton::Create(L"オプションを開く", widgetStyle2));
 		mGuiEvaluator.add(L"option_name", GUIText::Create(L"", widgetStyle));
 		mGuiEvaluator.add(L"time_prefix", GUIText::Create(L"　　思考時間", widgetStyle));
-		mGuiEvaluator.add(L"time_sec", GUITextField::Create(5));
+		mGuiEvaluator.add(L"time_sec", GUITextField::Create(5, widgetStyle2));
 		mGuiEvaluator.addln(L"time_suffix", GUIText::Create(L"秒", widgetStyle));
 
 
 		String x = CharacterSet::Widen(to_string(mEvaluator.GetDurationSec()));
 		mGuiEvaluator.textField(L"time_sec").setText(x);
 
-
-		mGuiNode = GUI(GUIStyle::Default);
-		mGuiNode.setPos(0, WINDOW_H - 56);
-		mGuiNode.addln(L"summary", GUITextField::Create(33));
-//		mGuiNode.addln(L"comment", GUITextArea::Create(4, 30));
+		const int syogibanY = 90;
 
 		mGuiScore = GUI(style);
-		mGuiScore.setPos(630, 100);
+		mGuiScore.setTitle(L"評価値");
+		mGuiScore.setPos(mShogibanWidth, syogibanY);
 		mGuiScore.addln(L"score", GUIText::Create(L"", widgetStyle));
 		mGuiScore.addln(L"tejunJap", GUIText::Create(L"", widgetStyle));
 		
 		mGuiSettings = GUI(style2);
-		mGuiSettings.setPos(WINDOW_W - 142, 0);
-		mGuiSettings.add(L"settings", GUICheckBox::Create({ L"評価値", L"指し手", L"タグ", L"選択ノードの固定", L"デバッグ" }, { SHOW_SCORE, SHOW_TE, SHOW_TAG, FIX_SELECTED_NODE }, true, widgetStyle2));
+		mGuiSettings.setTitle(L"設定");
+		mGuiSettings.setPos(WINDOW_W - 114, 0);
+		mGuiSettings.add(L"settings", GUICheckBox::Create({ L"評価値", L"指し手", L"コメント", L"小さいノード", L"選択ノードの固定", L"デバッグ" }, { SHOW_SCORE, SHOW_TE, SHOW_TAG, FIX_SELECTED_NODE }, true, widgetStyle2));
 
 		mGuiDelete = GUI(style4);
-		mGuiDelete.setPos(WINDOW_W - 70, 131);
+		mGuiDelete.setPos(WINDOW_W - 99, 139);
 		mGuiDelete.setTitle(L"削除 [Delete]キー");
 		mGuiDelete.addln(L"delete_score", GUIButton::Create(L"評価値１つ", false, widgetStyle2));
 		mGuiDelete.addln(L"delete_all_score", GUIButton::Create(L"評価値全て", false, widgetStyle2));
 		mGuiDelete.addln(L"delete_all_node", GUIButton::Create(L"局面全て", false, widgetStyle2));
 
+
 		mTextureBackground = Texture(L"pictures/background.jpg");
 		mNodeSelectSound = Sound(L"sounds/decision22.mp3");
+
+		GUIStyle style5 = style;
+		style5.background.color = Color(255, 255, 255, 0);
+		mGuiBoard = GUI(style5);
+		mGuiBoard.setPos(0, syogibanY);
+		mGuiBoard.addln(L"summary", GUITextField::Create(33));
+		mGuiBoard.setTitle(L"将棋盤");
 	}
 
 	virtual void Draw() override;
@@ -334,26 +343,41 @@ private:
 		return (scaledY - mOffsetY) / mGridScale;;
 	}
 
+	float GetTreeCenterX() const
+	{
+		return Window::Width()*0.75f;
+	}
+
+	float GetTreeCenterY() const
+	{
+		return Window::Height()*0.5f;
+	}
+
+
 //	void DrawScoreBar(int score, int maxScore, float cx, float cy, float w, float h);
 	s3d::RoundRect GetNodeShape(float centerX, float centerY);
 
 	Font mFont;
 	Font mFontScore;
+	Font mFontScoreSmall;
 	Font mFontGuiDefault;
 	GUI mGuiFile;
 	GUI mGuiEvaluator;
-	GUI mGuiNode;
 	GUI mGuiScore;
 	GUI mGuiSettings;
 	GUI mGuiDelete;
+	GUI mGuiBoard;
 	Texture mTextureBackground;
 	Sound mNodeSelectSound;
 
 	float mOffsetX;
 	float mOffsetY;
-	float mNodeRadius;
 	float mGridScale;
 
 	Evaluator	mEvaluator; // TODO : 評価ソフトなので、treeに移動したほうが良いのでは。ただファイル読み込みとかがちがちにSIV3D使っているので、ちょっと移動は大変かも。
+
+	const int mShogibanWidth  = 613;
+	const int mShogibanHeight = 523;
+
 };
 

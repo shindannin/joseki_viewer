@@ -1,4 +1,5 @@
 #include "tree_siv3d.h"
+#include "board_siv3d.h"
 #include "util.h"
 
 #include <algorithm>
@@ -27,12 +28,30 @@
 // 表示
 void TreeSiv3D::Draw()
 {
-	mTextureBackground.draw(0, 0);
+	mTextureBackground.map(Window::Width(), Window::Height()).draw();
 
 	// デバッグ用座標と拡大縮小情報
 	if (mGuiSettings.checkBox(L"settings").checked(SHOW_DEBUG))
 	{
 		mFont(L"Offset=(", mOffsetX, L",", mOffsetY, L") GridScale=", mGridScale).draw(WINDOW_W / 2 + 20.f, 20.0f, Palette::Orange);
+
+		vector <GUI*> allGUI = 
+		{
+			&mGuiFile,
+			&mGuiEvaluator,
+			&mGuiScore,
+			&mGuiSettings,
+			&mGuiDelete,
+			&mGuiBoard,
+		};
+
+
+		int i = 0;
+		for (GUI* pGUI : allGUI)
+		{
+			mFont(L"(", pGUI->getPos().x, L",", pGUI->getPos().y, L")").draw(Window::Width()-200, Window::Height()-200+i*20, Palette::Orange);
+			++i;
+		}
 	}
 
 	// 読んだ評価ソフト・読んだ手数・読んだ時間の表示
@@ -69,7 +88,7 @@ void TreeSiv3D::Draw()
 			const float deX = ScaleX(destNode.mVisualX);
 			const float deY = ScaleY(destNode.mVisualY);
 
-			Line(stX, stY, deX, deY).draw(5, Color(255, 255, 255, 128));
+			Line(stX, stY, deX, deY).draw(2, Color(192, 192, 192, 128));
 
 			if (mGuiSettings.checkBox(L"settings").checked(SHOW_TE))
 			{
@@ -122,20 +141,37 @@ void TreeSiv3D::Draw()
 				string s = node.ConverScoreToString();
 				wstring ws(s.begin(), s.end());
 
-				if (node.mScore > 0)
+				Font* pFont = &mFontScore;
+				if (mGuiSettings.checkBox(L"settings").checked(SMALL_NODE))
 				{
-					mFontScore(ws).drawCenter(centerX, centerY, Palette::Red);
+					pFont = &mFontScoreSmall;
+				}
+
+				if (node.IsResign())
+				{
+					(*pFont)(ws).drawCenter(centerX, centerY, Palette::Black);
+				}
+				else if (node.mScore > 0)
+				{
+					(*pFont)(ws).drawCenter(centerX, centerY, Palette::Red);
 				}
 				else if (node.mScore < 0)
 				{
-					mFontScore(ws).drawCenter(centerX, centerY, Palette::Blue);
+					(*pFont)(ws).drawCenter(centerX, centerY, Palette::Blue);
 				}
 				else
 				{
-					mFontScore(ws).drawCenter(centerX, centerY, Palette::Purple);
+					(*pFont)(ws).drawCenter(centerX, centerY, Palette::Purple);
 				}
 			}
 		}
+	}
+
+	for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
+	{
+		const Node& node = mNodes[nodeID];
+		const float centerX = ScaleX(node.mVisualX);
+		const float centerY = ScaleY(node.mVisualY);
 
 		// タグの表示
 		if (mGuiSettings.checkBox(L"settings").checked(SHOW_TAG))
@@ -146,12 +182,13 @@ void TreeSiv3D::Draw()
 
 				rect.pos.x -= rect.size.x / 2;
 				rect.pos.y -= rect.size.y / 2;
-				rect.draw(Color(0, 255, 0, 128));
+				rect.draw(Color(0, 128, 0, 192));
 				rect.drawFrame(0, 2, Color(255, 255, 255, 255));
 				mFont(node.mSummary).drawCenter(centerX, centerY - 22, Palette::White);
 			}
 		}
 	}
+
 
 	// 手順
 	{
@@ -163,7 +200,7 @@ void TreeSiv3D::Draw()
 		}
 		else
 		{
-			mGuiScore.text(L"score").text = Format(L"未評価");
+			mGuiScore.text(L"score").text = Format(L"未評価 -----");
 			mGuiScore.text(L"tejunJap").text = L"";
 		}
 
@@ -180,30 +217,48 @@ void TreeSiv3D::Draw()
 // ノードの表示に使う図形を返す
 s3d::RoundRect TreeSiv3D::GetNodeShape(float centerX, float centerY)
 {
-	return s3d::RoundRect(centerX - 25, centerY - mNodeRadius, 50, mNodeRadius * 2, mNodeRadius);
+	int halfWidth = 25; 
+	int radius = 8;
+	if (mGuiSettings.checkBox(L"settings").checked(SMALL_NODE))
+	{
+		halfWidth = 12;
+		radius = 4;
+	}
+
+	return s3d::RoundRect(centerX - halfWidth, centerY - radius, halfWidth * 2, radius* 2, radius);
 }
 
 // 現在選択中のノードが変更した瞬間に呼ばれる関数
 void TreeSiv3D::OnSelectedNodeIDChanged()
 {
 	Node& node = mNodes[GetSelectedNodeID()];
-	mGuiNode.textField(L"summary").setText(node.mSummary);
+	mGuiBoard.textField(L"summary").setText(node.mSummary);
 //	mGuiNode.textArea(L"comment").setText(node.mComment);
 
 	if (mGuiSettings.checkBox(L"settings").checked(FIX_SELECTED_NODE))
 	{
 		const float centerX = ScaleX(node.mVisualX);
 		const float centerY = ScaleY(node.mVisualY);
-		mOffsetX = RIGHT_CENTER_X - node.mVisualX * mGridScale;
-		mOffsetY = RIGHT_CENTER_Y - node.mVisualY * mGridScale;
+		mOffsetX = GetTreeCenterX() - node.mVisualX * mGridScale;
+		mOffsetY = GetTreeCenterY() - node.mVisualY * mGridScale;
 	}
 }
 
 // メインループ
 void TreeSiv3D::Update()
 {
+	// TODO メニューはtree3dから分離して、TreeSiv3D->BoardSiv3Dと参照しないように。
+	{
+		BoardSiv3D* boardSiv3D = dynamic_cast<BoardSiv3D*>(mBoard);
+		if (boardSiv3D != nullptr)
+		{
+			boardSiv3D->SetOffset(mGuiBoard.getPos().x + 100, mGuiBoard.getPos().y+70);
+		}
+	}
+
 	Tree::Update();
 	mEvaluator.Update();
+
 
 	// メニュー
 	if (mGuiFile.button(L"kifu_load").pushed)
@@ -280,7 +335,9 @@ void TreeSiv3D::Update()
 				const Node& node = mNodes[nodeID];
 				const float centerX = ScaleX(node.mVisualX);
 				const float centerY = ScaleY(node.mVisualY);
-				if (centerX >= WINDOW_W / 2) // 画面の左側にノードがあるときに、将棋盤とかぶって、誤クリックしないようにする。
+
+				if (!(INRANGE(static_cast<int>(centerX), mGuiBoard.getPos().x, mGuiBoard.getPos().x+mShogibanWidth) &&
+					  INRANGE(static_cast<int>(centerY), mGuiBoard.getPos().y, mGuiBoard.getPos().y+mShogibanHeight)))
 				{
 					if (GetNodeShape(centerX, centerY).contains(Mouse::Pos()))
 					{
@@ -307,8 +364,8 @@ void TreeSiv3D::Update()
 		if (wheelY != 0)
 		{
 			const float prevGridScale = mGridScale;
-			const float invScaledRightCenterX = InvScaleX(RIGHT_CENTER_X);
-			const float invScaledRightCenterY = InvScaleY(RIGHT_CENTER_Y);
+			const float invScaledRightCenterX = InvScaleX(GetTreeCenterX());
+			const float invScaledRightCenterY = InvScaleY(GetTreeCenterY());
 			mGridScale *= (float)pow(1.1, -wheelY);
 			const float diffGridScale = mGridScale - prevGridScale;
 
@@ -348,31 +405,18 @@ void TreeSiv3D::Update()
 
 		Graphics::SetBackground(Color(160, 200, 100));
 
-		if (mGuiNode.textField(L"summary").hasChanged)
+		if (mGuiBoard.textField(L"summary").hasChanged)
 		{
-			String tmp = mGuiNode.textField(L"summary").text;
+			String tmp = mGuiBoard.textField(L"summary").text;
 			node.mSummary = tmp.str();
 		}
 
-		if (mGuiNode.textField(L"summary").active)
+		if (mGuiBoard.textField(L"summary").active)
 		{
-			const Point delta(24, 16); // ウィンドウからサマリ枠への相対座標
-			const Rect rect = mFontGuiDefault(node.mSummary).region(mGuiNode.getPos() + delta);
+			const Point delta(20, 26); // ウィンドウからサマリ枠への相対座標
+			const Rect rect = mFontGuiDefault(node.mSummary).region(mGuiBoard.getPos() + delta);
 			IME::SetCompositionWindowPos(Point(rect.x + rect.w, rect.y));
 		}
-
-//		if (mGuiNode.textArea(L"comment").hasChanged)
-//		{
-//			String tmp = mGuiNode.textArea(L"comment").text;
-//			node.mComment = tmp.str();
-//		}
-//
-//		if (mGuiNode.textArea(L"comment").active)
-//		{
-//			const Point delta(24, 56); // ウィンドウからコメント枠への相対座標
-//			// TODO ここは、ちゃんと相対座標を決める手段がないので、無理。
-//			IME::SetCompositionWindowPos(mGuiNode.getPos() + delta);
-//		}
 	}
 }
 

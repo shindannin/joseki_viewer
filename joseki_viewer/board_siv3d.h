@@ -83,6 +83,12 @@ private:
 		{ 192, 192, 255, 255 },
 	};
 
+	const Color maisuFontColor[NUM_SEN_GO] =
+	{
+		{ 192, 0, 0, 255 },
+		{ 0, 0, 192, 255 },
+	};
+
 	vector <Texture> mTexture[NUM_SEN_GO];
 	Texture mTextureBoard;
 	Texture mTextureGrid;

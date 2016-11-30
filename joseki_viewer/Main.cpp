@@ -22,6 +22,7 @@ using namespace s3d;
 void Main()
 {
 	Window::SetTitle(VERSION_TITLE);
+    Window::SetStyle(WindowStyle::Sizeable);
 	Window::Resize(WINDOW_W, WINDOW_H);
 	const Font font(30);
 
@@ -30,8 +31,6 @@ void Main()
 
 	while (System::Update())
 	{
-		Circle(Mouse::Pos(), 50).draw({ 255, 0, 0, 127 });
-
 		tree->Update();
 		tree->Draw();
 	}

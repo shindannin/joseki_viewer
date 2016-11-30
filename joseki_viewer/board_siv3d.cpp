@@ -35,7 +35,7 @@ BoardSiv3D::BoardSiv3D()
 	mSoundKomaoto = Sound(L"sounds/komaoto5.wav");
 
 
-	SetOffset(100, 100);
+	SetOffset(0, 0);
 }
 
 BoardSiv3D::~BoardSiv3D()
@@ -90,6 +90,17 @@ void BoardSiv3D::Draw()
 		DrawCursor(GetMoveFromPos(), grabbedColor[GetTeban()]);
 	}
 
+	//----- ãÓë‰ -----
+	{
+		const int w = static_cast<int>(mKomaTextureWidth *1.75f);
+		const int h = static_cast<int>(mKomaTextureHeight*7.50f);
+		const int spaceW = mKomaTextureWidth * 0.5f;
+
+		mTextureBoard(0, 0, w, h).draw(mOffsetX - spaceW - w, mOffsetY);
+		mTextureBoard(0, 0, w, h).draw(mOffsetX  + mTextureBoard.width + spaceW, mOffsetY + mTextureBoard.height - h);
+	
+	}
+
 	//----- éùÇøãÓ -----
 	{
 		for (int s = 0; s < NUM_SEN_GO; ++s)
@@ -115,9 +126,12 @@ void BoardSiv3D::Draw()
 	//----- éËî‘ -----
 	{
 		wstring name[2] = { L"êÊéËî‘", L"å„éËî‘" };
-		const Rect rect = mFont(name[GetTeban()]).draw(leftX + tebanOffestX * mKomaTextureWidth, topY);
+		const int x = mOffsetX + 439;
+		const int y = mOffsetY;
+		const int rad = 16;
+		RoundRect rect(x-rad/2, y, 75, rad * 2, rad);
 		rect.draw(grabbedColor[GetTeban()]);
-		mFont(name[GetTeban()]).draw(leftX + tebanOffestX * mKomaTextureWidth, topY);
+		mFont(name[GetTeban()]).draw(x, y+2);
 	}
 
 	//----- î’ñ  -----
@@ -213,9 +227,11 @@ void BoardSiv3D::DrawKoma(int sengo, int type, int y, int x, int maisu, bool isC
 		mTexture[sengo][type].draw(leftX + (BOARD_SIZE - 1 - x)*mKomaTextureWidth, topY + y*mKomaTextureHeight);
 	}
 
+	// ãÓñáêîÇÃêîéö
 	if (maisu >= 1)
 	{
-		mFont(L"", maisu).draw(leftX + (BOARD_SIZE - 1 - x + 1)*mKomaTextureWidth, topY + y*mKomaTextureHeight);
+		const float dx[] = { +1.0f, -0.25f };
+		mFont(L"", maisu).draw(leftX + (BOARD_SIZE - 1 - x + dx[sengo])*mKomaTextureWidth, topY + y*mKomaTextureHeight, maisuFontColor[sengo]);
 	}
 }
 

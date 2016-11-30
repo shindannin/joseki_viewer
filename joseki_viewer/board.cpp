@@ -255,8 +255,6 @@ string Board::GetTejunFromKif(const vector <wstring>& kifStrings) const
 				assert(y != BOARD_SIZE);
 			}
 			
-			// "R*1f 7f7g P*6h 7h6h 5h6h 7g6h N*7e 6g7g L*8a L*8f 1f1h+ 2c1c 8a8c 8f8c+"
-
 			const ESengo sengo = ((tesuu%2)==1) ? E_SEN : E_GO;
 
 			bool komaFound = false;

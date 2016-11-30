@@ -46,9 +46,14 @@ int Node::HasLink(const string& te) const
 Tree::Tree(Board* board)
 {
 	mVersion = VERSION_DATA;
+	mBoard = board; // 外でnew deleteするので、ポインタ渡すだけ
+	Init();
+}
+
+void Tree::Init()
+{
 	mNodes.clear();
 	mNodes.push_back(Node());
-	mBoard = board; // 外でnew deleteするので、ポインタ渡すだけ
 	CalculateVisualPos();
 	SetSelectedNodeID(0);
 }
