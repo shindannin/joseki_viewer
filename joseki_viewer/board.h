@@ -46,14 +46,6 @@ enum EKomaType
 	E_EMPTY = -1,
 };
 
-// 現在の状態。
-enum EInputState
-{
-	E_IDLE,		// どの駒を動かすか選択中
-	E_GRABBED,	// 掴んだ駒をどこへ動かすか選択中
-	E_UTSU,		// 持ち駒をどこへ動かすか選択中
-	E_CHOICE,	// 成るかどうか選択中
-};
 
 // 将棋盤1マスごとの状態
 struct Masu
@@ -187,6 +179,7 @@ public:
 	string GetTejunFromPSN(const string& tejunPSN) const;
 	string GetTejunFromKif(const vector <wstring>& kifStrings) const;
 	string GetTeFromMove(const Move& mv) const;
+	string GetFirstTeFromTejun(const string& tejun) const;
 	Move GetMoveFromTe(const string& te) const;
 
 

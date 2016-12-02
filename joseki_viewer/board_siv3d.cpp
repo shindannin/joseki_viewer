@@ -94,7 +94,7 @@ void BoardSiv3D::Draw()
 	{
 		const int w = static_cast<int>(mKomaTextureWidth *1.75f);
 		const int h = static_cast<int>(mKomaTextureHeight*7.50f);
-		const int spaceW = mKomaTextureWidth * 0.5f;
+		const int spaceW = static_cast<int>(mKomaTextureWidth * 0.5f);
 
 		mTextureBoard(0, 0, w, h).draw(mOffsetX - spaceW - w, mOffsetY);
 		mTextureBoard(0, 0, w, h).draw(mOffsetX  + mTextureBoard.width + spaceW, mOffsetY + mTextureBoard.height - h);
@@ -182,7 +182,6 @@ void BoardSiv3D::Draw()
 		const Masu& grabbed = GetMasu(GetMoveFromPos());
 		DrawKoma(grabbed.sengo, grabbed.type, GetMoveToPos().y, GetMoveToPos().x, 0, true);
 	}
-
 }
 
 void BoardSiv3D::DrawKoma(const Masu& masu, int y, int x) const
@@ -477,6 +476,7 @@ void BoardSiv3D::GetMochigomaPos(int s, int k, int& y, int& x) const
 	const int posX[2] = { -2, 10 };
 	const int posY[2] = { 1,  7 };
 	const int signY[2] = { +1, -1 };
+	assert(INRANGE(s,0,1));
 
 	y = k*signY[s] + posY[s];
 	x = posX[s];
@@ -528,3 +528,42 @@ bool BoardSiv3D::IsNarazuChoice() const
 
 	return (INRANGE(x, cx + 0.5f, cx + 1.5f) && INRANGE(y, cy, cy + 1.0f));
 }
+
+// 移動をあらわす表示。また、その中央座標をcy,cxで返す（矢印の上の評価値表示など、tree側で使用する目的）
+void BoardSiv3D::DrawMove(const string& te, const Color& color, int& cy, int& cx) const
+{
+	Move mv = GetMoveFromTe(te);
+	int startY, startX;
+	if (mv.utsuKomaType == E_EMPTY)
+	{
+		startY = mv.from.y;
+		startX = mv.from.x;
+	}
+	else
+	{
+		// 駒を打つ場合の座標に注意
+		const int s = static_cast<int>(GetTeban());
+		GetMochigomaPos(s, mv.utsuKomaType, startY, startX);
+	}
+	DrawArrow(startY, startX, mv.to.y, mv.to.x, color, cy, cx);
+}
+
+// 矢印を表示
+void BoardSiv3D::DrawArrow(int startY, int startX, int destY, int destX, const Color& color, int& cy, int& cx) const
+{
+	const int leftX = GetGridLeftX();
+	const int topY = GetGridTopY();
+
+
+	const float sx = leftX + (BOARD_SIZE - 1 - startX + 0.5f) * mKomaTextureWidth;
+	const float sy = topY  + (startY + 0.5f) * mKomaTextureHeight;
+	const float dx = leftX + (BOARD_SIZE - 1 - destX + 0.5f) * mKomaTextureWidth;
+	const float dy = topY +  (destY + 0.5f) * mKomaTextureHeight;
+
+	cy = static_cast<int>((sy + dy) * 0.5f);
+	cx = static_cast<int>((sx + dx) * 0.5f);
+
+	Line(sx, sy, dx, dy).drawArrow(10, { 20, 20 }, color);
+}
+
+

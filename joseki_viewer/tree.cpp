@@ -206,10 +206,10 @@ void Tree::InitializeAfterLoad()
 	// 日本語手順だけ計算
 	for (Node& node : mNodes)
 	{
-		if (!node.mTejun.empty())
+		if (!node.mBestTejun.empty())
 		{
 			mBoard->SetState(node.mState);
-			node.mTejunJap = mBoard->MoveByTejun(node.mTejun);
+			node.mTejunJap = mBoard->MoveByTejun(node.mBestTejun);
 		}
 	}
 
@@ -222,7 +222,7 @@ void Tree::UpdateNode(int nodeID, int score, const string& tejun)
 
 	// このノードが先手番か後手番か
 
-	node.mTejun = tejun;
+	node.mBestTejun = tejun;
 
 	Board tmpBoard;
 	tmpBoard.SetState(node.mState);

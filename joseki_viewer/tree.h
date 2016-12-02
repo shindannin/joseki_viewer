@@ -47,6 +47,8 @@ public:
 	bool IsScoreEvaluated() const { return mScore != SCORE_NOT_EVALUATED;  }
 	bool IsResign() const { return mScore == SCORE_RESIGN; }
 	void ResetScore() { mScore = SCORE_NOT_EVALUATED; } 
+	int GetParentNodeID() const { return mParentNodeID; }
+
 
 	static int ConvertMateToScore(int mate) 
 	{
@@ -144,7 +146,7 @@ public:
 		}
 		wfs << mSummary << endl;
 		wfs << EasyEscape(mComment) << endl;
-		wfs << wstring(mTejun.begin(), mTejun.end()) << endl;
+		wfs << wstring(mBestTejun.begin(), mBestTejun.end()) << endl;
 	}
 
 	void Load(wfstream& wfs)
@@ -165,7 +167,7 @@ public:
 
 		GetLineTrim(wfs, ws);	mSummary = ws;
 		GetLineTrim(wfs, ws);	mComment = EasyUnescape(ws);
-		GetLineTrim(wfs, ws);	mTejun = string(ws.begin(), ws.end());
+		GetLineTrim(wfs, ws);	mBestTejun = string(ws.begin(), ws.end());
 	}
 
 	// セーブする情報
@@ -174,7 +176,7 @@ public:
 	vector <Link>	mLinks;
 	wstring			mSummary;		// コメントの要約
 	wstring			mComment;		// コメント
-	string			mTejun;			// 最善手
+	string			mBestTejun;		// 最善手
 
 	// セーブしない情報
 	string			mState;			// ルート以外は本当は必須でもない。
@@ -245,6 +247,8 @@ public:
 	void UpdateNode(int nodeID, int score, const string& tejun);
 	void SetSelectedNodeID(int nodeID);
 	int  GetSelectedNodeID() const { return mSelectedNodeID; }
+	const Node& GetSelectedNode() const { return mNodes[mSelectedNodeID]; }
+
 
 	void Save(const wstring& path)
 	{

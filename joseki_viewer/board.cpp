@@ -354,6 +354,20 @@ string Board::GetTeFromMove(const Move& mv) const
 	return te;
 }
 
+string Board::GetFirstTeFromTejun(const string& tejun) const
+{
+	vector <string> vs;
+	Split1(tejun, vs);
+
+	if (SZ(vs) >= 1)
+	{
+		return vs[0];
+	}
+
+	return "";
+}
+
+
 Move Board::GetMoveFromTe(const string& te) const
 {
 	// http://www.geocities.jp/shogidokoro/usi.html ‚æ‚è

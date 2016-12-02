@@ -30,12 +30,24 @@ void TreeSiv3D::Draw()
 {
 	mTextureBackground.map(Window::Width(), Window::Height()).draw();
 
+	// 普通の表示（将棋盤の裏になる）
+	DrawBeforeBoard();
+
+	// 将棋盤の表示
+	Tree::Draw();
+	
+	// 将棋盤上の表示
+	DrawAfterBoard();
+}
+
+void TreeSiv3D::DrawBeforeBoard() const
+{
 	// デバッグ用座標と拡大縮小情報
 	if (mGuiSettings.checkBox(L"settings").checked(SHOW_DEBUG))
 	{
 		mFont(L"Offset=(", mOffsetX, L",", mOffsetY, L") GridScale=", mGridScale).draw(WINDOW_W / 2 + 20.f, 20.0f, Palette::Orange);
 
-		vector <GUI*> allGUI = 
+		vector <const GUI*> allGUI =
 		{
 			&mGuiFile,
 			&mGuiEvaluator,
@@ -47,9 +59,9 @@ void TreeSiv3D::Draw()
 
 
 		int i = 0;
-		for (GUI* pGUI : allGUI)
+		for (const GUI* pGUI : allGUI)
 		{
-			mFont(L"(", pGUI->getPos().x, L",", pGUI->getPos().y, L")").draw(Window::Width()-200, Window::Height()-200+i*20, Palette::Orange);
+			mFont(L"(", pGUI->getPos().x, L",", pGUI->getPos().y, L")").draw(Window::Width() - 200, Window::Height() - 200 + i * 20, Palette::Orange);
 			++i;
 		}
 	}
@@ -100,15 +112,21 @@ void TreeSiv3D::Draw()
 	}
 
 	// 木のノード
-	for (int nodeID = 0; nodeID<SZ(mNodes); ++nodeID)
+	for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
 	{
 		const Node& node = mNodes[nodeID];
-		const float centerX = ScaleX(node.mVisualX);
-		const float centerY = ScaleY(node.mVisualY);
+		const int centerX = static_cast<int>(ScaleX(node.mVisualX));
+		const int centerY = static_cast<int>(ScaleY(node.mVisualY));
+		if (mGuiSettings.checkBox(L"settings").checked(SHOW_DEBUG))
+		{
+			// デバッグ用：表示場所の表示
+			mFont(centerX, L",", centerY).draw(centerX, centerY, Palette::Orange);
+		}
 
 		// ノード背景の表示
 		Color color = Palette::White;
-		const s3d::RoundRect& roundRect = GetNodeShape(centerX, centerY);
+		const NodeSize nodeSize = mGuiSettings.checkBox(L"settings").checked(SMALL_NODE) ? NS_SMALL : NS_BIG;
+		const s3d::RoundRect& roundRect = GetNodeShape(centerX, centerY, nodeSize);
 		if (nodeID == GetSelectedNodeID())
 		{
 			color = Palette::Yellow;
@@ -121,49 +139,11 @@ void TreeSiv3D::Draw()
 		{
 			color = Palette::Lightgreen;
 		}
-
 		roundRect.draw(color);
 
-
-		if (mGuiSettings.checkBox(L"settings").checked(SHOW_DEBUG))
-		{
-			// デバッグ用：表示場所の表示
-			mFont(centerX, L",", centerY).draw(centerX, centerY, Palette::Orange);
-		}
-		
-		// 評価値の表示
 		if (mGuiSettings.checkBox(L"settings").checked(SHOW_SCORE))
 		{
-			if (node.IsScoreEvaluated())
-			{
-				//			DrawScoreBar(node.mScore, 2000, centerX, centerY, 80, 10);
-
-				string s = node.ConverScoreToString();
-				wstring ws(s.begin(), s.end());
-
-				Font* pFont = &mFontScore;
-				if (mGuiSettings.checkBox(L"settings").checked(SMALL_NODE))
-				{
-					pFont = &mFontScoreSmall;
-				}
-
-				if (node.IsResign())
-				{
-					(*pFont)(ws).drawCenter(centerX, centerY, Palette::Black);
-				}
-				else if (node.mScore > 0)
-				{
-					(*pFont)(ws).drawCenter(centerX, centerY, Palette::Red);
-				}
-				else if (node.mScore < 0)
-				{
-					(*pFont)(ws).drawCenter(centerX, centerY, Palette::Blue);
-				}
-				else
-				{
-					(*pFont)(ws).drawCenter(centerX, centerY, Palette::Purple);
-				}
-			}
+			DrawScore(centerX, centerY, node, nodeSize);
 		}
 	}
 
@@ -204,28 +184,143 @@ void TreeSiv3D::Draw()
 			mGuiScore.text(L"tejunJap").text = L"";
 		}
 
-//		// 評価値バー
-//		if (node.IsScoreEvaluated())
-//		{
-//			DrawScoreBar(node.mScore, 2000, 400, 200, 400, 50);
-//		}
+		//		// 評価値バー
+		//		if (node.IsScoreEvaluated())
+		//		{
+		//			DrawScoreBar(node.mScore, 2000, 400, 200, 400, 50);
+		//		}
 	}
+}
 
-	Tree::Draw();
+void TreeSiv3D::DrawAfterBoard() const
+{
+	if (mGuiSettings.checkBox(L"settings").checked(SHOW_ARROW))
+	{
+		BoardSiv3D* boardSiv3D = dynamic_cast<BoardSiv3D*>(mBoard);
+		if (boardSiv3D != nullptr)
+		{
+			struct ScoreOnArrow
+			{
+				int cy;
+				int cx;
+				const Node* pDestNode;
+			};
+
+			vector <ScoreOnArrow> scoreOnArrows;
+
+			const Node& node = GetSelectedNode();
+
+
+			for (const Link& link : node.mLinks)
+			{
+				const Color grabbedColor[NUM_SEN_GO] =
+				{
+					{ 255, 0, 0, 127 },
+					{ 0, 0, 255, 127 },
+				};
+
+				int cy, cx;
+
+				// 矢印表示
+				boardSiv3D->DrawMove(link.te, grabbedColor[boardSiv3D->GetTeban()], cy, cx);
+
+				// もし1手先のノードの評価値が分かれば、それを後で表示
+				const Node& destNode = GetNode(link.destNodeID);
+				if (destNode.IsScoreEvaluated())
+				{
+					ScoreOnArrow tmp = { cy, cx, &destNode };
+					scoreOnArrows.push_back(tmp);
+				}
+			}
+
+			// 最善手の表示（紫）
+			if (node.IsScoreEvaluated())
+			{
+				int cy, cx;
+				const string firstTe = boardSiv3D->GetFirstTeFromTejun(node.mBestTejun);
+
+				// 矢印表示
+				if (!firstTe.empty())
+				{
+					boardSiv3D->DrawMove(firstTe, { 255, 0, 255, 127 }, cy, cx);
+				}
+			}
+
+			for (const ScoreOnArrow& tmp : scoreOnArrows)
+			{
+				// ノード背景の表示
+				Color color = Palette::White;
+				const s3d::RoundRect& roundRect = GetNodeShape(tmp.cx, tmp.cy, NS_MEDIUM);
+				roundRect.draw(color);
+
+				// ノードスコアの表示
+				DrawScore(tmp.cx, tmp.cy, *tmp.pDestNode, NS_MEDIUM);
+			}
+		}
+	}
+}
+
+
+// 評価値の表示
+void TreeSiv3D::DrawScore(int centerX, int centerY, const Node& node, NodeSize nodeSize) const
+{
+	if (node.IsScoreEvaluated())
+	{
+		string s = node.ConverScoreToString();
+		wstring ws(s.begin(), s.end());
+
+		const Font* pFont = nullptr;
+		switch (nodeSize)
+		{
+		case NS_BIG:
+			pFont = &mFontScore;
+			break;
+		case NS_MEDIUM:
+			pFont = &mFontScoreMedium;
+			break;
+		case NS_SMALL:
+			pFont = &mFontScoreSmall;
+			break;
+		}
+
+
+		if (node.IsResign())
+		{
+			(*pFont)(ws).drawCenter(centerX, centerY, Palette::Black);
+		}
+		else if (node.mScore > 0)
+		{
+			(*pFont)(ws).drawCenter(centerX, centerY, Palette::Red);
+		}
+		else if (node.mScore < 0)
+		{
+			(*pFont)(ws).drawCenter(centerX, centerY, Palette::Blue);
+		}
+		else
+		{
+			(*pFont)(ws).drawCenter(centerX, centerY, Palette::Purple);
+		}
+	}
 }
 
 // ノードの表示に使う図形を返す
-s3d::RoundRect TreeSiv3D::GetNodeShape(float centerX, float centerY)
+s3d::RoundRect TreeSiv3D::GetNodeShape(int centerX, int centerY, NodeSize nodeSize) const
 {
-	int halfWidth = 25; 
-	int radius = 8;
-	if (mGuiSettings.checkBox(L"settings").checked(SMALL_NODE))
+	const int halfWidth[NUM_NS]=
 	{
-		halfWidth = 12;
-		radius = 4;
-	}
+		25,
+		16,
+		12,
+	};
 
-	return s3d::RoundRect(centerX - halfWidth, centerY - radius, halfWidth * 2, radius* 2, radius);
+	const int radius[NUM_NS]=
+	{
+		8,
+		6,
+		4,
+	};
+
+	return s3d::RoundRect(centerX - halfWidth[nodeSize], centerY - radius[nodeSize], halfWidth[nodeSize] * 2, radius[nodeSize]* 2, radius[nodeSize]);
 }
 
 // 現在選択中のノードが変更した瞬間に呼ばれる関数
@@ -255,9 +350,6 @@ void TreeSiv3D::Update()
 			boardSiv3D->SetOffset(mGuiBoard.getPos().x + 100, mGuiBoard.getPos().y+70);
 		}
 	}
-
-	Tree::Update();
-	mEvaluator.Update();
 
 
 	// メニュー
@@ -320,9 +412,23 @@ void TreeSiv3D::Update()
 
 
 	{
-		// 中心座標の変更（前フレームからのカーソルの移動量）
-		if (Input::MouseR.pressed)
+		if (Input::MouseR.clicked && IsInShogiban(Mouse::Pos().x, Mouse::Pos().y))
 		{
+			// 1手戻る
+			BoardSiv3D* boardSiv3D = dynamic_cast<BoardSiv3D*>(mBoard);
+			if (boardSiv3D != nullptr && boardSiv3D->IsInputStateIdle())
+			{
+				const Node& node = mNodes[GetSelectedNodeID()];
+				if (!node.IsRoot())
+				{
+					SetSelectedNodeID(node.GetParentNodeID());
+					PlayNodeSelectSound();
+				}
+			}
+		}
+		else if (Input::MouseR.pressed)
+		{
+			// 中心座標の変更（前フレームからのカーソルの移動量）
 			const Point delta = Mouse::Delta();
 			mOffsetX += delta.x;
 			mOffsetY += delta.y;
@@ -330,29 +436,19 @@ void TreeSiv3D::Update()
 		else if (Input::MouseL.clicked)
 		{
 			// ノードの選択
+			const NodeSize nodeSize = mGuiSettings.checkBox(L"settings").checked(SMALL_NODE) ? NS_SMALL : NS_BIG;
 			for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
 			{
 				const Node& node = mNodes[nodeID];
-				const float centerX = ScaleX(node.mVisualX);
-				const float centerY = ScaleY(node.mVisualY);
+				const int centerX = static_cast<int>(ScaleX(node.mVisualX));
+				const int centerY = static_cast<int>(ScaleY(node.mVisualY));
 
-				if (!(INRANGE(static_cast<int>(centerX), mGuiBoard.getPos().x, mGuiBoard.getPos().x+mShogibanWidth) &&
-					  INRANGE(static_cast<int>(centerY), mGuiBoard.getPos().y, mGuiBoard.getPos().y+mShogibanHeight)))
+				if (!IsInShogiban(centerX, centerY))
 				{
-					if (GetNodeShape(centerX, centerY).contains(Mouse::Pos()))
+					if (GetNodeShape(centerX, centerY, nodeSize).contains(Mouse::Pos()))
 					{
 						SetSelectedNodeID(nodeID);
-
-						if (mNodeSelectSound)
-						{
-							if (mNodeSelectSound.isPlaying())
-							{
-								// 停止して曲の先頭に戻る
-								mNodeSelectSound.stop();
-							}
-							mNodeSelectSound.play();
-						}
-
+						PlayNodeSelectSound();
 						break;
 					}
 				}
@@ -418,7 +514,33 @@ void TreeSiv3D::Update()
 			IME::SetCompositionWindowPos(Point(rect.x + rect.w, rect.y));
 		}
 	}
+
+	// 親クラスの更新
+	Tree::Update();
+	mEvaluator.Update();
 }
+
+// ノード選択音を鳴らす
+void TreeSiv3D::PlayNodeSelectSound()
+{
+	if (mNodeSelectSound)
+	{
+		if (mNodeSelectSound.isPlaying())
+		{
+			// 停止して曲の先頭に戻る
+			mNodeSelectSound.stop();
+		}
+		mNodeSelectSound.play();
+	}
+}
+
+// ノード選択音を鳴らす
+bool TreeSiv3D::IsInShogiban(int x, int y) const
+{
+	return	INRANGE(x, mGuiBoard.getPos().x, mGuiBoard.getPos().x + mShogibanWidth) &&
+			INRANGE(y, mGuiBoard.getPos().y, mGuiBoard.getPos().y + mShogibanHeight);
+}
+
 
 // 評価ソフトを開く
 void Evaluator::Open()

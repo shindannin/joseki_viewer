@@ -217,6 +217,7 @@ public:
 		SHOW_TAG,			// "タグ"
 		SMALL_NODE,			// "小さいノード"
 		FIX_SELECTED_NODE,	// "選択ノードの固定"
+		SHOW_ARROW,			// "矢印"
 		SHOW_DEBUG,			// "デバッグ"
 	};
 
@@ -228,6 +229,7 @@ public:
 		mGridScale = 40.f;
 		mFont = Font(8, L"メイリオ");
 		mFontScore = Font(10, L"Segoe WP Black");
+		mFontScoreMedium = Font(7, L"Segoe WP Black");
 		mFontScoreSmall = Font(5, L"MS UI Gothic", FontStyle::Bitmap); // L"Consolas");
 		mFontGuiDefault = GUIManager::GetDefaultFont();
 
@@ -289,11 +291,13 @@ public:
 		mGuiSettings = GUI(style2);
 		mGuiSettings.setTitle(L"設定");
 		mGuiSettings.setPos(WINDOW_W - 114, 0);
-		mGuiSettings.add(L"settings", GUICheckBox::Create({ L"評価値", L"指し手", L"コメント", L"小さいノード", L"選択ノードの固定", L"デバッグ" }, { SHOW_SCORE, SHOW_TE, SHOW_TAG, FIX_SELECTED_NODE }, true, widgetStyle2));
+		mGuiSettings.add(L"settings", 
+			GUICheckBox::Create({ L"評価値", L"指し手", L"コメント", L"小さいノード", L"選択ノードの固定", L"矢印", L"デバッグ" },
+		                        { SHOW_SCORE, SHOW_TE, SHOW_TAG, FIX_SELECTED_NODE, SHOW_ARROW }, true, widgetStyle2));
 
 		mGuiDelete = GUI(style4);
-		mGuiDelete.setPos(WINDOW_W - 99, 139);
-		mGuiDelete.setTitle(L"削除 [Delete]キー");
+		mGuiDelete.setPos(WINDOW_W - 99, 158);
+		mGuiDelete.setTitle(L"削除 [Del]キー");
 		mGuiDelete.addln(L"delete_score", GUIButton::Create(L"評価値１つ", false, widgetStyle2));
 		mGuiDelete.addln(L"delete_all_score", GUIButton::Create(L"評価値全て", false, widgetStyle2));
 		mGuiDelete.addln(L"delete_all_node", GUIButton::Create(L"局面全て", false, widgetStyle2));
@@ -345,20 +349,34 @@ private:
 
 	float GetTreeCenterX() const
 	{
-		return Window::Width()*0.75f;
+		return Window::Width()*0.75f; // TODO これは指定可能なようにしたい。例えば左の将棋盤を置きたい人はどうするの？
 	}
 
 	float GetTreeCenterY() const
 	{
-		return Window::Height()*0.5f;
+		return Window::Height()*0.5f; // TODO これは指定可能なようにしたい。例えば左の将棋盤を置きたい人はどうするの？
 	}
 
-
 //	void DrawScoreBar(int score, int maxScore, float cx, float cy, float w, float h);
-	s3d::RoundRect GetNodeShape(float centerX, float centerY);
+
+	enum NodeSize
+	{
+		NS_BIG,
+		NS_MEDIUM,
+		NS_SMALL,
+		NUM_NS,
+	};
+
+	void PlayNodeSelectSound();
+	bool IsInShogiban(int x, int y) const;
+	s3d::RoundRect GetNodeShape(int centerX, int centerY, NodeSize nodeSize) const;
+	void DrawBeforeBoard() const;
+	void DrawAfterBoard() const;
+	void DrawScore(int centerX, int centerY, const Node& node, NodeSize nodeSize) const;
 
 	Font mFont;
 	Font mFontScore;
+	Font mFontScoreMedium;
 	Font mFontScoreSmall;
 	Font mFontGuiDefault;
 	GUI mGuiFile;

@@ -7,6 +7,15 @@
 using namespace std;
 using namespace s3d;
 
+// 現在の状態。
+enum EInputState
+{
+	E_IDLE,		// どの駒を動かすか選択中
+	E_GRABBED,	// 掴んだ駒をどこへ動かすか選択中
+	E_UTSU,		// 持ち駒をどこへ動かすか選択中
+	E_CHOICE,	// 成るかどうか選択中
+};
+
 class BoardSiv3D : public Board
 {
 public:
@@ -30,8 +39,11 @@ public:
 	bool IsNarazuChoice() const;
 	int GetGridLeftX() const;
 	int GetGridTopY() const;
+	void DrawMove(const string& te, const Color& color, int& cy, int& cx) const;
+	bool IsInputStateIdle() const { return mInputState==E_IDLE; }
 
 private:
+	void DrawArrow(int startY, int startX, int destY, int destX, const Color& color, int& cy, int& cx) const;
 	void UpdateDecided(string& te, wstring& teJap, bool& isMoved);
 
 	const wstring mFileName[NUM_KOMA_TYPE][NUM_SEN_GO] =
