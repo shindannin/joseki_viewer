@@ -37,7 +37,7 @@ class Node
 {
 public:
 	enum { SCORE_NOT_EVALUATED = 123456789 }; // •]‰¿‚ª‚³‚ê‚Ä‚¢‚È‚¢ó‘Ô
-	enum { SCORE_RESIGN        = 999999999 }; // •]‰¿‚ª‚³‚ê‚Ä‚¢‚È‚¢ó‘Ô
+	enum { SCORE_RESIGN        = 999999999 }; // “Š—¹
 	enum { SCORE_MATE          =  10000000 }; // xè‹l‚İ‚ğ•\‚·
 
 	Node();
@@ -45,7 +45,11 @@ public:
 	int HasLink(const string& te) const;
 	bool IsRoot() const { return mParentNodeID == NG; }
 	bool IsScoreEvaluated() const { return mScore != SCORE_NOT_EVALUATED;  }
-	bool IsResign() const { return mScore == SCORE_RESIGN; }
+	bool IsResign() const { return mScore == SCORE_RESIGN || mScore == -SCORE_RESIGN; }
+	bool IsSenteKachi() const { return mScore == -SCORE_RESIGN; }
+	bool IsGoteKachi() const  { return mScore ==  SCORE_RESIGN; }
+
+
 	void ResetScore() { mScore = SCORE_NOT_EVALUATED; } 
 	int GetParentNodeID() const { return mParentNodeID; }
 
@@ -76,7 +80,7 @@ public:
 		{
 			return "";
 		}
-		else if (mScore == SCORE_RESIGN)
+		else if (IsResign())
 		{
 			return "MATE";
 		}

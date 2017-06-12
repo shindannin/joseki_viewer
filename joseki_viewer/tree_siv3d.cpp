@@ -283,22 +283,31 @@ void TreeSiv3D::DrawScore(int centerX, int centerY, const Node& node, NodeSize n
 			break;
 		}
 
-
 		if (node.IsResign())
 		{
-			(*pFont)(ws).drawCenter(centerX, centerY, Palette::Black);
-		}
-		else if (node.mScore > 0)
-		{
-			(*pFont)(ws).drawCenter(centerX, centerY, Palette::Red);
-		}
-		else if (node.mScore < 0)
-		{
-			(*pFont)(ws).drawCenter(centerX, centerY, Palette::Blue);
+			if (node.IsSenteKachi())
+			{
+				(*pFont)(ws).drawCenter(centerX, centerY, Palette::Red);
+			}
+			else if (node.IsGoteKachi())
+			{
+				(*pFont)(ws).drawCenter(centerX, centerY, Palette::Blue);
+			}
 		}
 		else
 		{
-			(*pFont)(ws).drawCenter(centerX, centerY, Palette::Purple);
+			if (node.mScore > 0)
+			{
+				(*pFont)(ws).drawCenter(centerX, centerY, Palette::Red);
+			}
+			else if (node.mScore < 0)
+			{
+				(*pFont)(ws).drawCenter(centerX, centerY, Palette::Blue);
+			}
+			else
+			{
+				(*pFont)(ws).drawCenter(centerX, centerY, Palette::Purple);
+			}
 		}
 	}
 }
@@ -840,6 +849,30 @@ bool Evaluator::ReceiveBestMoveAndScore()
 			break;
 		}
 	}
+
+	// 技巧などは、終局時にスコアを含まないので、bestmoveでチェックするしかない。
+	if (!isScoreFound)
+	{
+		const int lastIndex = SZ(mReadLogs) - 1;
+		if ( lastIndex >= 0)
+		{
+			const string& lastInfo = mReadLogs[lastIndex];
+
+			vector <string> tmp;
+			Split1(lastInfo, tmp, ' ');
+			Trim(tmp.back());
+
+			assert(tmp[0] == "bestmove");
+			if (tmp[1] == "resign")
+			{
+				isScoreFound = true;
+				mTree->UpdateNode(mEvaludatingNodeID, Node::ConvertMateToScore(0), "");
+			}
+		}
+	}
+
+
+
 
 	assert(isScoreFound);
 
