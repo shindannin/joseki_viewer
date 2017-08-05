@@ -9,7 +9,7 @@
 #define RIGHT_CENTER_X (WINDOW_W*0.75f)
 #define RIGHT_CENTER_Y (WINDOW_H*0.5f)
 
-#define VERSION_TITLE L"Siv3D 定跡ビューア Ver 0.02 (2016/12/02)  "
+#define VERSION_TITLE L"Siv3D 定跡ビューア Ver 0.03 (2017/06/18)  "
 #define VERSION_DATA (2)
 
 using namespace std;
