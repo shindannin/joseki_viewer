@@ -2,7 +2,14 @@
 
 #include <vector>
 #include <string>
+#include <algorithm>
+#include <numeric>
 
+using namespace std;
+
+template<class T> bool INRANGE(T x, T a, T b) { return a <= x&&x <= b; }
+#define SZ(a) ((int)a.size())
+const int NG = -1;
 #define WINDOW_W	(1280)
 #define WINDOW_H	 (720)
 

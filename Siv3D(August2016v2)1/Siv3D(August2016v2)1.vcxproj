@@ -278,6 +278,7 @@
   <ItemGroup>
     <ClCompile Include="..\joseki_viewer\board.cpp" />
     <ClCompile Include="..\joseki_viewer\board_siv3d.cpp" />
+    <ClCompile Include="..\joseki_viewer\evaluator.cpp" />
     <ClCompile Include="..\joseki_viewer\Main.cpp" />
     <ClCompile Include="..\joseki_viewer\tree.cpp" />
     <ClCompile Include="..\joseki_viewer\tree_siv3d.cpp" />
@@ -286,6 +287,7 @@
   <ItemGroup>
     <ClInclude Include="..\joseki_viewer\board.h" />
     <ClInclude Include="..\joseki_viewer\board_siv3d.h" />
+    <ClInclude Include="..\joseki_viewer\evaluator.h" />
     <ClInclude Include="..\joseki_viewer\tree.h" />
     <ClInclude Include="..\joseki_viewer\tree_siv3d.h" />
     <ClInclude Include="..\joseki_viewer\util.h" />

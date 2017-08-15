@@ -2,15 +2,10 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
+#include "util.h"
 #include <cassert>
 
-using namespace std;
 
-template<class T> bool INRANGE(T x, T a, T b) { return a <= x&&x <= b; }
-#define SZ(a) ((int)a.size())
-const int NG = -1;
 
 // æEŒã
 enum ESengo
