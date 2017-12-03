@@ -1,4 +1,4 @@
-// evaluator.h : 
+// evaluator.h : 評価ソフトへのアクセスをする。
 
 #pragma once
 

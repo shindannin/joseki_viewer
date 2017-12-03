@@ -29,8 +29,8 @@ public:
 		mOffsetY = RIGHT_CENTER_Y;
 		mGridScale = 40.f;
 		mFont = Font(8, L"ÉÅÉCÉäÉI");
-		mFontScore = Font(10, L"Segoe WP Black");
-		mFontScoreMedium = Font(7, L"Segoe WP Black");
+		mFontScore = Font(11, L"Impact");
+		mFontScoreMedium = Font(9, L"Impact");
 		mFontScoreSmall = Font(5, L"MS UI Gothic", FontStyle::Bitmap); // L"Consolas");
 		mFontGuiDefault = GUIManager::GetDefaultFont();
 

@@ -22,7 +22,7 @@
     <ProjectGuid>{12595914-F262-4DEF-88A9-7259F8330D95}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Siv3D_August2016v2_1</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
     <ProjectName>joseki_viewer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

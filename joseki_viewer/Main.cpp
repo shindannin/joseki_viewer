@@ -24,7 +24,6 @@ void Main()
 	Window::SetTitle(VERSION_TITLE);
     Window::SetStyle(WindowStyle::Sizeable);
 	Window::Resize(WINDOW_W, WINDOW_H);
-	const Font font(30);
 
 	Board* board = new BoardSiv3D();
 	Tree* tree = new TreeSiv3D(board);
