@@ -105,7 +105,7 @@ public:
 
 
 		mTextureBackground = Texture(L"pictures/background.jpg");
-		mNodeSelectSound = Sound(L"sounds/decision22.mp3");
+		mNodeSelectSound = Sound(L"sounds/cursor4.mp3");
 
 		GUIStyle style5 = style;
 		style5.background.color = Color(255, 255, 255, 0);
