@@ -16,10 +16,12 @@ enum EInputState
 	E_CHOICE,	// ê¨ÇÈÇ©Ç«Ç§Ç©ëIëíÜ
 };
 
+class GuiSiv3D;
+
 class BoardSiv3D : public Board
 {
 public:
-	BoardSiv3D();
+	BoardSiv3D(GuiSiv3D& gui);
 	virtual ~BoardSiv3D() override;
 	virtual void Draw() override;
 	virtual bool Update(string& te, wstring& teJap) override;
@@ -27,7 +29,7 @@ public:
 
 	void DrawCursor(const GridPos& gp, const Color& color) const;
 	void DrawKoma(const Masu& masu, int y, int x) const;
-	void DrawKoma(int sengo, int type, int y, int x, int maisu = 0, bool isChoice = false) const;
+	void DrawKoma(int baseSengo, int type, int y, int x, int maisu = 0, bool isChoice = false, bool ignoreReverse = false) const;
 	void SetOffset(int offsetX, int offsetY);
 	bool GetGridPosFromMouse(GridPos& gridPos) const;
 	void GetXYNaruNarazuChoice(int& y, int& x) const;
@@ -45,6 +47,7 @@ public:
 private:
 	void DrawArrow(int startY, int startX, int destY, int destX, const Color& color, int& cy, int& cx) const;
 	void UpdateDecided(string& te, wstring& teJap, bool& isMoved);
+	bool GetReverse() const;
 
 	const wstring mFileName[NUM_KOMA_TYPE][NUM_SEN_GO] =
 	{
@@ -73,14 +76,14 @@ private:
 
 	const Color grabbedColor[NUM_SEN_GO] =
 	{
-		{ 255, 0, 0, 127 },
-		{ 0, 0, 255, 127 },
+		{ 0xc9,0x3a,0x40,127 },
+		{ 0x00,0x74,0xbf,127 },
 	};
 
 	const Color nariColor[NUM_SEN_GO] =
 	{
-		{ 255, 0, 0, 192 },
-		{ 0, 0, 255, 192 },
+		{ 0xc9,0x3a,0x40, 192 },
+		{ 0x00,0x74,0xbf, 192 },
 	};
 
 	const Color narazuColor[NUM_SEN_GO] =
@@ -97,15 +100,17 @@ private:
 
 	const Color maisuFontColor[NUM_SEN_GO] =
 	{
-		{ 192, 0, 0, 255 },
-		{ 0, 0, 192, 255 },
+		{ 0xc9, 0, 0, 255 },
+		{ 0, 0, 0xbf, 255 },
 	};
 
 	vector <Texture> mTexture[NUM_SEN_GO];
 	Texture mTextureBoard;
 	Texture mTextureGrid;
 	Font mFont;
+	Font mFontTeban;
 	Sound mSoundKomaoto;
+	GuiSiv3D& mGui;
 
 	int mOffsetX;
 	int mOffsetY;

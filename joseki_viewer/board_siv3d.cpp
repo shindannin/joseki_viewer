@@ -1,9 +1,10 @@
 #include "board_siv3d.h"
+#include "gui_siv3d.h"
 #include "util.h"
 
 #include <cassert>
 
-BoardSiv3D::BoardSiv3D()
+BoardSiv3D::BoardSiv3D(GuiSiv3D& gui) : mGui(gui)
 {
 	for (int s = 0; s < NUM_SEN_GO; ++s)
 	{
@@ -26,6 +27,7 @@ BoardSiv3D::BoardSiv3D()
 	mBoardTextureHeight = mTextureBoard.height;
 
 	mFont = Font(15, L"メイリオ");
+	mFontTeban = Font(10, L"メイリオ");
 
 	mOffsetX = 0;
 	mOffsetY = 0;
@@ -62,7 +64,17 @@ void BoardSiv3D::DrawCursor(const GridPos& gp, const Color& color) const
 {
 	const int leftX = GetGridLeftX();
 	const int topY = GetGridTopY();
-	Rect(leftX + (BOARD_SIZE - 1 - gp.x) * mKomaTextureWidth, topY + gp.y* mKomaTextureHeight, mKomaTextureWidth, mKomaTextureHeight).draw(color);
+
+	int y = gp.y;
+	int x = gp.x;
+
+	if (GetReverse())
+	{
+		y = BOARD_SIZE - 1 - y;
+		x = BOARD_SIZE - 1 - x;
+	}
+
+	Rect(leftX + (BOARD_SIZE - 1 - x) * mKomaTextureWidth, topY + y* mKomaTextureHeight, mKomaTextureWidth, mKomaTextureHeight).draw(color);
 }
 
 void BoardSiv3D::Draw()
@@ -116,8 +128,8 @@ void BoardSiv3D::Draw()
 				if (numKoma >= 1)
 				{
 					int y, x;
-					GetMochigomaPos(s, k, y, x);
-					DrawKoma(s, k, y, x, numKoma);
+					GetMochigomaPos(s, k, y, x); // すでに先手後手を考慮していて、場所もあってる。
+					DrawKoma(s, k, y, x, numKoma, false, true);
 				}
 			}
 		}
@@ -126,13 +138,26 @@ void BoardSiv3D::Draw()
 	//----- 手番 -----
 	{
 		wstring name[2] = { L"先手番", L"後手番" };
-		const int x = mOffsetX + 439;
-		const int y = mOffsetY;
-		const int rad = 16;
-		RoundRect rect(x-rad/2, y, 75, rad * 2, rad);
+		const int w = 50;
+		const int rad = 8;
+		const int x = mOffsetX - w / 2 + mTextureBoard.width / 2;
+		int y = mOffsetY;
+		if ((GetTeban()==E_GO) ^ GetReverse())
+		{
+			y -= rad * 2;
+		}
+		else
+		{
+			y += mTextureBoard.height;
+		}
+
+
+		RoundRect rect(x, y, w, rad * 2, rad);
 		rect.draw(grabbedColor[GetTeban()]);
-		mFont(name[GetTeban()]).draw(x, y+2);
+		mFontTeban(name[GetTeban()]).draw(x+5, y-1);
 	}
+
+
 
 	//----- 盤面 -----
 	for (int y = 0; y < BOARD_SIZE; ++y)
@@ -165,15 +190,26 @@ void BoardSiv3D::Draw()
 	}
 
 	// つかんだ駒
-
-	if (mInputState == E_GRABBED)
+	if (mInputState == E_GRABBED || mInputState == E_UTSU)
 	{
 		const Masu& masu = GetMasu(GetMoveFromPos());
-		mTexture[masu.sengo][masu.type].draw(Mouse::Pos().x - mKomaTextureWidth / 2, Mouse::Pos().y - mKomaTextureHeight / 2);
-	}
-	else if (mInputState == E_UTSU)
-	{
-		mTexture[GetTeban()][GetUtsuKomaType()].draw(Mouse::Pos().x - mKomaTextureWidth / 2, Mouse::Pos().y - mKomaTextureHeight / 2);
+		int sengo = GetTeban();
+		if (GetReverse())
+		{
+			sengo = 1 - sengo;
+		}
+
+		EKomaType type;
+		if (mInputState == E_GRABBED)
+		{
+			type = masu.type;
+		}
+		else if (mInputState == E_UTSU)
+		{
+			type = GetUtsuKomaType();
+		}
+
+		mTexture[sengo][type].draw(Mouse::Pos().x - mKomaTextureWidth / 2, Mouse::Pos().y - mKomaTextureHeight / 2);
 	}
 
 	// 成り選択画面
@@ -189,10 +225,26 @@ void BoardSiv3D::DrawKoma(const Masu& masu, int y, int x) const
 	DrawKoma(masu.sengo, masu.type, y, x);
 }
 
-void BoardSiv3D::DrawKoma(int sengo, int type, int y, int x, int maisu, bool isChoice) const
+void BoardSiv3D::DrawKoma(int baseSengo, int type, int y, int x, int maisu, bool isChoice, bool isMochigoma) const
 {
 	const int leftX = GetGridLeftX();
 	const int topY = GetGridTopY();
+
+	int sengo = baseSengo;
+
+	if (!isMochigoma && GetReverse())
+	{
+		sengo = 1 - sengo;
+		y = BOARD_SIZE - 1 - y;
+		x = BOARD_SIZE - 1 - x;
+	}
+
+	int textureSengo = sengo;
+	if (GetReverse() && isMochigoma)
+	{
+		textureSengo = 1 - textureSengo;
+	}
+
 
 	if (isChoice)
 	{
@@ -223,14 +275,14 @@ void BoardSiv3D::DrawKoma(int sengo, int type, int y, int x, int maisu, bool isC
 	}
 	else
 	{
-		mTexture[sengo][type].draw(leftX + (BOARD_SIZE - 1 - x)*mKomaTextureWidth, topY + y*mKomaTextureHeight);
+		mTexture[textureSengo][type].draw(leftX + (BOARD_SIZE - 1 - x)*mKomaTextureWidth, topY + y*mKomaTextureHeight);
 	}
 
 	// 駒枚数の数字
 	if (maisu >= 1)
 	{
 		const float dx[] = { +1.0f, -0.25f };
-		mFont(L"", maisu).draw(leftX + (BOARD_SIZE - 1 - x + dx[sengo])*mKomaTextureWidth, topY + y*mKomaTextureHeight, maisuFontColor[sengo]);
+		mFont(L"", maisu).draw(leftX + (BOARD_SIZE - 1 - x + dx[textureSengo])*mKomaTextureWidth, topY + y*mKomaTextureHeight, maisuFontColor[baseSengo]);
 	}
 }
 
@@ -245,8 +297,14 @@ bool BoardSiv3D::GetGridPosFromMouse(GridPos& gridPos) const
 {
 	const int leftX = GetGridLeftX();
 	const int topY = GetGridTopY();
-	const int x = BOARD_SIZE - 1 - (Mouse::Pos().x - leftX) / mKomaTextureWidth;
-	const int y = (Mouse::Pos().y - topY) / mKomaTextureHeight;
+	int x = BOARD_SIZE - 1 - (Mouse::Pos().x - leftX) / mKomaTextureWidth;
+	int y = (Mouse::Pos().y - topY) / mKomaTextureHeight;
+
+	if (GetReverse())
+	{
+		x = BOARD_SIZE - 1 - x;
+		y = BOARD_SIZE - 1 - y;
+	}
 
 	if (!(INRANGE(x, 0, BOARD_SIZE - 1) && INRANGE(y, 0, BOARD_SIZE - 1)))
 	{
@@ -471,15 +529,20 @@ void BoardSiv3D::NariOffsetY(T& y) const
 	}
 }
 
-void BoardSiv3D::GetMochigomaPos(int s, int k, int& y, int& x) const
+void BoardSiv3D::GetMochigomaPos(int sengo, int k, int& y, int& x) const
 {
 	const int posX[2] = { -2, 10 };
 	const int posY[2] = { 1,  7 };
 	const int signY[2] = { +1, -1 };
-	assert(INRANGE(s,0,1));
+	assert(INRANGE(sengo,0,1));
 
-	y = k*signY[s] + posY[s];
-	x = posX[s];
+	if (GetReverse())
+	{
+		sengo = 1 - sengo;
+	}
+
+	y = k*signY[sengo] + posY[sengo];
+	x = posX[sengo];
 }
 
 
@@ -509,6 +572,11 @@ bool BoardSiv3D::IsNaruChoice() const
 {
 	float y, x;
 	GetXYNaruNarazuChoice(y, x);
+	if (GetReverse())
+	{
+		y = BOARD_SIZE - 1 - y;
+		x = BOARD_SIZE - 1 - x;
+	}
 
 	float		cy = static_cast<float>(GetMoveToPos().y);
 	const float	cx = static_cast<float>(GetMoveToPos().x);
@@ -521,6 +589,11 @@ bool BoardSiv3D::IsNarazuChoice() const
 {
 	float y, x;
 	GetXYNaruNarazuChoice(y, x);
+	if (GetReverse())
+	{
+		y = BOARD_SIZE - 1 - y;
+		x = BOARD_SIZE - 1 - x + 2;
+	}
 
 	float		cy = static_cast<float>(GetMoveToPos().y);
 	const float	cx = static_cast<float>(GetMoveToPos().x);
@@ -565,5 +638,11 @@ void BoardSiv3D::DrawArrow(int startY, int startX, int destY, int destX, const C
 
 	Line(sx, sy, dx, dy).drawArrow(10, { 20, 20 }, color);
 }
+
+bool BoardSiv3D::GetReverse() const
+{
+	return mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::REVERSE_BOARD);
+}
+
 
 

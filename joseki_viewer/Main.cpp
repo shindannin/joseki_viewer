@@ -13,6 +13,7 @@
 
 #include "board_siv3d.h"
 #include "tree_siv3d.h"
+#include "gui_siv3d.h"
 #include "util.h"
 
 
@@ -25,8 +26,9 @@ void Main()
     Window::SetStyle(WindowStyle::Sizeable);
 	Window::Resize(WINDOW_W, WINDOW_H);
 
-	Board* board = new BoardSiv3D();
-	Tree* tree = new TreeSiv3D(board);
+	GuiSiv3D* guiSiv3D = new GuiSiv3D();
+	Board* board = new BoardSiv3D(*guiSiv3D);
+	Tree* tree = new TreeSiv3D(board, *guiSiv3D);
 
 	while (System::Update())
 	{

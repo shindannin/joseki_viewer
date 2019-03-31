@@ -288,6 +288,7 @@
     <ClInclude Include="..\joseki_viewer\board.h" />
     <ClInclude Include="..\joseki_viewer\board_siv3d.h" />
     <ClInclude Include="..\joseki_viewer\evaluator.h" />
+    <ClInclude Include="..\joseki_viewer\gui_siv3d.h" />
     <ClInclude Include="..\joseki_viewer\tree.h" />
     <ClInclude Include="..\joseki_viewer\tree_siv3d.h" />
     <ClInclude Include="..\joseki_viewer\util.h" />

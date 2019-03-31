@@ -1,5 +1,6 @@
 #include "tree_siv3d.h"
 #include "board_siv3d.h"
+#include "gui_siv3d.h"
 #include "util.h"
 
 #include <algorithm>
@@ -43,18 +44,18 @@ void TreeSiv3D::Draw()
 void TreeSiv3D::DrawBeforeBoard() const
 {
 	// デバッグ用座標と拡大縮小情報
-	if (mGuiSettings.checkBox(L"settings").checked(SHOW_DEBUG))
+	if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_DEBUG))
 	{
 		mFont(L"Offset=(", mOffsetX, L",", mOffsetY, L") GridScale=", mGridScale).draw(WINDOW_W / 2 + 20.f, 20.0f, Palette::Orange);
 
 		vector <const GUI*> allGUI =
 		{
-			&mGuiFile,
-			&mGuiEvaluator,
-			&mGuiScore,
-			&mGuiSettings,
-			&mGuiDelete,
-			&mGuiBoard,
+			&mGui.mFile,
+			&mGui.mEvaluator,
+			&mGui.mScore,
+			&mGui.mSettings,
+			&mGui.mDelete,
+			&mGui.mBoard,
 		};
 
 
@@ -70,7 +71,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 	if (mEvaluator.IsActive())
 	{
 		wstring wname(mEvaluator.GetName().begin(), mEvaluator.GetName().end());
-		mGuiEvaluator.text(L"evaluator_name").text = Format(L"評価ソフト ", wname, L"  読んだ手数 ", mEvaluator.GetPonderNodes(), L"手  読んだ時間 ", mEvaluator.GetPonderTime(), L"ミリ秒");
+		mGui.mEvaluator.text(L"evaluator_name").text = Format(L"評価ソフト ", wname, L"  読んだ手数 ", mEvaluator.GetPonderNodes(), L"手  読んだ時間 ", mEvaluator.GetPonderTime(), L"ミリ秒");
 	}
 
 	// オプションの設定
@@ -84,7 +85,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 		{
 			optionString = Format(L"未設定");
 		}
-		mGuiEvaluator.text(L"option_name").text = optionString;
+		mGui.mEvaluator.text(L"option_name").text = optionString;
 	}
 
 	// 木のリンク
@@ -102,10 +103,10 @@ void TreeSiv3D::DrawBeforeBoard() const
 
 			Line(stX, stY, deX, deY).draw(2, Color(192, 192, 192, 128));
 
-			if (mGuiSettings.checkBox(L"settings").checked(SHOW_TE))
+			if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_TE))
 			{
-				const float centerX = 0.5f * (stX + deX);
-				const float centerY = 0.5f * (stY + deY);
+				const int centerX = static_cast<int>(deX); // (0.5f * (stX + deX));
+				const int centerY = static_cast<int>(0.5f * (stY + deY));
 				mFont(link.teJap).drawCenter(centerX, centerY);
 			}
 		}
@@ -117,7 +118,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 		const Node& node = mNodes[nodeID];
 		const int centerX = static_cast<int>(ScaleX(node.mVisualX));
 		const int centerY = static_cast<int>(ScaleY(node.mVisualY));
-		if (mGuiSettings.checkBox(L"settings").checked(SHOW_DEBUG))
+		if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_DEBUG))
 		{
 			// デバッグ用：表示場所の表示
 			mFont(centerX, L",", centerY).draw(centerX, centerY, Palette::Orange);
@@ -125,23 +126,23 @@ void TreeSiv3D::DrawBeforeBoard() const
 
 		// ノード背景の表示
 		Color color = Palette::White;
-		const NodeSize nodeSize = mGuiSettings.checkBox(L"settings").checked(SMALL_NODE) ? NS_SMALL : NS_BIG;
+		const NodeSize nodeSize = mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SMALL_NODE) ? NS_SMALL : NS_BIG;
 		const s3d::RoundRect& roundRect = GetNodeShape(centerX, centerY, nodeSize);
 		if (nodeID == GetSelectedNodeID())
 		{
-			color = Palette::Yellow;
+			color = Color{ 0xff, 0xf0, 0x01, 0xff }; //  Palette::Yellow;
 		}
 		else if (roundRect.contains(Mouse::Pos()))
 		{
-			color = Palette::Orange;
+			color = Palette::Orange; // Color{ 0xde, 0x96, 0x10, 0xff }; 
 		}
 		else if (mEvaluator.IsNodeEvaluating(nodeID))
 		{
-			color = Palette::Lightgreen;
+			color = Color{ 0xa0, 0xc2, 0x38, 0xff }; // Palette::Lightgreen;
 		}
 		roundRect.draw(color);
 
-		if (mGuiSettings.checkBox(L"settings").checked(SHOW_SCORE))
+		if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_SCORE))
 		{
 			DrawScore(centerX, centerY, node, nodeSize);
 		}
@@ -154,7 +155,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 		const float centerY = ScaleY(node.mVisualY);
 
 		// タグの表示
-		if (mGuiSettings.checkBox(L"settings").checked(SHOW_TAG))
+		if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_TAG))
 		{
 			if (!node.mSummary.empty())
 			{
@@ -175,13 +176,13 @@ void TreeSiv3D::DrawBeforeBoard() const
 		const Node& node = mNodes[GetSelectedNodeID()];
 		if (node.IsScoreEvaluated())
 		{
-			mGuiScore.text(L"score").text = Format(L"評価値 ", node.ConverScoreToWString());
-			mGuiScore.text(L"tejunJap").text = AddNewLine(node.mTejunJap, 1);
+			mGui.mScore.text(L"score").text = Format(L"評価値 ", node.ConverScoreToWString());
+			mGui.mScore.text(L"tejunJap").text = AddNewLine(node.mTejunJap, 1);
 		}
 		else
 		{
-			mGuiScore.text(L"score").text = Format(L"未評価 -----");
-			mGuiScore.text(L"tejunJap").text = L"";
+			mGui.mScore.text(L"score").text = Format(L"未評価 -----");
+			mGui.mScore.text(L"tejunJap").text = L"";
 		}
 
 		//		// 評価値バー
@@ -194,7 +195,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 
 void TreeSiv3D::DrawAfterBoard() const
 {
-	if (mGuiSettings.checkBox(L"settings").checked(SHOW_ARROW))
+	if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_ARROW))
 	{
 		BoardSiv3D* boardSiv3D = dynamic_cast<BoardSiv3D*>(mBoard);
 		if (boardSiv3D != nullptr)
@@ -336,10 +337,10 @@ s3d::RoundRect TreeSiv3D::GetNodeShape(int centerX, int centerY, NodeSize nodeSi
 void TreeSiv3D::OnSelectedNodeIDChanged()
 {
 	Node& node = mNodes[GetSelectedNodeID()];
-	mGuiBoard.textField(L"summary").setText(node.mSummary);
-//	mGuiNode.textArea(L"comment").setText(node.mComment);
+	mGui.mBoard.textField(L"summary").setText(node.mSummary);
+//	mGui.mNode.textArea(L"comment").setText(node.mComment);
 
-	if (mGuiSettings.checkBox(L"settings").checked(FIX_SELECTED_NODE))
+	if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::FIX_SELECTED_NODE))
 	{
 		const float centerX = ScaleX(node.mVisualX);
 		const float centerY = ScaleY(node.mVisualY);
@@ -356,13 +357,13 @@ void TreeSiv3D::Update()
 		BoardSiv3D* boardSiv3D = dynamic_cast<BoardSiv3D*>(mBoard);
 		if (boardSiv3D != nullptr)
 		{
-			boardSiv3D->SetOffset(mGuiBoard.getPos().x + 100, mGuiBoard.getPos().y+70);
+			boardSiv3D->SetOffset(mGui.mBoard.getPos().x + 100, mGui.mBoard.getPos().y+70);
 		}
 	}
 
 
 	// メニュー
-	if (mGuiFile.button(L"kifu_load").pushed)
+	if (mGui.mFile.button(L"kifu_load").pushed)
 	{
 		const auto path = Dialog::GetOpen({ { L"定跡ビューワファイル (*.jsv)", L"*.jsv" } });
 		if (path.has_value())
@@ -375,7 +376,7 @@ void TreeSiv3D::Update()
 			mEvaluator.RequestCancel();
 		}
 	}
-	else if (mGuiFile.button(L"kifu_save").pushed)
+	else if (mGui.mFile.button(L"kifu_save").pushed)
 	{
 		const auto path = Dialog::GetSave({ { L"定跡ビューワファイル (*.jsv)", L"*.jsv" } });
 		if (path.has_value())
@@ -384,7 +385,7 @@ void TreeSiv3D::Update()
 			Window::SetTitle(GetVersionTitle(path.value().str()));
 		}
 	}
-	else if (mGuiFile.button(L"kif_format_load").pushed)
+	else if (mGui.mFile.button(L"kif_format_load").pushed)
 	{
 		const auto path = Dialog::GetOpen({ { L"kifファイル (*.kif)", L"*.kif" } });
 		if (path.has_value())
@@ -396,19 +397,19 @@ void TreeSiv3D::Update()
 			mEvaluator.RequestCancel();
 		}
 	}
-	else if (mGuiEvaluator.button(L"evaluator_load").pushed)
+	else if (mGui.mEvaluator.button(L"evaluator_load").pushed)
 	{
 		mEvaluator.Open();
 	}
-	else if (mGuiEvaluator.button(L"option_load").pushed)
+	else if (mGui.mEvaluator.button(L"option_load").pushed)
 	{
 		mEvaluator.OpenOption();
 	}
 
 	// 時間の更新
-	if (mGuiEvaluator.textField(L"time_sec").hasChanged)
+	if (mGui.mEvaluator.textField(L"time_sec").hasChanged)
 	{
-		string text = mGuiEvaluator.textField(L"time_sec").text.narrow();
+		string text = mGui.mEvaluator.textField(L"time_sec").text.narrow();
 		if(!text.empty())
 		{
 			const int sec = strtol(text.c_str(),NULL,0);
@@ -445,7 +446,7 @@ void TreeSiv3D::Update()
 		else if (Input::MouseL.clicked)
 		{
 			// ノードの選択
-			const NodeSize nodeSize = mGuiSettings.checkBox(L"settings").checked(SMALL_NODE) ? NS_SMALL : NS_BIG;
+			const NodeSize nodeSize = mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SMALL_NODE) ? NS_SMALL : NS_BIG;
 			for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
 			{
 				const Node& node = mNodes[nodeID];
@@ -481,23 +482,23 @@ void TreeSiv3D::Update()
 		// 削除
 		if (Input::KeyDelete.clicked)
 		{
-			const bool nextFlip = !mGuiDelete.button(L"delete_score").enabled;
+			const bool nextFlip = !mGui.mDelete.button(L"delete_score").enabled;
 
-			mGuiDelete.button(L"delete_score").enabled = nextFlip;
-			mGuiDelete.button(L"delete_all_score").enabled = nextFlip;
-			mGuiDelete.button(L"delete_all_node").enabled = nextFlip;
+			mGui.mDelete.button(L"delete_score").enabled = nextFlip;
+			mGui.mDelete.button(L"delete_all_score").enabled = nextFlip;
+			mGui.mDelete.button(L"delete_all_node").enabled = nextFlip;
 		}
-		else if (mGuiDelete.button(L"delete_score").pushed)
+		else if (mGui.mDelete.button(L"delete_score").pushed)
 		{
 			mEvaluator.RequestCancel();
 			ResetSelectedScore();
 		}
-		else if (mGuiDelete.button(L"delete_all_score").pushed)
+		else if (mGui.mDelete.button(L"delete_all_score").pushed)
 		{
 			mEvaluator.RequestCancel();
 			ResetSelectedAncientScore();
 		}
-		else if (mGuiDelete.button(L"delete_all_node").pushed)
+		else if (mGui.mDelete.button(L"delete_all_node").pushed)
 		{
 			mEvaluator.RequestCancel();
 			DeleteSelectedAncientNode();
@@ -510,16 +511,16 @@ void TreeSiv3D::Update()
 
 		Graphics::SetBackground(Color(160, 200, 100));
 
-		if (mGuiBoard.textField(L"summary").hasChanged)
+		if (mGui.mBoard.textField(L"summary").hasChanged)
 		{
-			String tmp = mGuiBoard.textField(L"summary").text;
+			String tmp = mGui.mBoard.textField(L"summary").text;
 			node.mSummary = tmp.str();
 		}
 
-		if (mGuiBoard.textField(L"summary").active)
+		if (mGui.mBoard.textField(L"summary").active)
 		{
 			const Point delta(20, 26); // ウィンドウからサマリ枠への相対座標
-			const Rect rect = mFontGuiDefault(node.mSummary).region(mGuiBoard.getPos() + delta);
+			const Rect rect = mFontGuiDefault(node.mSummary).region(mGui.mBoard.getPos() + delta);
 			IME::SetCompositionWindowPos(Point(rect.x + rect.w, rect.y));
 		}
 	}
@@ -546,6 +547,6 @@ void TreeSiv3D::PlayNodeSelectSound()
 // 座標が将棋盤の中かどうかをチェック
 bool TreeSiv3D::IsInShogiban(int x, int y) const
 {
-	return	INRANGE(x, mGuiBoard.getPos().x, mGuiBoard.getPos().x + mShogibanWidth) &&
-			INRANGE(y, mGuiBoard.getPos().y, mGuiBoard.getPos().y + mShogibanHeight);
+	return	INRANGE(x, mGui.mBoard.getPos().x, mGui.mBoard.getPos().x + mShogibanWidth) &&
+			INRANGE(y, mGui.mBoard.getPos().y, mGui.mBoard.getPos().y + mShogibanHeight);
 }

@@ -432,5 +432,8 @@
     <ClInclude Include="..\joseki_viewer\evaluator.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="..\joseki_viewer\gui_siv3d.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

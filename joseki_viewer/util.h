@@ -16,7 +16,11 @@ const int NG = -1;
 #define RIGHT_CENTER_X (WINDOW_W*0.75f)
 #define RIGHT_CENTER_Y (WINDOW_H*0.5f)
 
-#define VERSION_TITLE L"Siv3D 定跡ビューア Ver 0.03 (2017/06/18)  "
+const int mShogibanWidth = 613;
+const int mShogibanHeight = 523;
+
+
+#define VERSION_TITLE L"Siv3D 定跡ビューア Ver 0.04 (2019/04/01)  "
 #define VERSION_DATA (2)
 
 using namespace std;
