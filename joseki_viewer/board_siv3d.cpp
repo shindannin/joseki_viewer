@@ -231,20 +231,15 @@ void BoardSiv3D::DrawKoma(int baseSengo, int type, int y, int x, int maisu, bool
 	const int topY = GetGridTopY();
 
 	int sengo = baseSengo;
-
-	if (!isMochigoma && GetReverse())
+	if (GetReverse())
 	{
 		sengo = 1 - sengo;
-		y = BOARD_SIZE - 1 - y;
-		x = BOARD_SIZE - 1 - x;
+		if (!isMochigoma)
+		{
+			y = BOARD_SIZE - 1 - y;
+			x = BOARD_SIZE - 1 - x;
+		}
 	}
-
-	int textureSengo = sengo;
-	if (GetReverse() && isMochigoma)
-	{
-		textureSengo = 1 - textureSengo;
-	}
-
 
 	if (isChoice)
 	{
@@ -275,14 +270,14 @@ void BoardSiv3D::DrawKoma(int baseSengo, int type, int y, int x, int maisu, bool
 	}
 	else
 	{
-		mTexture[textureSengo][type].draw(leftX + (BOARD_SIZE - 1 - x)*mKomaTextureWidth, topY + y*mKomaTextureHeight);
+		mTexture[sengo][type].draw(leftX + (BOARD_SIZE - 1 - x)*mKomaTextureWidth, topY + y*mKomaTextureHeight);
 	}
 
 	// ‹î–‡”‚Ì”Žš
 	if (maisu >= 1)
 	{
 		const float dx[] = { +1.0f, -0.25f };
-		mFont(L"", maisu).draw(leftX + (BOARD_SIZE - 1 - x + dx[textureSengo])*mKomaTextureWidth, topY + y*mKomaTextureHeight, maisuFontColor[baseSengo]);
+		mFont(L"", maisu).draw(leftX + (BOARD_SIZE - 1 - x + dx[sengo])*mKomaTextureWidth, topY + y*mKomaTextureHeight, maisuFontColor[baseSengo]);
 	}
 }
 
@@ -611,6 +606,12 @@ void BoardSiv3D::DrawMove(const string& te, const Color& color, int& cy, int& cx
 	{
 		startY = mv.from.y;
 		startX = mv.from.x;
+
+		if (GetReverse())
+		{
+			startY = BOARD_SIZE - 1 - startY;
+			startX = BOARD_SIZE - 1 - startX;
+		}
 	}
 	else
 	{
@@ -618,6 +619,13 @@ void BoardSiv3D::DrawMove(const string& te, const Color& color, int& cy, int& cx
 		const int s = static_cast<int>(GetTeban());
 		GetMochigomaPos(s, mv.utsuKomaType, startY, startX);
 	}
+
+	if (GetReverse())
+	{
+		mv.to.y = BOARD_SIZE - 1 - mv.to.y;
+		mv.to.x = BOARD_SIZE - 1 - mv.to.x;
+	}
+
 	DrawArrow(startY, startX, mv.to.y, mv.to.x, color, cy, cx);
 }
 
