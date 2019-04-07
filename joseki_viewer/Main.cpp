@@ -35,9 +35,10 @@ void Main()
 		tree->Update();
 		tree->Draw();
 	}
-	
+
 	delete tree;
 	delete board;
+	delete guiSiv3D;
 }
 
 

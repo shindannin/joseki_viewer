@@ -56,6 +56,7 @@ void Tree::Init()
 	mNodes.push_back(Node());
 	CalculateVisualPos();
 	SetSelectedNodeID(0);
+	UpdateBestRouteNodeIDs();
 }
 
 void Tree::Draw()
@@ -193,6 +194,7 @@ void Tree::SetSelectedNodeID(int nodeID)
 {
 	mSelectedNodeID = nodeID;
 	mBoard->SetState(mNodes[nodeID].mState);
+	UpdateBestRouteNodeIDs();
 	OnSelectedNodeIDChanged();
 }
 
@@ -281,6 +283,65 @@ void Tree::DfsCalcNewNodeIDExceptSelected(int nodeID, vector <int>& newNodeIDs)
 	}
 }
 
+// mSelectedNodeIDの過去のノード+評価済みの中でベストルートをたどったときの
+void Tree::UpdateBestRouteNodeIDs()
+{
+	mBestRouteNodeIDs.clear();
+
+	// 過去のノードをたどる
+	for (int nodeID = mSelectedNodeID; nodeID!=NG;)
+	{
+		mBestRouteNodeIDs.push_back(nodeID);
+		nodeID = mNodes[nodeID].mParentNodeID;
+	}
+	
+	reverse(mBestRouteNodeIDs.begin(), mBestRouteNodeIDs.end());
+
+
+	// 未来のノードをたどる
+	for (int nodeID = mSelectedNodeID; ;)
+	{
+		// ルートまで戻るを前提としているので、これで先手後手が分かる
+		int sengo = (SZ(mBestRouteNodeIDs) + 1) % 2;
+		assert(sengo != E_NO_SENGO);
+
+		const Node& node = mNodes[nodeID];
+
+		int bestScore = Node::SCORE_RESIGN + 10000; // 後手はスコア最小化（最悪＝最大）
+		if (sengo == E_SEN)
+		{
+			bestScore = -bestScore;	// 先手はスコア最大化（最悪＝最小）
+		}
+		int bestNextNodeID = NG;
+
+		for (int i = 0; i < SZ(node.mLinks); ++i)
+		{
+			const Link& link = node.mLinks[i];
+			const int nextNodeID = link.destNodeID;
+			const Node& nextNode = mNodes[nextNodeID];
+			if (nextNode.IsScoreEvaluated())
+			{
+				if (sengo == E_SEN && nextNode.mScore > bestScore ||
+					sengo == E_GO && nextNode.mScore < bestScore)
+				{
+					bestScore = nextNode.mScore;
+					bestNextNodeID = nextNodeID;
+				}
+			}
+		}
+
+		if (bestNextNodeID == NG)
+		{
+			break;
+		}
+		else
+		{
+			mBestRouteNodeIDs.push_back(bestNextNodeID);
+			nodeID = bestNextNodeID;
+		}
+	}
+}
+
 void Tree::DeleteSelectedAncientNode()
 {
 	const int rootNodeID = GetRootNodeID();
@@ -339,6 +400,7 @@ void Tree::DeleteSelectedAncientNode()
 void Tree::ResetSelectedScore()
 {
 	mNodes[mSelectedNodeID].ResetScore();
+	UpdateBestRouteNodeIDs();
 }
 
 void Tree::ResetSelectedAncientScore()
@@ -350,6 +412,7 @@ void Tree::ResetSelectedAncientScore()
 	{
 		mNodes[nodeID].ResetScore();
 	}
+	UpdateBestRouteNodeIDs();
 }
 
 

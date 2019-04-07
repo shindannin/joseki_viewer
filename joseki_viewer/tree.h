@@ -2,6 +2,8 @@
 
 #pragma once
 
+
+
 #include "board.h"
 #include "util.h"
 #include <fstream>
@@ -368,6 +370,18 @@ protected:
 	void DeleteSelectedAncientNode();
 	void ResetSelectedScore();
 	void ResetSelectedAncientScore();
+	bool IsBestRoute(int nodeID) const
+	{
+		for (int n : mBestRouteNodeIDs)
+		{
+			if (nodeID == n)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	// ÉZÅ[ÉuÇ∑ÇÈ
 	int mVersion;
@@ -380,5 +394,8 @@ protected:
 private:
 	void DfsCalcNewNodeIDExceptSelected(int nodeID, vector <int>& newNodeIDs);
 	void DfsCalcNewNodeID(int nodeID, vector <int>& newNodeIDs);
+	void UpdateBestRouteNodeIDs();
+
 	int mSelectedNodeID;
+	vector <int> mBestRouteNodeIDs;
 };

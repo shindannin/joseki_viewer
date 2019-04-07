@@ -140,6 +140,11 @@ void TreeSiv3D::DrawBeforeBoard() const
 		{
 			color = Color{ 0xa0, 0xc2, 0x38, 0xff }; // Palette::Lightgreen;
 		}
+		else if (IsBestRoute(nodeID))
+		{
+			color = Palette::Lightblue;
+		}
+
 		roundRect.draw(color);
 
 		if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_SCORE))
