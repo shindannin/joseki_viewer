@@ -76,7 +76,7 @@ public:
 
 		mScore = GUI(style);
 		mScore.setTitle(L"•]‰¿’l");
-		mScore.setPos(mShogibanWidth, syogibanY);
+		mScore.setPos(SHOGIBAN_W, syogibanY);
 		mScore.addln(L"score", GUIText::Create(L"", widgetStyle));
 		mScore.addln(L"tejunJap", GUIText::Create(L"", widgetStyle));
 

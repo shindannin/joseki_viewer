@@ -383,6 +383,21 @@ protected:
 		return false;
 	}
 
+	const vector <int>& GetBestRouteNodeIDs() const
+	{
+		return mBestRouteNodeIDs;
+	}
+
+	vector <int> GetBestRouteScores() const
+	{
+		vector <int> ret;
+		for (int nodeID :  mBestRouteNodeIDs)
+		{
+			ret.push_back(mNodes[nodeID].mScore);
+		}
+		return ret;
+	}
+
 	// ÉZÅ[ÉuÇ∑ÇÈ
 	int mVersion;
 	vector <Node> mNodes;

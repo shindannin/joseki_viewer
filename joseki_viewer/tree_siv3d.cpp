@@ -59,11 +59,21 @@ void TreeSiv3D::DrawBeforeBoard() const
 		};
 
 
-		int i = 0;
-		for (const GUI* pGUI : allGUI)
 		{
-			mFont(L"(", pGUI->getPos().x, L",", pGUI->getPos().y, L")").draw(Window::Width() - 200, Window::Height() - 200 + i * 20, Palette::Orange);
-			++i;
+			int i = 0;
+			for (const GUI* pGUI : allGUI)
+			{
+				mFont(L"(", pGUI->getPos().x, L",", pGUI->getPos().y, L")").draw(Window::Width() - 200, Window::Height() - 200 + i * 20, Palette::Orange);
+				++i;
+			}
+		}
+
+		// 通信デバッグログ
+		const vector <string>& logs = mEvaluator.GetReadLogs();
+
+		for (int i=0;i<SZ(logs);++i)
+		{
+			mFont(Widen(logs[i])).draw(800, 400+15*i, Palette::Orange);
 		}
 	}
 
@@ -196,6 +206,45 @@ void TreeSiv3D::DrawBeforeBoard() const
 		//			DrawScoreBar(node.mScore, 2000, 400, 200, 400, 50);
 		//		}
 	}
+
+	// 評価値グラフ
+	{
+		const float offW = SCORE_GRAPH_W;
+		const float offH = SCORE_GRAPH_H;
+
+		const float halfH = offH / 2;
+		const float offX = SCORE_GRAPH_X;
+		const float offY = SCORE_GRAPH_Y;
+		const float scaleX = SCORE_GRAPH_SW;
+		const float maxScore = 2000;
+
+		Rect(offX, offY, offW, offH).draw(Color(0, 0, 64, 192));
+		Line(offX, offY + halfH, offX + offW, offY + halfH).draw(1, Color(192, 192, 192, 128));
+
+		vector <int> scores = GetBestRouteScores();
+
+		for (int i = 0; i < SZ(scores) - 1; ++i)
+		{
+			const float scaleY = -halfH / maxScore;
+
+			const float stX = offX + i * scaleX;
+			const float stY = offY + halfH + CLAMP(scores[i] * scaleY, -halfH + 1, halfH - 1);
+			const float deX = offX + (i + 1) * scaleX;
+			const float deY = offY + halfH + CLAMP(scores[i + 1] * scaleY, -halfH + 1, halfH - 1);
+
+			Line(stX, stY, deX, deY).draw(2, Color(64, 255, 64, 128));
+		}
+
+		if (IsInScoreGraph(Mouse::Pos().x, Mouse::Pos().y))
+		{
+			const int order = CalcOrder(Mouse::Pos().x, offX, scaleX);
+			const float x = offX + order * scaleX;
+			Rect( x - scaleX * 0.5, offY, scaleX, offH).draw(Color(255, 255, 0, 64));
+		}
+	}
+
+	
+
 }
 
 void TreeSiv3D::DrawAfterBoard() const
@@ -321,14 +370,14 @@ void TreeSiv3D::DrawScore(int centerX, int centerY, const Node& node, NodeSize n
 // ノードの表示に使う図形を返す
 s3d::RoundRect TreeSiv3D::GetNodeShape(int centerX, int centerY, NodeSize nodeSize) const
 {
-	const int halfWidth[NUM_NS]=
+	const static int halfWidth[NUM_NS]=
 	{
 		25,
 		16,
 		12,
 	};
 
-	const int radius[NUM_NS]=
+	const static int radius[NUM_NS]=
 	{
 		8,
 		6,
@@ -427,6 +476,7 @@ void TreeSiv3D::Update()
 
 
 	{
+
 		if (Input::MouseR.clicked && IsInShogiban(Mouse::Pos().x, Mouse::Pos().y))
 		{
 			// 1手戻る
@@ -450,23 +500,40 @@ void TreeSiv3D::Update()
 		}
 		else if (Input::MouseL.clicked)
 		{
-			// ノードの選択
-			const NodeSize nodeSize = mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SMALL_NODE) ? NS_SMALL : NS_BIG;
-			for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
+			if (IsInScoreGraph(Mouse::Pos().x, Mouse::Pos().y))
 			{
-				const Node& node = mNodes[nodeID];
-				const int centerX = static_cast<int>(ScaleX(node.mVisualX));
-				const int centerY = static_cast<int>(ScaleY(node.mVisualY));
+				// 評価値グラフ上の選択
 
-				if (!IsInShogiban(centerX, centerY))
+				// 現在何番目を選択しているか？
+				int order = CalcOrder(Mouse::Pos().x, SCORE_GRAPH_X, SCORE_GRAPH_SW);
+
+				const vector <int>& bestRoundNodeIDs = GetBestRouteNodeIDs();
+				const int num = SZ(bestRoundNodeIDs);
+				order = CLAMP(order, 0, num-1);
+				SetSelectedNodeID(bestRoundNodeIDs[order]);
+				PlayNodeSelectSound();
+			}
+			else
+			{
+				// ノードの選択
+				const NodeSize nodeSize = mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SMALL_NODE) ? NS_SMALL : NS_BIG;
+				for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
 				{
-					if (GetNodeShape(centerX, centerY, nodeSize).contains(Mouse::Pos()))
+					const Node& node = mNodes[nodeID];
+					const int centerX = static_cast<int>(ScaleX(node.mVisualX));
+					const int centerY = static_cast<int>(ScaleY(node.mVisualY));
+
+					if (!IsInShogiban(centerX, centerY))
 					{
-						SetSelectedNodeID(nodeID);
-						PlayNodeSelectSound();
-						break;
+						if (GetNodeShape(centerX, centerY, nodeSize).contains(Mouse::Pos()))
+						{
+							SetSelectedNodeID(nodeID);
+							PlayNodeSelectSound();
+							break;
+						}
 					}
 				}
+
 			}
 		}
 
@@ -552,6 +619,13 @@ void TreeSiv3D::PlayNodeSelectSound()
 // 座標が将棋盤の中かどうかをチェック
 bool TreeSiv3D::IsInShogiban(int x, int y) const
 {
-	return	INRANGE(x, mGui.mBoard.getPos().x, mGui.mBoard.getPos().x + mShogibanWidth) &&
-			INRANGE(y, mGui.mBoard.getPos().y, mGui.mBoard.getPos().y + mShogibanHeight);
+	return	INRANGE(x, mGui.mBoard.getPos().x, mGui.mBoard.getPos().x + SHOGIBAN_W) &&
+			INRANGE(y, mGui.mBoard.getPos().y, mGui.mBoard.getPos().y + SHOGIBAN_H);
+}
+
+// 座標が評価値グラフの中かどうかチェック
+bool TreeSiv3D::IsInScoreGraph(int x, int y) const
+{
+	return	INRANGE(x, SCORE_GRAPH_X, SCORE_GRAPH_X + SCORE_GRAPH_W) &&
+			INRANGE(y, SCORE_GRAPH_Y, SCORE_GRAPH_Y + SCORE_GRAPH_H);
 }

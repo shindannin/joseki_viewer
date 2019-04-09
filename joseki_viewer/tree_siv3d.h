@@ -84,6 +84,7 @@ private:
 
 	void PlayNodeSelectSound();
 	bool IsInShogiban(int x, int y) const;
+	bool IsInScoreGraph(int x, int y) const;
 	s3d::RoundRect GetNodeShape(int centerX, int centerY, NodeSize nodeSize) const;
 	void DrawBeforeBoard() const;
 	void DrawAfterBoard() const;

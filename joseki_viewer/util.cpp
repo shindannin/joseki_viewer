@@ -104,6 +104,11 @@ void Trim(string& s)
 	}
 }
 
+int CalcOrder(float x, float start_x, float w)
+{
+	return static_cast<int>((x - start_x + w * 0.5) / w);
+}
+
 wstring AddNewLine(const wstring& ws, int perNumTe)
 {
 	wstring ret;

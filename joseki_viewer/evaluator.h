@@ -178,6 +178,7 @@ public:
 
 	int GetDurationSec() const { return mDurationMilliSec/1000; }
 	void SetDurationSec(int sec) { mDurationMilliSec = sec * 1000; }
+	const vector <string>& GetReadLogs() const { return mReadLogs;  }
 
 private:
 	void OpenSub(const FilePath& newEvaluatorPath);
