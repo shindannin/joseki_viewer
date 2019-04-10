@@ -27,8 +27,11 @@ const int SCORE_GRAPH_X = WINDOW_W - SCORE_GRAPH_W;
 const int SCORE_GRAPH_Y = WINDOW_H - SCORE_GRAPH_H;
 const int SCORE_GRAPH_SW = 4;
 
+const int DEFAULT_EVALUATION_SEC = 2;
 
-#define VERSION_TITLE L"Siv3D 定跡ビューア Ver 0.04 (2019/04/01)  "
+
+
+#define VERSION_TITLE L"Siv3D 将棋ビューア Ver 0.04 (2019/04/07)  "
 #define VERSION_DATA (2)
 
 using namespace std;

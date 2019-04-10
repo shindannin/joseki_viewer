@@ -202,6 +202,6 @@ private:
 	FilePath mEvaluatorPath;			// 評価ソフトのファイルパス
 	vector <string> mReadLogs;			// 評価ソフトから受け取ったログ
 
-	int mDurationMilliSec		            = 2000; // 評価時間。単位はミリ秒
+	int mDurationMilliSec		            = DEFAULT_EVALUATION_SEC * 1000; // 評価時間。単位はミリ秒
 	const int mDurationMilliSecPolling	    =  500;	// 定期的に評価ソフトに問い合わせる時間間隔。単位はミリ秒
 };

@@ -328,6 +328,11 @@ void Tree::UpdateBestRouteNodeIDs()
 					bestNextNodeID = nextNodeID;
 				}
 			}
+			else
+			{
+				// •]‰¿‚³‚ê‚Ä‚¢‚È‚¢ƒm[ƒh‚àŠÜ‚ß‚éê‡
+				bestNextNodeID = nextNodeID;
+			}
 		}
 
 		if (bestNextNodeID == NG)

@@ -47,6 +47,7 @@ public:
 	int HasLink(const string& te) const;
 	bool IsRoot() const { return mParentNodeID == NG; }
 	bool IsScoreEvaluated() const { return mScore != SCORE_NOT_EVALUATED;  }
+	static bool IsScoreEvaluated(int score) { return score != SCORE_NOT_EVALUATED; }
 	bool IsResign() const { return mScore == SCORE_RESIGN || mScore == -SCORE_RESIGN; }
 	bool IsSenteKachi() const { return mScore == -SCORE_RESIGN; }
 	bool IsGoteKachi() const  { return mScore ==  SCORE_RESIGN; }

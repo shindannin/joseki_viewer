@@ -54,23 +54,22 @@ public:
 
 		mFile = GUI(style2);
 		mFile.setTitle(L"ファイル");
-		mFile.addln(L"kifu_load", GUIButton::Create(L"定跡ファイルを開く", widgetStyle2));
-		mFile.addln(L"kifu_save", GUIButton::Create(L"定跡ファイルを保存", widgetStyle2));
+		mFile.addln(L"kifu_load", GUIButton::Create(L"ファイルを開く", widgetStyle2));
+		mFile.addln(L"kifu_save", GUIButton::Create(L"ファイルを保存", widgetStyle2));
 		mFile.addln(L"kif_format_load", GUIButton::Create(L"kifファイルを開く", widgetStyle2));
 
 		mEvaluator = GUI(style3);
 		mEvaluator.setTitle(L"評価ソフト");
-		mEvaluator.setPos(144, 0);
+		mEvaluator.setPos(132, 0);
 		mEvaluator.add(L"evaluator_load", GUIButton::Create(L"評価ソフトを開く", widgetStyle2));
 		mEvaluator.addln(L"evaluator_name", GUIText::Create(L"", widgetStyle));
 		mEvaluator.add(L"option_load", GUIButton::Create(L"オプションを開く", widgetStyle2));
 		mEvaluator.add(L"option_name", GUIText::Create(L"", widgetStyle));
 		mEvaluator.add(L"time_prefix", GUIText::Create(L"　　思考時間", widgetStyle));
-		mEvaluator.add(L"time_sec", GUITextField::Create(2, widgetStyle2));
+
+		mEvaluator.add(L"time_sec", GUITextField::Create(DEFAULT_EVALUATION_SEC, widgetStyle2));
 		mEvaluator.addln(L"time_suffix", GUIText::Create(L"秒", widgetStyle));
-
-
-		mEvaluator.textField(L"time_sec").setText(L"0");
+		mEvaluator.textField(L"time_sec").setText(to_wstring(DEFAULT_EVALUATION_SEC));
 
 		const int syogibanY = 90;
 
@@ -89,7 +88,7 @@ public:
 				true, widgetStyle2));
 
 		mDelete = GUI(style4);
-		mDelete.setPos(WINDOW_W - 99, 180);
+		mDelete.setPos(WINDOW_W - 114, 177);
 		mDelete.setTitle(L"削除 [Del]キー");
 		mDelete.addln(L"delete_score", GUIButton::Create(L"評価値１つ", false, widgetStyle2));
 		mDelete.addln(L"delete_all_score", GUIButton::Create(L"評価値全て", false, widgetStyle2));

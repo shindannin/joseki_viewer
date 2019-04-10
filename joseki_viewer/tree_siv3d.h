@@ -104,7 +104,5 @@ private:
 	float mGridScale;
 
 	Evaluator	mEvaluator; // TODO : 評価ソフトなので、treeに移動したほうが良いのでは。ただファイル読み込みとかがちがちにSIV3D使っているので、ちょっと移動は大変かも。
-
-
 };
 

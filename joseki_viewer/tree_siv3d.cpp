@@ -1,30 +1,12 @@
 #include "tree_siv3d.h"
 #include "board_siv3d.h"
 #include "gui_siv3d.h"
+#include "color.h"
 #include "util.h"
 
 #include <algorithm>
 #include <numeric>
 
-// 評価値バー
-//void TreeSiv3D::DrawScoreBar(int score, int maxScore, float cx, float cy, float w, float h)
-//{
-//	const int x = static_cast<int>(cx - w * 0.5f);
-//	const int y = static_cast<int>(cy - h * 0.5f);
-//	float blueRatio = 0.5f - 0.5f * score / maxScore;
-//	
-//	if (blueRatio < 0.f)
-//	{
-//		blueRatio = 0.f;
-//	}
-//	else if (blueRatio > 1.0f)
-//	{
-//		blueRatio = 1.f;
-//	}
-//
-//	Rect(x, y, w*blueRatio, h).draw(Palette::Blue);
-//	Rect(x + w*blueRatio, y, w*(1.0f-blueRatio), h).draw(Palette::Red);
-//}
 
 // 表示
 void TreeSiv3D::Draw()
@@ -111,7 +93,19 @@ void TreeSiv3D::DrawBeforeBoard() const
 			const float deX = ScaleX(destNode.mVisualX);
 			const float deY = ScaleY(destNode.mVisualY);
 
-			Line(stX, stY, deX, deY).draw(2, Color(192, 192, 192, 128));
+			Color c;
+
+			if (destNode.IsScoreEvaluated() && IsBestRoute(link.destNodeID))
+			{
+				c = COLOR_LINK_BEST;
+			}
+			else
+			{
+				c = COLOR_LINK_NORMAL;
+			
+			}
+
+			Line(stX, stY, deX, deY).draw(2, c);
 
 			if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_TE))
 			{
@@ -149,10 +143,6 @@ void TreeSiv3D::DrawBeforeBoard() const
 		else if (mEvaluator.IsNodeEvaluating(nodeID))
 		{
 			color = Color{ 0xa0, 0xc2, 0x38, 0xff }; // Palette::Lightgreen;
-		}
-		else if (IsBestRoute(nodeID))
-		{
-			color = Palette::Lightblue;
 		}
 
 		roundRect.draw(color);
@@ -199,47 +189,70 @@ void TreeSiv3D::DrawBeforeBoard() const
 			mGui.mScore.text(L"score").text = Format(L"未評価 -----");
 			mGui.mScore.text(L"tejunJap").text = L"";
 		}
-
-		//		// 評価値バー
-		//		if (node.IsScoreEvaluated())
-		//		{
-		//			DrawScoreBar(node.mScore, 2000, 400, 200, 400, 50);
-		//		}
 	}
 
 	// 評価値グラフ
 	{
-		const float offW = SCORE_GRAPH_W;
-		const float offH = SCORE_GRAPH_H;
+		const int offW = SCORE_GRAPH_W;
+		const int offH = SCORE_GRAPH_H;
 
-		const float halfH = offH / 2;
-		const float offX = SCORE_GRAPH_X;
-		const float offY = SCORE_GRAPH_Y;
-		const float scaleX = SCORE_GRAPH_SW;
-		const float maxScore = 2000;
+		const int halfH = offH / 2;
+		const int offX = SCORE_GRAPH_X;
+		const int offY = SCORE_GRAPH_Y;
+		const int scaleX = SCORE_GRAPH_SW;
+		const int maxScore = 2000;
 
-		Rect(offX, offY, offW, offH).draw(Color(0, 0, 64, 192));
+		int sente_offset = 0;
+		int gote_offset = 0;
+		if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::REVERSE_BOARD))
+		{
+			gote_offset = halfH;
+		}
+		else
+		{
+			sente_offset = halfH;
+		}
+
+		Rect(offX, offY + sente_offset, offW, halfH).draw(COLOR_SENTE_DARK);
+		Rect(offX, offY + gote_offset, offW, halfH).draw(COLOR_GOTE_DARK);
+
 		Line(offX, offY + halfH, offX + offW, offY + halfH).draw(1, Color(192, 192, 192, 128));
 
 		vector <int> scores = GetBestRouteScores();
 
+		int current_score = 0;
+
+		// 折れ線グラフ
 		for (int i = 0; i < SZ(scores) - 1; ++i)
 		{
-			const float scaleY = -halfH / maxScore;
+			const float scaleY = (float)halfH / maxScore;
 
-			const float stX = offX + i * scaleX;
-			const float stY = offY + halfH + CLAMP(scores[i] * scaleY, -halfH + 1, halfH - 1);
-			const float deX = offX + (i + 1) * scaleX;
-			const float deY = offY + halfH + CLAMP(scores[i + 1] * scaleY, -halfH + 1, halfH - 1);
+			int next_score = current_score;
+			Color c = COLOR_LINK_NORMAL;
+			if (Node::IsScoreEvaluated(scores[i + 1]))
+			{
+				next_score = scores[i + 1];
+				c = COLOR_LINK_BEST;
+			}
+			const int stX = offX + i * scaleX;
+			const int stY = offY + halfH + CLAMP(static_cast<int>(current_score * scaleY), -halfH + 1, halfH - 1);
+			const int deX = offX + (i + 1) * scaleX;
+			const int deY = offY + halfH + CLAMP(static_cast<int>(next_score * scaleY), -halfH + 1, halfH - 1);
 
-			Line(stX, stY, deX, deY).draw(2, Color(64, 255, 64, 128));
+			Line(stX, stY, deX, deY).draw(2, c);
+
+			if (Node::IsScoreEvaluated(scores[i + 1]))
+			{
+				current_score = next_score;
+			}
 		}
 
+		// 細長選択バー
 		if (IsInScoreGraph(Mouse::Pos().x, Mouse::Pos().y))
 		{
-			const int order = CalcOrder(Mouse::Pos().x, offX, scaleX);
-			const float x = offX + order * scaleX;
-			Rect( x - scaleX * 0.5, offY, scaleX, offH).draw(Color(255, 255, 0, 64));
+			const int order = CalcOrder(static_cast<float>(Mouse::Pos().x), static_cast<float>(offX), static_cast<float>(scaleX));
+			const int x = offX + order * scaleX;
+			Rect( static_cast<int>(x - scaleX * 0.5f), offY, scaleX, offH).draw(Color(255, 255, 0, 64));
 		}
 	}
 
@@ -411,7 +424,7 @@ void TreeSiv3D::Update()
 		BoardSiv3D* boardSiv3D = dynamic_cast<BoardSiv3D*>(mBoard);
 		if (boardSiv3D != nullptr)
 		{
-			boardSiv3D->SetOffset(mGui.mBoard.getPos().x + 100, mGui.mBoard.getPos().y+70);
+			boardSiv3D->SetOffset(mGui.mBoard.getPos().x + 100, mGui.mBoard.getPos().y+80);
 		}
 	}
 
@@ -419,7 +432,7 @@ void TreeSiv3D::Update()
 	// メニュー
 	if (mGui.mFile.button(L"kifu_load").pushed)
 	{
-		const auto path = Dialog::GetOpen({ { L"定跡ビューワファイル (*.jsv)", L"*.jsv" } });
+		const auto path = Dialog::GetOpen({ { L"将棋ビューワファイル (*.jsv)", L"*.jsv" } });
 		if (path.has_value())
 		{
 			Load(path.value().str());
@@ -432,7 +445,7 @@ void TreeSiv3D::Update()
 	}
 	else if (mGui.mFile.button(L"kifu_save").pushed)
 	{
-		const auto path = Dialog::GetSave({ { L"定跡ビューワファイル (*.jsv)", L"*.jsv" } });
+		const auto path = Dialog::GetSave({ { L"将棋ビューワファイル (*.jsv)", L"*.jsv" } });
 		if (path.has_value())
 		{
 			Save(path.value().str());
@@ -498,43 +511,40 @@ void TreeSiv3D::Update()
 			mOffsetX += delta.x;
 			mOffsetY += delta.y;
 		}
+		else if (Input::MouseL.pressed && IsInScoreGraph(Mouse::Pos().x, Mouse::Pos().y))
+		{
+			// 評価値グラフ上の選択
+
+			// 現在何番目を選択しているか？
+			int order = CalcOrder(static_cast<float>(Mouse::Pos().x), static_cast<float>(SCORE_GRAPH_X), static_cast<float>(SCORE_GRAPH_SW));
+
+			const vector <int>& bestRoundNodeIDs = GetBestRouteNodeIDs();
+			const int num = SZ(bestRoundNodeIDs);
+			order = CLAMP(order, 0, num-1);
+			SetSelectedNodeID(bestRoundNodeIDs[order]);
+			PlayNodeSelectSound();
+		}
 		else if (Input::MouseL.clicked)
 		{
-			if (IsInScoreGraph(Mouse::Pos().x, Mouse::Pos().y))
+			// ノードの選択
+			const NodeSize nodeSize = mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SMALL_NODE) ? NS_SMALL : NS_BIG;
+			for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
 			{
-				// 評価値グラフ上の選択
+				const Node& node = mNodes[nodeID];
+				const int centerX = static_cast<int>(ScaleX(node.mVisualX));
+				const int centerY = static_cast<int>(ScaleY(node.mVisualY));
 
-				// 現在何番目を選択しているか？
-				int order = CalcOrder(Mouse::Pos().x, SCORE_GRAPH_X, SCORE_GRAPH_SW);
-
-				const vector <int>& bestRoundNodeIDs = GetBestRouteNodeIDs();
-				const int num = SZ(bestRoundNodeIDs);
-				order = CLAMP(order, 0, num-1);
-				SetSelectedNodeID(bestRoundNodeIDs[order]);
-				PlayNodeSelectSound();
-			}
-			else
-			{
-				// ノードの選択
-				const NodeSize nodeSize = mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SMALL_NODE) ? NS_SMALL : NS_BIG;
-				for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
+				if (!IsInShogiban(centerX, centerY))
 				{
-					const Node& node = mNodes[nodeID];
-					const int centerX = static_cast<int>(ScaleX(node.mVisualX));
-					const int centerY = static_cast<int>(ScaleY(node.mVisualY));
-
-					if (!IsInShogiban(centerX, centerY))
+					if (GetNodeShape(centerX, centerY, nodeSize).contains(Mouse::Pos()))
 					{
-						if (GetNodeShape(centerX, centerY, nodeSize).contains(Mouse::Pos()))
-						{
-							SetSelectedNodeID(nodeID);
-							PlayNodeSelectSound();
-							break;
-						}
+						SetSelectedNodeID(nodeID);
+						PlayNodeSelectSound();
+						break;
 					}
 				}
-
 			}
+
 		}
 
 		// 拡大縮小

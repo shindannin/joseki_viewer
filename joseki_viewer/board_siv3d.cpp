@@ -292,6 +292,13 @@ bool BoardSiv3D::GetGridPosFromMouse(GridPos& gridPos) const
 {
 	const int leftX = GetGridLeftX();
 	const int topY = GetGridTopY();
+
+	if (!(INRANGE(Mouse::Pos().x, leftX, leftX + mKomaTextureWidth * BOARD_SIZE - 1) && 
+		INRANGE(Mouse::Pos().y, topY,  topY + mKomaTextureHeight * BOARD_SIZE - 1)) )
+	{
+		return false;
+	}
+
 	int x = BOARD_SIZE - 1 - (Mouse::Pos().x - leftX) / mKomaTextureWidth;
 	int y = (Mouse::Pos().y - topY) / mKomaTextureHeight;
 
@@ -301,10 +308,6 @@ bool BoardSiv3D::GetGridPosFromMouse(GridPos& gridPos) const
 		y = BOARD_SIZE - 1 - y;
 	}
 
-	if (!(INRANGE(x, 0, BOARD_SIZE - 1) && INRANGE(y, 0, BOARD_SIZE - 1)))
-	{
-		return false;
-	}
 
 	gridPos.x = x;
 	gridPos.y = y;
