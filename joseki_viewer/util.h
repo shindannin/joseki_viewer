@@ -31,7 +31,7 @@ const int DEFAULT_EVALUATION_SEC = 2;
 
 
 
-#define VERSION_TITLE L"Siv3D 将棋ビューア Ver 0.04 (2019/04/07)  "
+#define VERSION_TITLE L"Siv3D 将棋ビューア Ver 0.05 (2019/04/12)  "
 #define VERSION_DATA (2)
 
 using namespace std;
