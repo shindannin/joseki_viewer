@@ -49,8 +49,8 @@ public:
 	bool IsScoreEvaluated() const { return mScore != SCORE_NOT_EVALUATED;  }
 	static bool IsScoreEvaluated(int score) { return score != SCORE_NOT_EVALUATED; }
 	bool IsResign() const { return mScore == SCORE_RESIGN || mScore == -SCORE_RESIGN; }
-	bool IsSenteKachi() const { return mScore == -SCORE_RESIGN; }
-	bool IsGoteKachi() const  { return mScore ==  SCORE_RESIGN; }
+	bool IsSenteKachi() const { return mScore ==  SCORE_RESIGN; }
+	bool IsGoteKachi() const  { return mScore == -SCORE_RESIGN; }
 
 
 	void ResetScore() { mScore = SCORE_NOT_EVALUATED; } 
@@ -251,7 +251,7 @@ public:
 	int GetNextEvaludatedNodeID() const;
 	const Node& GetNode(int nodeID) const { return mNodes[nodeID]; }
 	void InitializeAfterLoad();
-	void UpdateNode(int nodeID, int score, const string& tejun);
+	void UpdateNode(int nodeID, int score, const string& tejun, bool isMate=false);
 	void SetSelectedNodeID(int nodeID);
 	int  GetSelectedNodeID() const { return mSelectedNodeID; }
 	const Node& GetSelectedNode() const { return mNodes[mSelectedNodeID]; }

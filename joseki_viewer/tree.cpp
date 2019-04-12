@@ -218,7 +218,7 @@ void Tree::InitializeAfterLoad()
 	SetSelectedNodeID(rootNodeID);
 }
 
-void Tree::UpdateNode(int nodeID, int score, const string& tejun)
+void Tree::UpdateNode(int nodeID, int score, const string& tejun, bool isMate)
 {
 	Node& node = mNodes[nodeID];
 
@@ -241,6 +241,11 @@ void Tree::UpdateNode(int nodeID, int score, const string& tejun)
 	default:
 		assert(0);
 		break;
+	}
+
+	if (isMate)
+	{
+		node.mScore = -node.mScore;
 	}
 
 	node.mTejunJap = tmpBoard.MoveByTejun(tejun);

@@ -248,6 +248,28 @@ bool Evaluator::ReceiveBestMoveAndScore()
 
 	bool isScoreFound = false;
 
+	// bestmoveでチェックするしかないケース
+	// 技巧：終局時にスコアを含まない。
+	// Apery：終局時のスコアが、なぜか自分が勝ちに(mate 1)
+	{
+		const int lastIndex = SZ(mReadLogs) - 1;
+		if (lastIndex >= 0)
+		{
+			const string& lastInfo = mReadLogs[lastIndex];
+
+			vector <string> tmp;
+			Split1(lastInfo, tmp, ' ');
+			Trim(tmp.back());
+
+			assert(tmp[0] == "bestmove");
+			if (tmp[1] == "resign")
+			{
+				isScoreFound = true;
+				mTree->UpdateNode(mEvaludatingNodeID, Node::ConvertMateToScore(0), "", true);
+			}
+		}
+	}
+
 	for (int i = SZ(mReadLogs) - 2; i >= 0; --i) // 最後の行はbestmoveなので、-2からチェックで正しい
 	{
 		const string& lastInfo = mReadLogs[i];
@@ -263,9 +285,11 @@ bool Evaluator::ReceiveBestMoveAndScore()
 
 		assert(tmp[0]=="info");
 
+		bool isJustNowScoreFound = false;
+
 		for (int k = 0; k < SZ(tmp); ++k)
 		{
-			if (tmp[k] == "score" && k + 2 < SZ(tmp))
+			if (!isScoreFound && tmp[k] == "score" && k + 2 < SZ(tmp))
 			{
 				if (tmp[k + 1] == "cp")
 				{
@@ -276,12 +300,18 @@ bool Evaluator::ReceiveBestMoveAndScore()
 					const int mate = stoi(tmp[k + 2]);
 					score = Node::ConvertMateToScore(mate);
 				}
-				isScoreFound = true;
+				isJustNowScoreFound = true;
 			}
 			else if (tmp[k] == "pv")
 			{
 				for (int x = k+1; x < SZ(tmp); ++x)
 				{
+					if (tmp[x] == "None")
+					{
+						tejun = "";
+						break;
+					}
+
 					tejun += tmp[x];
 					if (x < SZ(tmp) - 1)
 					{
@@ -299,36 +329,13 @@ bool Evaluator::ReceiveBestMoveAndScore()
 			}
 		}
 
-		if (isScoreFound)
+		if (isJustNowScoreFound)
 		{
-			mTree->UpdateNode(mEvaludatingNodeID, score, tejun);
+			isScoreFound = true;
+			mTree->UpdateNode(mEvaludatingNodeID, score, tejun, false);
 			break;
 		}
 	}
-
-	// 技巧などは、終局時にスコアを含まないので、bestmoveでチェックするしかない。
-	if (!isScoreFound)
-	{
-		const int lastIndex = SZ(mReadLogs) - 1;
-		if ( lastIndex >= 0)
-		{
-			const string& lastInfo = mReadLogs[lastIndex];
-
-			vector <string> tmp;
-			Split1(lastInfo, tmp, ' ');
-			Trim(tmp.back());
-
-			assert(tmp[0] == "bestmove");
-			if (tmp[1] == "resign")
-			{
-				isScoreFound = true;
-				mTree->UpdateNode(mEvaludatingNodeID, Node::ConvertMateToScore(0), "");
-			}
-		}
-	}
-
-
-
 
 	assert(isScoreFound);
 
