@@ -304,10 +304,12 @@ void Tree::UpdateBestRouteNodeIDs()
 	mBestRouteNodeIDs.clear();
 
 	// ‰ß‹‚Ìƒm[ƒh‚ğ‚½‚Ç‚é
+	mTesu = 0;
 	for (int nodeID = mSelectedNodeID; nodeID!=NG;)
 	{
 		mBestRouteNodeIDs.push_back(nodeID);
 		nodeID = mNodes[nodeID].mParentNodeID;
+		mTesu++;
 	}
 	
 	reverse(mBestRouteNodeIDs.begin(), mBestRouteNodeIDs.end());

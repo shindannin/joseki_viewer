@@ -134,7 +134,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 		const s3d::RoundRect& roundRect = GetNodeShape(centerX, centerY, nodeSize);
 		if (nodeID == GetSelectedNodeID())
 		{
-			color = Color{ 0xff, 0xf0, 0x01, 0xff }; //  Palette::Yellow;
+			color = COLOR_SELECTED_NODE;
 		}
 		else if (roundRect.contains(Mouse::Pos()))
 		{
@@ -219,7 +219,8 @@ void TreeSiv3D::DrawBeforeBoard() const
 
 		Line(offX, offY + halfH, offX + offW, offY + halfH).draw(1, Color(192, 192, 192, 128));
 
-		vector <int> scores = GetBestRouteScores();
+		const vector <int> scores = GetBestRouteScores();
+		const vector <bool> branch = GetBestRouteBranch();
 
 		int current_score = 0;
 
@@ -241,6 +242,15 @@ void TreeSiv3D::DrawBeforeBoard() const
 			const int deY = offY + halfH + CLAMP(static_cast<int>(next_score * scaleY), -halfH + 1, halfH - 1);
 
 			Line(stX, stY, deX, deY).draw(2, c);
+			if (branch[i])
+			{
+				Circle(stX, stY, 2).draw(Palette::White);
+			}
+
+			if (i == GetTesu()-1)
+			{
+				Circle(stX, stY, 3).draw(COLOR_SELECTED_NODE);
+			}
 
 			if (Node::IsScoreEvaluated(scores[i + 1]))
 			{

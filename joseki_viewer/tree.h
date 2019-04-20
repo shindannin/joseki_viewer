@@ -51,7 +51,7 @@ public:
 	bool IsResign() const { return mScore == SCORE_RESIGN || mScore == -SCORE_RESIGN; }
 	bool IsSenteKachi() const { return mScore ==  SCORE_RESIGN; }
 	bool IsGoteKachi() const  { return mScore == -SCORE_RESIGN; }
-
+	bool IsBranch() const { return SZ(mLinks) >= 2; }
 
 	void ResetScore() { mScore = SCORE_NOT_EVALUATED; } 
 	int GetParentNodeID() const { return mParentNodeID; }
@@ -258,7 +258,7 @@ public:
 	void SetFixUpdatedNodeID(int nodeID);
 	int  GetSelectedNodeID() const { return mSelectedNodeID; }
 	const Node& GetSelectedNode() const { return mNodes[mSelectedNodeID]; }
-
+	int GetTesu() const { return mTesu; };
 
 	void Save(const wstring& path)
 	{
@@ -402,6 +402,17 @@ protected:
 		return ret;
 	}
 
+	vector <bool> GetBestRouteBranch() const
+	{
+		vector <bool> ret;
+		for (int nodeID : mBestRouteNodeIDs)
+		{
+			ret.push_back(mNodes[nodeID].IsBranch());
+		}
+		return ret;
+	}
+
+
 	// ÉZÅ[ÉuÇ∑ÇÈ
 	int mVersion;
 	vector <Node> mNodes;
@@ -416,5 +427,6 @@ private:
 	void UpdateBestRouteNodeIDs();
 
 	int mSelectedNodeID;
+	int mTesu = 0;
 	vector <int> mBestRouteNodeIDs;
 };
