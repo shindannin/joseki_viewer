@@ -245,6 +245,8 @@ public:
 	virtual void Draw();
 	virtual void Update();
 	virtual void OnSelectedNodeIDChanged() {};
+	virtual bool IsFixUpdatedNode() const { return false; };
+
 	void Init();
 	void AddLink(const string& te, const wstring* pTeJap = nullptr);
 	void CalculateVisualPos();
@@ -253,6 +255,7 @@ public:
 	void InitializeAfterLoad();
 	void UpdateNode(int nodeID, int score, const string& tejun, bool isMate=false);
 	void SetSelectedNodeID(int nodeID);
+	void SetFixUpdatedNodeID(int nodeID);
 	int  GetSelectedNodeID() const { return mSelectedNodeID; }
 	const Node& GetSelectedNode() const { return mNodes[mSelectedNodeID]; }
 

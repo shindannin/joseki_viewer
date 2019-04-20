@@ -280,6 +280,7 @@ void TreeSiv3D::DrawAfterBoard() const
 			const Node& node = GetSelectedNode();
 
 
+			// 次の手の表示
 			for (const Link& link : node.mLinks)
 			{
 				const Color grabbedColor[NUM_SEN_GO] =
@@ -312,6 +313,23 @@ void TreeSiv3D::DrawAfterBoard() const
 				if (!firstTe.empty())
 				{
 					boardSiv3D->DrawMove(firstTe, { 255, 0, 255, 127 }, cy, cx);
+
+					// スコア表示の追加。もし、最善手の次の手が評価されている場合は、そちらのほうが正確なので、足さない
+					bool ok = true;
+					for ( const auto& a : scoreOnArrows)
+					{
+						if (a.cy == cy && a.cx == cx)
+						{
+							ok = false;
+							break;
+						}
+					}
+
+					if (ok)
+					{
+						ScoreOnArrow tmp = { cy, cx, &node };
+						scoreOnArrows.push_back(tmp);
+					}
 				}
 			}
 
@@ -416,6 +434,12 @@ void TreeSiv3D::OnSelectedNodeIDChanged()
 		mOffsetY = GetTreeCenterY() - node.mVisualY * mGridScale;
 	}
 }
+
+bool TreeSiv3D::IsFixUpdatedNode() const 
+{
+	return mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::FIX_UPDATED_NODE);
+}
+
 
 // メインループ
 void TreeSiv3D::Update()

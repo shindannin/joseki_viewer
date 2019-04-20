@@ -198,6 +198,16 @@ void Tree::SetSelectedNodeID(int nodeID)
 	OnSelectedNodeIDChanged();
 }
 
+void Tree::SetFixUpdatedNodeID(int nodeID)
+{
+	if (IsFixUpdatedNode())
+	{
+		if (nodeID == NG) return;
+		if (mNodes[nodeID].mParentNodeID == NG) return;
+		SetSelectedNodeID(mNodes[nodeID].mParentNodeID);
+	}
+}
+
 void Tree::InitializeAfterLoad()
 {
 	mBoard->Init();

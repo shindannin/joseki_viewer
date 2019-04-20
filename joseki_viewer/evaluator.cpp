@@ -153,6 +153,7 @@ void Evaluator::Update()
 			{
 				if (ReceiveBestMoveAndScore())
 				{
+					mTree->SetFixUpdatedNodeID(mEvaludatingNodeID);
 					mEStateEvaluation = EStateEvaluation_FindingNode;
 				}
 			}

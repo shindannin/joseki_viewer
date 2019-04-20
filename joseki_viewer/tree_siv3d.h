@@ -33,6 +33,7 @@ public:
 	virtual void Draw() override;
 	virtual void Update() override;
 	virtual void OnSelectedNodeIDChanged() override;
+	virtual bool IsFixUpdatedNode() const override;
 
 	long long GetPonderNodes() const { return mEvaluator.GetPonderNodes();}
 	long long GetPonderTime() const { return mEvaluator.GetPonderTime(); }
