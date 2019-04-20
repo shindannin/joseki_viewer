@@ -12,9 +12,12 @@ public:
 		SHOW_TE,			// "指し手"
 		SHOW_TAG,			// "タグ"
 		SMALL_NODE,			// "小さいノード"
-		FIX_SELECTED_NODE,	// "選択ノードの固定"
 		SHOW_ARROW,			// "矢印"
+		SHOW_SCOREGRAPH,	// "評価値グラフ"
+		FIX_SELECTED_NODE,	// "選択ノードの固定"
+		FIX_UPDATED_NODE,	// "評価ノードの固定"
 		REVERSE_BOARD,		// "盤面反転"
+		SOUND,				// "サウンド"
 		SHOW_DEBUG,			// "デバッグ"
 	};
 
@@ -83,12 +86,12 @@ public:
 		mSettings.setTitle(L"設定");
 		mSettings.setPos(WINDOW_W - 114, 0);
 		mSettings.add(L"settings",
-			GUICheckBox::Create({ L"評価値", L"指し手", L"コメント", L"小さいノード", L"選択ノードの固定", L"矢印", L"盤面反転", L"デバッグ" },
-				{ SHOW_SCORE, SHOW_TE, SHOW_TAG, FIX_SELECTED_NODE, SHOW_ARROW }, // デフォルトでONのもの
+			GUICheckBox::Create({ L"評価値", L"指し手", L"タグ", L"小さいノード", L"矢印", L"評価値グラフ", L"選択ノードの固定", L"評価ノードの固定", L"盤面反転", L"サウンド", L"デバッグ" },
+				{ SHOW_SCORE, SHOW_TE, SHOW_TAG, FIX_SELECTED_NODE, SHOW_ARROW, SHOW_SCOREGRAPH, SOUND }, // デフォルトでONのもの
 				true, widgetStyle2));
 
 		mDelete = GUI(style4);
-		mDelete.setPos(WINDOW_W - 114, 177);
+		mDelete.setPos(WINDOW_W - 114, 234);
 		mDelete.setTitle(L"削除 [Del]キー");
 		mDelete.addln(L"delete_score", GUIButton::Create(L"評価値１つ", false, widgetStyle2));
 		mDelete.addln(L"delete_all_score", GUIButton::Create(L"評価値全て", false, widgetStyle2));

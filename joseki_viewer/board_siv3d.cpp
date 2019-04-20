@@ -358,7 +358,10 @@ void BoardSiv3D::UpdateDecided(string& te, wstring& teJap, bool& isMoved)
 	mInputState = E_IDLE;
 	if (mSoundKomaoto)
 	{
-		mSoundKomaoto.play();
+		if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SOUND))
+		{
+			mSoundKomaoto.play();
+		}
 	}
 }
 

@@ -192,6 +192,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 	}
 
 	// 評価値グラフ
+	if(mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_SCOREGRAPH))
 	{
 		const int offW = SCORE_GRAPH_W;
 		const int offH = SCORE_GRAPH_H;
@@ -514,15 +515,17 @@ void TreeSiv3D::Update()
 		else if (Input::MouseL.pressed && IsInScoreGraph(Mouse::Pos().x, Mouse::Pos().y))
 		{
 			// 評価値グラフ上の選択
+			if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_SCOREGRAPH))
+			{
+				// 現在何番目を選択しているか？
+				int order = CalcOrder(static_cast<float>(Mouse::Pos().x), static_cast<float>(SCORE_GRAPH_X), static_cast<float>(SCORE_GRAPH_SW));
 
-			// 現在何番目を選択しているか？
-			int order = CalcOrder(static_cast<float>(Mouse::Pos().x), static_cast<float>(SCORE_GRAPH_X), static_cast<float>(SCORE_GRAPH_SW));
-
-			const vector <int>& bestRoundNodeIDs = GetBestRouteNodeIDs();
-			const int num = SZ(bestRoundNodeIDs);
-			order = CLAMP(order, 0, num-1);
-			SetSelectedNodeID(bestRoundNodeIDs[order]);
-			PlayNodeSelectSound();
+				const vector <int>& bestRoundNodeIDs = GetBestRouteNodeIDs();
+				const int num = SZ(bestRoundNodeIDs);
+				order = CLAMP(order, 0, num - 1);
+				SetSelectedNodeID(bestRoundNodeIDs[order]);
+				PlayNodeSelectSound();
+			}
 		}
 		else if (Input::MouseL.clicked)
 		{
@@ -615,14 +618,17 @@ void TreeSiv3D::Update()
 // ノード選択音を鳴らす
 void TreeSiv3D::PlayNodeSelectSound()
 {
-	if (mNodeSelectSound)
+	if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SOUND))
 	{
-		if (mNodeSelectSound.isPlaying())
+		if (mNodeSelectSound)
 		{
-			// 停止して曲の先頭に戻る
-			mNodeSelectSound.stop();
+			if (mNodeSelectSound.isPlaying())
+			{
+				// 停止して曲の先頭に戻る
+				mNodeSelectSound.stop();
+			}
+			mNodeSelectSound.play();
 		}
-		mNodeSelectSound.play();
 	}
 }
 

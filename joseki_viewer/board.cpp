@@ -98,11 +98,11 @@ wstring Board::DecideMove()
 
 	if (mNextMove.utsuKomaType != E_EMPTY) // // ãÓÇë≈Ç¬
 	{
-		teJap += mKoma[mNextMove.utsuKomaType].jap[mTeban] + mJapUtsu;
+		teJap += mKoma[mNextMove.utsuKomaType].jap[0] + mJapUtsu;
 	}
 	else // à⁄ìÆÇ∑ÇÈ
 	{
-		teJap += mKoma[mGrid[mNextMove.from.y][mNextMove.from.x].type].jap[mTeban];
+		teJap += mKoma[mGrid[mNextMove.from.y][mNextMove.from.x].type].jap[0];
 
 		// ê¨ÇÈ
 		if (mNextMove.naru)
@@ -261,12 +261,21 @@ string Board::GetTejunFromKif(const vector <wstring>& kifStrings) const
 			for (int i=0;i<NUM_KOMA_TYPE;++i)
 			{
 				const Koma& km = mKoma[i];
-				const wstring& jap = km.jap[sengo];
-				const int japLen = SZ(jap);
-				
-				if( jap==kifTe.substr(2, japLen) )
+
+				int cur = NG;
+				for (int k=0;k<2;++k)
 				{
-					int cur = 2+japLen;
+					const wstring& jap = km.jap[k];
+					const int japLen = SZ(jap);
+					if (jap == kifTe.substr(2, japLen))
+					{
+						cur = 2 + japLen;;
+						break;
+					}
+				}
+				
+				if (cur != NG )
+				{
 					if (kifTe[cur]==mJapUtsu[0])
 					{
 						// ë≈
