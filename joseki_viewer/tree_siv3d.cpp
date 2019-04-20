@@ -214,7 +214,8 @@ void TreeSiv3D::DrawBeforeBoard() const
 
 		int sente_offset = 0;
 		int gote_offset = 0;
-		if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::REVERSE_BOARD))
+		const bool isReverse = mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::REVERSE_BOARD);
+		if (isReverse)
 		{
 			gote_offset = halfH;
 		}
@@ -243,6 +244,10 @@ void TreeSiv3D::DrawBeforeBoard() const
 			if (Node::IsScoreEvaluated(scores[i + 1]))
 			{
 				next_score = scores[i + 1];
+				if(isReverse)
+				{
+					next_score = -next_score;
+				}
 				c = COLOR_LINK_BEST;
 			}
 			const int stX = offX + i * scaleX;
