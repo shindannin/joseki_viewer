@@ -208,7 +208,7 @@ void BoardSiv3D::Draw()
 			sengo = 1 - sengo;
 		}
 
-		EKomaType type;
+		EKomaType type = E_EMPTY;
 		if (mInputState == E_GRABBED)
 		{
 			type = masu.type;
