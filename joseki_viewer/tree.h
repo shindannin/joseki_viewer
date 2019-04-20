@@ -2,11 +2,8 @@
 
 #pragma once
 
-
-
 #include "board.h"
 #include "util.h"
-#include <fstream>
 
 #define MAX_SAVE_SIZE	(0x1000)
 
@@ -193,48 +190,6 @@ public:
 	wstring			mTejunJap;
 };
 
-struct KifHeader
-{
-	void Init()
-	{
-		mKaishiNichiji.clear();
-		mKisen.clear();
-		mMochijikan.clear();
-		mTeaiWari.clear();
-		mSente.clear();
-		mGote.clear();
-	}
-
-
-	void Save(wfstream& wfs)
-	{
-		wfs << mKaishiNichiji << endl;
-		wfs << mKisen << endl;
-		wfs << mMochijikan << endl;
-		wfs << mTeaiWari << endl;
-		wfs << mSente << endl;
-		wfs << mGote << endl;
-	}
-
-	void Load(wfstream& wfs)
-	{
-		wstring ws;
-
-		GetLineTrim(wfs, ws); mKaishiNichiji = ws;
-		GetLineTrim(wfs, ws); mKisen = ws;
-		GetLineTrim(wfs, ws); mMochijikan = ws;
-		GetLineTrim(wfs, ws); mTeaiWari = ws;
-		GetLineTrim(wfs, ws); mSente = ws;
-		GetLineTrim(wfs, ws); mGote = ws;
-	}
-
-	wstring mKaishiNichiji;
-	wstring mKisen;
-	wstring mMochijikan;
-	wstring mTeaiWari;
-	wstring mSente;
-	wstring mGote;
-};
 
 // 棋譜の木。複数のノードと、それぞれのノードが持つ複数のリンクから成る。
 class Tree
@@ -360,6 +315,7 @@ public:
 				AddLink(te, &teJap);
 			}
 		}
+		mBoard->SetKifHeader(mKifHeader);
 
 		wfs.close();
 	}

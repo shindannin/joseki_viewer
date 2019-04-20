@@ -12,6 +12,7 @@ Board::Board()
 
 void Board::Init()
 {
+	mKifHeader.Init();
 	InitState();
 	InitValidMoveGrid();
 	mNextMove.Init();

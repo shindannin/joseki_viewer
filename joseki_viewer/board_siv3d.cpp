@@ -1,5 +1,6 @@
 #include "board_siv3d.h"
 #include "gui_siv3d.h"
+#include "color.h"
 #include "util.h"
 
 #include <cassert>
@@ -79,12 +80,16 @@ void BoardSiv3D::DrawCursor(const GridPos& gp, const Color& color) const
 
 void BoardSiv3D::Draw()
 {
+	RoundRect rrect(mOffsetX - 100, mOffsetY - 50, 612, 525, 10);
+	rrect.draw(COLOR_NEUTRAL2);
+
 	mTextureBoard.draw(mOffsetX, mOffsetY);
 	mTextureGrid.draw(mOffsetX, mOffsetY);
 
 	const int leftX = GetGridLeftX();
 	const int topY = GetGridTopY();
 	const int tebanOffestX = 10;
+
 
 	//----- カーソル -----
 	// マウスが指しているマス
@@ -141,23 +146,27 @@ void BoardSiv3D::Draw()
 		const int w = 50;
 		const int rad = 8;
 		const int x = mOffsetX - w / 2 + mTextureBoard.width / 2;
-		int y = mOffsetY;
+
+		const int y_top = mOffsetY - (rad * 2);
+		const int y_bot = mOffsetY + mTextureBoard.height;
+
+		mFontTeban(mKifHeader.mSente).draw(x + w + 5, GetReverse() ? y_top - 1 : y_bot - 1);
+		mFontTeban(mKifHeader.mGote).draw(x + w + 5, GetReverse() ? y_bot - 1 : y_top - 1);
+
+		int teban_marker_y;
 		if ((GetTeban()==E_GO) ^ GetReverse())
 		{
-			y -= rad * 2;
+			teban_marker_y = y_top;
 		}
 		else
 		{
-			y += mTextureBoard.height;
+			teban_marker_y = y_bot;
 		}
 
-
-		RoundRect rect(x, y, w, rad * 2, rad);
+		RoundRect rect(x, teban_marker_y, w, rad * 2, rad);
 		rect.draw(grabbedColor[GetTeban()]);
-		mFontTeban(name[GetTeban()]).draw(x+5, y-1);
+		mFontTeban(name[GetTeban()]).draw(x+5, teban_marker_y -1);
 	}
-
-
 
 	//----- 盤面 -----
 	for (int y = 0; y < BOARD_SIZE; ++y)

@@ -65,7 +65,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 		{
 			s += to_string(bestRouteNodeIDs[i]) + " -> ";
 		}
-		mFont(Widen(s)).draw(600, 400, Palette::Orange);
+		mFont(Widen(s)).draw(650, 400, Palette::Orange);
 	}
 
 	// 読んだ評価ソフト・読んだ手数・読んだ時間の表示
@@ -546,6 +546,28 @@ void TreeSiv3D::Update()
 					SetSelectedNodeID(node.GetParentNodeID());
 					PlayNodeSelectSound();
 				}
+			}
+		}
+		else if (Input::KeyLeft.clicked)
+		{
+			// 1手戻る
+			const Node& node = mNodes[GetSelectedNodeID()];
+			if (!node.IsRoot())
+			{
+				SetSelectedNodeID(node.GetParentNodeID());
+				PlayNodeSelectSound();
+			}
+		}
+		else if (Input::KeyRight.clicked)
+		{
+			// 1手進む
+			const int tesu = GetTesu();
+			const vector <int>& bestRouteNodeID = GetBestRouteNodeIDs();
+
+			if (tesu < SZ(bestRouteNodeID))
+			{
+				SetSelectedNodeID(bestRouteNodeID[tesu]);
+				PlayNodeSelectSound();
 			}
 		}
 		else if (Input::MouseR.pressed)

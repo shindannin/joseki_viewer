@@ -5,8 +5,6 @@
 #include "util.h"
 #include <cassert>
 
-
-
 // êÊÅEå„
 enum ESengo
 {
@@ -217,6 +215,8 @@ public:
 	}
 	ESengo GetTeban() const { return mTeban; }
 
+	void SetKifHeader(const KifHeader& kifHeader) { mKifHeader = kifHeader;  };
+
 protected:
 	bool IsNarubeki(const GridPos& from, const GridPos& to, ESengo teban) const;
 	bool IsNareru(const GridPos& from, const GridPos& to, ESengo teban) const;
@@ -252,6 +252,8 @@ protected:
 	const wstring mJapDou  = { L"ìØ" };
 	const wstring mJapUtsu = { L"ë≈" };
 	const wstring mJapNaru = { L"ê¨" };
+
+	KifHeader mKifHeader;
 
 private:
 	void InitValidMoveGrid();

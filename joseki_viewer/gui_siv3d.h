@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Siv3D.hpp>
+#include "color.h"
 #include "util.h"
 
 class GuiSiv3D
@@ -25,11 +26,9 @@ public:
 	{
 		mFont = Font(8, L"メイリオ");
 
-		const Color NeutralColor{ 0x94, 0x60, 0xa0, 0x40 };
-
 		GUIStyle style = GUIStyle::Default;
 		style.font = mFont;
-		style.background.color = NeutralColor;
+		style.background.color = COLOR_NEUTRAL;
 		style.padding.bottom = 0;
 		style.padding.top = 0;
 		style.padding.left = 0;
@@ -48,12 +47,12 @@ public:
 		widgetStyle2.margin = Margin(2);
 
 		GUIStyle style3 = style;
-		style3.background.color = NeutralColor;
+		style3.background.color = COLOR_NEUTRAL;
 
 
 
 		GUIStyle style4 = style;
-		style4.background.color = NeutralColor;
+		style4.background.color = COLOR_NEUTRAL;
 
 		mFile = GUI(style2);
 		mFile.setTitle(L"ファイル");
@@ -93,9 +92,9 @@ public:
 		mDelete = GUI(style4);
 		mDelete.setPos(WINDOW_W - 114, 234);
 		mDelete.setTitle(L"削除 [Del]キー");
-		mDelete.addln(L"delete_score", GUIButton::Create(L"評価値１つ", false, widgetStyle2));
-		mDelete.addln(L"delete_all_score", GUIButton::Create(L"評価値全て", false, widgetStyle2));
-		mDelete.addln(L"delete_all_node", GUIButton::Create(L"局面全て", false, widgetStyle2));
+		mDelete.addln(L"delete_score", GUIButton::Create(L"評価値   １つ", false, widgetStyle2));
+		mDelete.addln(L"delete_all_score", GUIButton::Create(L"評価値   全て", false, widgetStyle2));
+		mDelete.addln(L"delete_all_node", GUIButton::Create(L"局面   全て", false, widgetStyle2));
 
 
 		GUIStyle style5 = style;

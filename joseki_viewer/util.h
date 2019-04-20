@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
+#include <fstream>
 
 using namespace std;
 
@@ -29,10 +30,23 @@ const int SCORE_GRAPH_SW = 4;
 
 const int DEFAULT_EVALUATION_SEC = 2;
 
-
-
-#define VERSION_TITLE L"Siv3D 将棋ビューア Ver 0.05 (2019/04/12)  "
+#define VERSION_TITLE L"Siv3D 将棋ビューア Ver 0.06 (2019/04/20)  "
 #define VERSION_DATA (2)
+
+struct KifHeader
+{
+	void Init();
+	void Save(wfstream& wfs);
+	void Load(wfstream& wfs);
+
+	wstring mKaishiNichiji;
+	wstring mKisen;
+	wstring mMochijikan;
+	wstring mTeaiWari;
+	wstring mSente;
+	wstring mGote;
+};
+
 
 using namespace std;
 

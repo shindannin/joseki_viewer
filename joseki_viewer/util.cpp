@@ -142,3 +142,35 @@ wstring GetVersionTitle(const wstring& jsvPathStr)
 	wstring ret = VERSION_TITLE + jsvPathStr;
 	return ret;
 }
+
+void KifHeader::Init()
+{
+	mKaishiNichiji.clear();
+	mKisen.clear();
+	mMochijikan.clear();
+	mTeaiWari.clear();
+	mSente.clear();
+	mGote.clear();
+}
+
+void KifHeader::Save(wfstream& wfs)
+{
+	wfs << mKaishiNichiji << endl;
+	wfs << mKisen << endl;
+	wfs << mMochijikan << endl;
+	wfs << mTeaiWari << endl;
+	wfs << mSente << endl;
+	wfs << mGote << endl;
+}
+
+void KifHeader::Load(wfstream& wfs)
+{
+	wstring ws;
+
+	GetLineTrim(wfs, ws); mKaishiNichiji = ws;
+	GetLineTrim(wfs, ws); mKisen = ws;
+	GetLineTrim(wfs, ws); mMochijikan = ws;
+	GetLineTrim(wfs, ws); mTeaiWari = ws;
+	GetLineTrim(wfs, ws); mSente = ws;
+	GetLineTrim(wfs, ws); mGote = ws;
+}
