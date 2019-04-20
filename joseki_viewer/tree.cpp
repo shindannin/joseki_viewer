@@ -322,8 +322,6 @@ void Tree::UpdateBestRouteNodeIDs()
 		int sengo = (SZ(mBestRouteNodeIDs) + 1) % 2;
 		assert(sengo != E_NO_SENGO);
 
-		const Node& node = mNodes[nodeID];
-
 		int bestScore = Node::SCORE_RESIGN + 10000; // 後手はスコア最小化（最悪＝最大）
 		if (sengo == E_SEN)
 		{
@@ -331,6 +329,7 @@ void Tree::UpdateBestRouteNodeIDs()
 		}
 		int bestNextNodeID = NG;
 
+		const Node& node = mNodes[nodeID];
 		for (int i = 0; i < SZ(node.mLinks); ++i)
 		{
 			const Link& link = node.mLinks[i];
@@ -348,7 +347,10 @@ void Tree::UpdateBestRouteNodeIDs()
 			else
 			{
 				// 評価されていないノードも含める場合
-				bestNextNodeID = nextNodeID;
+				if (bestNextNodeID == NG)
+				{
+					bestNextNodeID = nextNodeID;
+				}
 			}
 		}
 

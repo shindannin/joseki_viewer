@@ -55,8 +55,17 @@ void TreeSiv3D::DrawBeforeBoard() const
 
 		for (int i=0;i<SZ(logs);++i)
 		{
-			mFont(Widen(logs[i])).draw(800, 400+15*i, Palette::Orange);
+			mFont(Widen(logs[i])).draw(800, 200+15*i, Palette::Orange);
 		}
+
+		// ベストルート
+		const vector <int> bestRouteNodeIDs = GetBestRouteNodeIDs();
+		string s;
+		for (int i=0; i< SZ(bestRouteNodeIDs); ++i)
+		{
+			s += to_string(bestRouteNodeIDs[i]) + " -> ";
+		}
+		mFont(Widen(s)).draw(600, 400, Palette::Orange);
 	}
 
 	// 読んだ評価ソフト・読んだ手数・読んだ時間の表示
