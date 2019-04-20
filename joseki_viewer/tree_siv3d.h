@@ -26,7 +26,7 @@ public:
 		mFontGuiDefault = GUIManager::GetDefaultFont();
 
 		mTextureBackground = Texture(L"pictures/background.jpg");
-		mNodeSelectSound = Sound(L"sounds/cursor4.mp3");
+		mNodeSelectSound = Sound(L"sounds/cursor4.wav");
 
 	}
 
