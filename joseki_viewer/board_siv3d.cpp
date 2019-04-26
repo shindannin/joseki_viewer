@@ -485,44 +485,6 @@ bool BoardSiv3D::Update(string& te, wstring& teJap)
 		}
 	}
 
-/* 盤面ペースト機能は、現在のバージョンは、初期盤面からスタートなので合わない気がする…
-	else if ((Input::KeyControl + Input::KeyV).clicked)
-	{
-		// 盤面をペースト
-		wstring ws = Clipboard::GetText().str();
-		string s(ws.begin(), ws.end());
-		vector <string> vs;
-		Split1(s, vs, '\n');
-
-		const string header("[SFEN");
-		for (int i = 0; i < SZ(vs); ++i)
-		{
-			const string& line = vs[i];
-			if (line.substr(0, SZ(header)) == header)
-			{
-				int st = NG;
-				for (int k = SZ(header); k < SZ(line); ++k)
-				{
-					if (st == NG && line[k] == '"')
-					{
-						st = k + 1;
-					}
-					else if (line[k] == '"')
-					{
-						const int ed = k;
-						const int len = ed - st;
-
-						SetState(line.substr(st, len));
-						break;
-					}
-				}
-				assert(st != NG);
-			}
-		}
-	}
-*/
-
-
 	return isMoved;
 }
 

@@ -508,10 +508,18 @@ void TreeSiv3D::Update()
 		{
 			LoadKif(path.value().str());
 			Window::SetTitle(GetVersionTitle(path.value().str()));
-
 			CalculateVisualPos();
 			mEvaluator.RequestCancel();
 		}
+	}
+	else if ((Input::KeyControl + Input::KeyV).clicked)
+	{
+		// kifファイル（盤面ではない）をペースト
+		wstring ws = Clipboard::GetText().str();
+		PasteKif(ws);
+		Window::SetTitle(GetVersionTitle(mKifHeader.mSente + L" VS " + mKifHeader.mGote));
+		CalculateVisualPos();
+		mEvaluator.RequestCancel();
 	}
 	else if (mGui.mEvaluator.button(L"evaluator_load").pushed)
 	{

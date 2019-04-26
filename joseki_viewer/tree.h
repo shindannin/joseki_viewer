@@ -258,21 +258,9 @@ public:
 		wfs.close();
 	}
 
-	void LoadKif(const wstring& path)
+	void InitKif(const vector <wstring>& vws)
 	{
 		Init();
-
-		wfstream wfs;
-		wfs.open(path, std::fstream::in);
-
-		vector <wstring> vws;
-		{
-			wstring ws;
-			while (getline(wfs, ws))
-			{
-				vws.push_back(ws);
-			}
-		}
 
 		// ヘッダーのセット（てきとー）
 		for (const wstring& ws : vws)
@@ -316,6 +304,30 @@ public:
 			}
 		}
 		mBoard->SetKifHeader(mKifHeader);
+	}
+
+	void PasteKif(const wstring& rawKif)
+	{
+		vector <wstring> vws;
+		Split1(rawKif, vws, '\n');
+		InitKif(vws);
+	}
+
+	void LoadKif(const wstring& path)
+	{
+		wfstream wfs;
+		wfs.open(path, std::fstream::in);
+
+		vector <wstring> vws;
+		{
+			wstring ws;
+			while (getline(wfs, ws))
+			{
+				vws.push_back(ws);
+			}
+		}
+
+		InitKif(vws);
 
 		wfs.close();
 	}
