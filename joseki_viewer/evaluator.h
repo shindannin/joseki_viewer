@@ -166,7 +166,7 @@ public:
 	void Open();
 	void OpenOption();
 	void Close();
-	void Update();
+	bool Update();
 	void RequestCancel();
 
 	bool IsActive() const { return mServer!=nullptr; }				// 評価ソフトを起動したか？

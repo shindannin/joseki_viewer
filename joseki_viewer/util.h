@@ -30,7 +30,7 @@ const int SCORE_GRAPH_SW = 4;
 
 const int DEFAULT_EVALUATION_SEC = 2;
 
-#define VERSION_TITLE L"Siv3D 将棋ビューア Ver 0.06 (2019/04/20)  "
+#define VERSION_TITLE L"Siv3D 将棋ビューア Ver 0.07 (2020/03/15)  "
 #define VERSION_DATA (2)
 
 struct KifHeader

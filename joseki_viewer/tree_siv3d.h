@@ -90,6 +90,8 @@ private:
 	void DrawBeforeBoard() const;
 	void DrawAfterBoard() const;
 	void DrawScore(int centerX, int centerY, const Node& node, NodeSize nodeSize) const;
+	void LoadJsvFile(FilePath path);
+	void LoadKifFile(FilePath path);
 
 	Font mFont;
 	Font mFontScore;
@@ -99,6 +101,9 @@ private:
 	Texture mTextureBackground;
 	Sound mNodeSelectSound;
 	GuiSiv3D& mGui;
+	Array<FilePath> mWaitingEvaluationFileList; // tree.hÇ…à⁄ìÆÇ≈Ç´ÇÈÇ©Ç‡ÅB
+	bool mFolderAnalysis = false;
+	FilePath mCurrentPath;
 
 	float mOffsetX;
 	float mOffsetY;

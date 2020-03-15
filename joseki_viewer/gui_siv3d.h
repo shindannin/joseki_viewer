@@ -68,12 +68,13 @@ public:
 		mEvaluator.add(L"option_load", GUIButton::Create(L"オプションを開く", widgetStyle2));
 		mEvaluator.add(L"option_name", GUIText::Create(L"", widgetStyle));
 		mEvaluator.add(L"time_prefix", GUIText::Create(L"　　思考時間", widgetStyle));
-
 		mEvaluator.add(L"time_sec", GUITextField::Create(DEFAULT_EVALUATION_SEC, widgetStyle2));
 		mEvaluator.addln(L"time_suffix", GUIText::Create(L"秒", widgetStyle));
 		mEvaluator.textField(L"time_sec").setText(to_wstring(DEFAULT_EVALUATION_SEC));
+		mEvaluator.add(L"folder_analysis", GUIButton::Create(L"フォルダ内連続解析", widgetStyle2));
+		mEvaluator.add(L"folder_analysis_waiting_num", GUIText::Create(L"0", widgetStyle));
 
-		const int syogibanY = 90;
+		const int syogibanY = 100;
 
 		mScore = GUI(style);
 		mScore.setTitle(L"評価値");

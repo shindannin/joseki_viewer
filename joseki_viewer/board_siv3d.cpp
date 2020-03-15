@@ -107,12 +107,8 @@ void BoardSiv3D::Draw()
 		if (GetGridPosFromMouse(gp))
 		{
 			DrawCursor(gp, cursorColor[GetTeban()]);
-			mFont(L"GridXY=(", gp.x, L",", gp.y).draw(800.f, 100.f, Palette::Orange);
 		}
 	}
-
-
-
 
 	// ‚Â‚©‚ñ‚¾‹î‚Ìƒ}ƒX
 	if (mInputState == E_GRABBED || mInputState == E_CHOICE)

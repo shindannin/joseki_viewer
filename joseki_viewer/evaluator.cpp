@@ -125,7 +125,7 @@ void Evaluator::Close()
 }
 
 // メインループ
-void Evaluator::Update()
+bool Evaluator::Update()
 {
 	if (mServer)
 	{
@@ -144,6 +144,11 @@ void Evaluator::Update()
 					mStopwatch.restart();
 					mPollingStopwatch.restart();
 				}
+			}
+			else
+			{
+				// 全ノードの評価が終了
+				return true;
 			}
 		}
 		break;
@@ -164,6 +169,8 @@ void Evaluator::Update()
 			break;
 		}
 	}
+
+	return false;
 }
 
 // 評価を開始する

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <unordered_set>
 
 
 // 表示
@@ -87,6 +88,21 @@ void TreeSiv3D::DrawBeforeBoard() const
 			optionString = Format(L"未設定");
 		}
 		mGui.mEvaluator.text(L"option_name").text = optionString;
+	}
+
+	// 連続解析 残りファイル数
+	{
+		String waitingNumString;
+		if (mFolderAnalysis)
+		{
+			waitingNumString = Format(L"残り " + to_wstring(mWaitingEvaluationFileList.size()));
+		}
+		else
+		{
+			waitingNumString = Format(L"");
+		}
+		mGui.mEvaluator.text(L"folder_analysis_waiting_num").text = waitingNumString;
+
 	}
 
 	// 木のリンク
@@ -464,6 +480,25 @@ bool TreeSiv3D::IsFixUpdatedNode() const
 	return mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::FIX_UPDATED_NODE);
 }
 
+void TreeSiv3D::LoadJsvFile(FilePath path)
+{
+	Load(path.str());
+	mCurrentPath = path.str();
+	Window::SetTitle(GetVersionTitle(path.str()));
+
+	InitializeAfterLoad();
+	CalculateVisualPos();
+	mEvaluator.RequestCancel();
+}
+
+void TreeSiv3D::LoadKifFile(FilePath path)
+{
+	LoadKif(path.str());
+	mCurrentPath = path.str();
+	Window::SetTitle(GetVersionTitle(path.str()));
+	CalculateVisualPos();
+	mEvaluator.RequestCancel();
+}
 
 // メインループ
 void TreeSiv3D::Update()
@@ -484,13 +519,9 @@ void TreeSiv3D::Update()
 		const auto path = Dialog::GetOpen({ { L"将棋ビューワファイル (*.jsv)", L"*.jsv" } });
 		if (path.has_value())
 		{
-			Load(path.value().str());
-			Window::SetTitle(GetVersionTitle(path.value().str()));
-
-			InitializeAfterLoad();
-			CalculateVisualPos();
-			mEvaluator.RequestCancel();
+			LoadJsvFile(path.value());
 		}
+		mFolderAnalysis = false;
 	}
 	else if (mGui.mFile.button(L"kifu_save").pushed)
 	{
@@ -500,17 +531,16 @@ void TreeSiv3D::Update()
 			Save(path.value().str());
 			Window::SetTitle(GetVersionTitle(path.value().str()));
 		}
+		mFolderAnalysis = false;
 	}
 	else if (mGui.mFile.button(L"kif_format_load").pushed)
 	{
 		const auto path = Dialog::GetOpen({ { L"kifファイル (*.kif)", L"*.kif" } });
 		if (path.has_value())
 		{
-			LoadKif(path.value().str());
-			Window::SetTitle(GetVersionTitle(path.value().str()));
-			CalculateVisualPos();
-			mEvaluator.RequestCancel();
+			LoadKifFile(path.value());
 		}
+		mFolderAnalysis = false;
 	}
 	else if ((Input::KeyControl + Input::KeyV).clicked)
 	{
@@ -528,6 +558,28 @@ void TreeSiv3D::Update()
 	else if (mGui.mEvaluator.button(L"option_load").pushed)
 	{
 		mEvaluator.OpenOption();
+	}
+	else if (mGui.mEvaluator.button(L"folder_analysis").pushed)
+	{
+		const auto path = Dialog::GetFolder();
+		if (path.has_value())
+		{
+			// kifファイル あり, jsvファイル あり, 解析済み → なにもしない
+			// kifファイル あり, jsvファイル あり, 解析なし → 解析だけする
+			// kifファイル あり, jsvファイル なし, 解析なし → jsvファイルにして解析だけする
+			Array<FilePath> contents = FileSystem::DirectoryContents(path.value());
+			mWaitingEvaluationFileList.clear();
+
+			for (const FilePath& p : contents)
+			{
+				if (FileSystem::Extension(p) == L"kif" || FileSystem::Extension(p) == L"jsv")
+				{
+					mWaitingEvaluationFileList.push_back(p);
+				}
+			}
+
+			mFolderAnalysis = true;
+		}
 	}
 
 	// 時間の更新
@@ -690,7 +742,30 @@ void TreeSiv3D::Update()
 
 	// 親クラスの更新
 	Tree::Update();
-	mEvaluator.Update();
+
+	bool isEvaludationDone = mEvaluator.Update();
+	if (isEvaludationDone && mFolderAnalysis)
+	{
+		// まず同名のjsvファイルに保存する
+		Save( FileSystem::ParentPath(mCurrentPath).str() + FileSystem::BaseName(mCurrentPath).str() + L".jsv");
+
+		// ロードする
+		if (mWaitingEvaluationFileList.size() >= 1)
+		{
+			FilePath path = mWaitingEvaluationFileList.back();
+			mWaitingEvaluationFileList.pop_back();
+
+			if (FileSystem::Extension(path) == L"kif")
+			{
+				LoadKifFile(path);
+
+			}
+			else if (FileSystem::Extension(path) == L"jsv")
+			{
+				LoadJsvFile(path);
+			}
+		}
+	}
 }
 
 // ノード選択音を鳴らす
