@@ -493,7 +493,15 @@ void TreeSiv3D::LoadJsvFile(FilePath path)
 
 void TreeSiv3D::LoadKifFile(FilePath path)
 {
-	LoadKif(path.str());
+	TextReader reader(path.str());
+
+	String line;
+	vector <wstring> vws;
+	while (reader.readLine(line))
+	{
+		vws.push_back(line.str());
+	}
+	InitKif(vws);
 	mCurrentPath = path.str();
 	Window::SetTitle(GetVersionTitle(path.str()));
 	CalculateVisualPos();
@@ -747,7 +755,10 @@ void TreeSiv3D::Update()
 	if (isEvaludationDone && mFolderAnalysis)
 	{
 		// まず同名のjsvファイルに保存する
-		Save( FileSystem::ParentPath(mCurrentPath).str() + FileSystem::BaseName(mCurrentPath).str() + L".jsv");
+		if (!mCurrentPath.str().empty())
+		{
+			Save(FileSystem::ParentPath(mCurrentPath).str() + FileSystem::BaseName(mCurrentPath).str() + L".jsv");
+		}
 
 		// ロードする
 		if (mWaitingEvaluationFileList.size() >= 1)

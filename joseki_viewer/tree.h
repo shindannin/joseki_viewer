@@ -313,7 +313,8 @@ public:
 		InitKif(vws);
 	}
 
-	void LoadKif(const wstring& path)
+	// 今は使用していません！（これだとUTF-8が読めないので、tree_siv3D内でTextReaderクラスを使うことで対応した）
+	void LoadKif_Deprecated(const wstring& path)
 	{
 		wfstream wfs;
 		wfs.open(path, std::fstream::in);
