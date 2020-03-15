@@ -27,18 +27,18 @@ public:
 	virtual bool Update(string& te, wstring& teJap) override;
 	virtual void Init() override;
 
+	int BoardReverse(int a) const;
 	void DrawCursor(const GridPos& gp, const Color& color) const;
-	void DrawKoma(const Masu& masu, int y, int x) const;
-	void DrawKoma(int baseSengo, int type, int y, int x, int maisu = 0, bool isChoice = false, bool ignoreReverse = false) const;
+	void DrawKomaSimple(const Masu& masu, int y, int x) const;
+	void DrawKomaDetail(int baseSengo, int type, int y, int x, int maisu = 0, bool isChoice = false, bool ignoreReverse = false) const;
 	void SetOffset(int offsetX, int offsetY);
-	bool GetGridPosFromMouse(GridPos& gridPos) const;
-	void GetXYNaruNarazuChoice(int& y, int& x) const;
-	void GetXYNaruNarazuChoice(float& y, float& x) const;
-	template <class T> void NariOffsetY(T& y) const;
+	bool IsNariChoice(const GridPos& gridPos) const;
+	bool IsNarazuChoice(const GridPos& gridPos) const;
+	bool IsNariNarazuChoice(int y, int x, bool naru) const;
+	bool GetGridPosFromMouse(GridPos& gridPos, bool checkReverseFlag = true) const;
+	int NariOffsetY(int y) const;
 	void GetMochigomaPos(int s, int k, int& y, int& x) const;
 	bool CalcUtsuKomaType(EKomaType& harukomaType) const;
-	bool IsNaruChoice() const;
-	bool IsNarazuChoice() const;
 	int GetGridLeftX() const;
 	int GetGridTopY() const;
 	void DrawMove(const string& te, const Color& color, int& cy, int& cx) const;

@@ -255,11 +255,13 @@ protected:
 
 	KifHeader mKifHeader;
 
+protected:
+	bool IsBanjyo(const GridPos& gp) const;
+	bool IsBanjyo(int y, int x) const;
+
 private:
 	void InitValidMoveGrid();
 	bool IsTekijin(int y, ESengo teban) const;
-	bool IsBanjyo(const GridPos& gp) const;
-	bool IsBanjyo(int y, int x) const;
 	bool IsIkidomari(int y, EKomaType type, ESengo teban) const;
 
 	vector < vector <Masu> > mGrid;				// mGrid[y][x]	«Šû”ÕÀ•W(y,x)‚Ìƒ}ƒXî•ñ

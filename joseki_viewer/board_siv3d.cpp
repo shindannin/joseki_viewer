@@ -51,14 +51,21 @@ void BoardSiv3D::Init()
 	mInputState = E_IDLE;
 }
 
+// 将棋番の黒線グリッド左上のX座標
 int BoardSiv3D::GetGridLeftX() const
 {
 	return (mBoardTextureWidth - mKomaTextureWidth * BOARD_SIZE) / 2 + mOffsetX;
 }
 
+// 将棋番の黒線グリッド左上のY座標
 int BoardSiv3D::GetGridTopY() const
 {
 	return (mBoardTextureHeight - mKomaTextureHeight * BOARD_SIZE) / 2 + mOffsetY;
+}
+
+int BoardSiv3D::BoardReverse(int a) const
+{
+	return BOARD_SIZE-1-a;
 }
 
 void BoardSiv3D::DrawCursor(const GridPos& gp, const Color& color) const
@@ -71,11 +78,11 @@ void BoardSiv3D::DrawCursor(const GridPos& gp, const Color& color) const
 
 	if (GetReverse())
 	{
-		y = BOARD_SIZE - 1 - y;
-		x = BOARD_SIZE - 1 - x;
+		y = BoardReverse(y);
+		x = BoardReverse(x);
 	}
 
-	Rect(leftX + (BOARD_SIZE - 1 - x) * mKomaTextureWidth, topY + y* mKomaTextureHeight, mKomaTextureWidth, mKomaTextureHeight).draw(color);
+	Rect(leftX + (BoardReverse(x)) * mKomaTextureWidth, topY + y* mKomaTextureHeight, mKomaTextureWidth, mKomaTextureHeight).draw(color);
 }
 
 void BoardSiv3D::Draw()
@@ -91,6 +98,8 @@ void BoardSiv3D::Draw()
 	const int tebanOffestX = 10;
 
 
+
+
 	//----- カーソル -----
 	// マウスが指しているマス
 	{
@@ -98,8 +107,12 @@ void BoardSiv3D::Draw()
 		if (GetGridPosFromMouse(gp))
 		{
 			DrawCursor(gp, cursorColor[GetTeban()]);
+			mFont(L"GridXY=(", gp.x, L",", gp.y).draw(800.f, 100.f, Palette::Orange);
 		}
 	}
+
+
+
 
 	// つかんだ駒のマス
 	if (mInputState == E_GRABBED || mInputState == E_CHOICE)
@@ -134,7 +147,7 @@ void BoardSiv3D::Draw()
 				{
 					int y, x;
 					GetMochigomaPos(s, k, y, x); // すでに先手後手を考慮していて、場所もあってる。
-					DrawKoma(s, k, y, x, numKoma, false, true);
+					DrawKomaDetail(s, k, y, x, numKoma, false, true);
 				}
 			}
 		}
@@ -193,7 +206,7 @@ void BoardSiv3D::Draw()
 
 			if (GetMasu(y,x).type != E_EMPTY)
 			{
-				DrawKoma(GetMasu(y,x), y, x);
+				DrawKomaSimple(GetMasu(y,x), y, x);
 			}
 		}
 	}
@@ -225,16 +238,16 @@ void BoardSiv3D::Draw()
 	if (mInputState == E_CHOICE)
 	{
 		const Masu& grabbed = GetMasu(GetMoveFromPos());
-		DrawKoma(grabbed.sengo, grabbed.type, GetMoveToPos().y, GetMoveToPos().x, 0, true);
+		DrawKomaDetail(grabbed.sengo, grabbed.type, GetMoveToPos().y, GetMoveToPos().x, 0, true);
 	}
 }
 
-void BoardSiv3D::DrawKoma(const Masu& masu, int y, int x) const
+void BoardSiv3D::DrawKomaSimple(const Masu& masu, int y, int x) const
 {
-	DrawKoma(masu.sengo, masu.type, y, x);
+	DrawKomaDetail(masu.sengo, masu.type, y, x);
 }
 
-void BoardSiv3D::DrawKoma(int baseSengo, int type, int y, int x, int maisu, bool isChoice, bool isMochigoma) const
+void BoardSiv3D::DrawKomaDetail(int baseSengo, int type, int y, int x, int maisu, bool isChoice, bool ignoreReverse) const
 {
 	const int leftX = GetGridLeftX();
 	const int topY = GetGridTopY();
@@ -243,52 +256,81 @@ void BoardSiv3D::DrawKoma(int baseSengo, int type, int y, int x, int maisu, bool
 	if (GetReverse())
 	{
 		sengo = 1 - sengo;
-		if (!isMochigoma)
+		if (!ignoreReverse)
 		{
-			y = BOARD_SIZE - 1 - y;
-			x = BOARD_SIZE - 1 - x;
+			y = BoardReverse(y);
+			x = BoardReverse(x);
 		}
 	}
+
+	const int drawBaseX = leftX + BoardReverse(x)*mKomaTextureWidth;
+	const int drawBaseY = topY + y * mKomaTextureHeight;
+
+	// つかんでいる駒の表示
+	mTexture[sengo][type].draw(drawBaseX, drawBaseY);
 
 	if (isChoice)
 	{
 		const EKomaType nariType = mKoma[type].narigoma;
 
+		// 成らずの表示
 		{
-			const int drawX = static_cast<int>(leftX + (BOARD_SIZE-1-x)*mKomaTextureWidth);
-			const int drawY = static_cast<int>(topY + y*mKomaTextureHeight);
-			mTexture[sengo][type].draw(drawX, drawY);
-		}
-
-		NariOffsetY(y);
-
-		{
-			const int drawX = static_cast<int>(leftX + (BOARD_SIZE - 1.5f - x)*mKomaTextureWidth);
-			const int drawY = static_cast<int>(topY + y*mKomaTextureHeight);
+			const int drawX = static_cast<int>(drawBaseX - 0.5f * mKomaTextureWidth);
+			const int drawY = static_cast<int>(drawBaseY + NariOffsetY(y)*mKomaTextureHeight);
 			Rect(drawX, drawY, mKomaTextureWidth, mKomaTextureHeight).draw(narazuColor[GetTeban()]);
 			mTexture[sengo][type].draw(drawX, drawY);
 		}
 
+		// 成りの表示
 		{
-			const int drawX = static_cast<int>(leftX + (BOARD_SIZE - 0.5f - x)*mKomaTextureWidth);
-			const int drawY = static_cast<int>(topY + y*mKomaTextureHeight);
+			const int drawX = static_cast<int>(drawBaseX + 0.5f * mKomaTextureWidth);
+			const int drawY = static_cast<int>(drawBaseY + NariOffsetY(y)*mKomaTextureHeight);
 			Rect(drawX, drawY, mKomaTextureWidth, mKomaTextureHeight).draw(nariColor[GetTeban()]);
 			mTexture[sengo][nariType].draw(drawX, drawY);
 		}
+	}
 
-	}
-	else
-	{
-		mTexture[sengo][type].draw(leftX + (BOARD_SIZE - 1 - x)*mKomaTextureWidth, topY + y*mKomaTextureHeight);
-	}
 
 	// 駒枚数の数字
 	if (maisu >= 1)
 	{
 		const float dx[] = { +1.0f, -0.25f };
-		mFont(L"", maisu).draw(leftX + (BOARD_SIZE - 1 - x + dx[sengo])*mKomaTextureWidth, topY + y*mKomaTextureHeight, maisuFontColor[baseSengo]);
+		mFont(L"", maisu).draw(leftX + (BoardReverse(x) + dx[sengo])*mKomaTextureWidth, topY + y*mKomaTextureHeight, maisuFontColor[baseSengo]);
 	}
 }
+
+// 成先の座標(y,x)
+bool BoardSiv3D::IsNariChoice(const GridPos& gridPos) const
+{
+	return IsNariNarazuChoice(gridPos.y, gridPos.x, true);
+}
+
+bool BoardSiv3D::IsNarazuChoice(const GridPos& gridPos) const
+{
+	return IsNariNarazuChoice(gridPos.y, gridPos.x, false);
+}
+
+bool BoardSiv3D::IsNariNarazuChoice(int y, int x, bool naru) const
+{
+	if (GetReverse())
+	{
+		y = BoardReverse(y);
+		x = BoardReverse(x);
+	}
+
+	const int leftX = GetGridLeftX();
+	const int topY = GetGridTopY();
+	const int drawBaseX = leftX + BoardReverse(x)*mKomaTextureWidth;
+	const int drawBaseY = topY + y * mKomaTextureHeight;
+	const int drawX = static_cast<int>(drawBaseX - 0.5f * mKomaTextureWidth + (naru ? mKomaTextureWidth : 0) );
+	const int drawY = static_cast<int>(drawBaseY + NariOffsetY(y)*mKomaTextureHeight);
+
+	const int mx = Mouse::Pos().x;
+	const int my = Mouse::Pos().y;
+
+	return (drawX <= mx && mx < drawX + mKomaTextureWidth && drawY <= my && my < drawY + mKomaTextureHeight);
+}
+
 
 void BoardSiv3D::SetOffset(int offsetX, int offsetY)
 {
@@ -297,67 +339,23 @@ void BoardSiv3D::SetOffset(int offsetX, int offsetY)
 }
 
 
-bool BoardSiv3D::GetGridPosFromMouse(GridPos& gridPos) const
+// 将棋座標。盤面も反転にして(0,0)が１一、(8,8)が９九にあたる。盤面内ならtrue,盤面外ならfalseを返す。
+bool BoardSiv3D::GetGridPosFromMouse(GridPos& gridPos, bool checkReverseFlag) const
 {
 	const int leftX = GetGridLeftX();
 	const int topY = GetGridTopY();
 
-	if (!(INRANGE(Mouse::Pos().x, leftX, leftX + mKomaTextureWidth * BOARD_SIZE - 1) && 
-		INRANGE(Mouse::Pos().y, topY,  topY + mKomaTextureHeight * BOARD_SIZE - 1)) )
+	gridPos.x = BoardReverse(static_cast<int>(floor(static_cast<float>(Mouse::Pos().x - leftX) / mKomaTextureWidth))); // これはもともとのX座標反転
+	gridPos.y = static_cast<int>(floor(static_cast<float>(Mouse::Pos().y - topY) / mKomaTextureHeight));
+
+	if (checkReverseFlag && GetReverse())
 	{
-		return false;
+		gridPos.x = BoardReverse(gridPos.x);
+		gridPos.y = BoardReverse(gridPos.y);
 	}
 
-	int x = BOARD_SIZE - 1 - (Mouse::Pos().x - leftX) / mKomaTextureWidth;
-	int y = (Mouse::Pos().y - topY) / mKomaTextureHeight;
-
-	if (GetReverse())
-	{
-		x = BOARD_SIZE - 1 - x;
-		y = BOARD_SIZE - 1 - y;
-	}
-
-
-	gridPos.x = x;
-	gridPos.y = y;
-	return true;
+	return IsBanjyo(gridPos);
 }
-
-void BoardSiv3D::GetXYNaruNarazuChoice(int& y, int& x) const
-{
-	const int leftX = GetGridLeftX();
-	const int topY = GetGridTopY();
-
-	if (Mouse::Pos().x - leftX >= 0)
-	{
-		x = BOARD_SIZE - 1 - static_cast<int>(Mouse::Pos().x - leftX) / mKomaTextureWidth;
-	}
-	else
-	{
-		x = BOARD_SIZE + static_cast<int>(leftX - Mouse::Pos().x) / mKomaTextureWidth;
-	}
-
-	y = (Mouse::Pos().y - topY) / mKomaTextureHeight;
-}
-
-void BoardSiv3D::GetXYNaruNarazuChoice(float& y, float& x) const
-{
-	const int leftX = GetGridLeftX();
-	const int topY = GetGridTopY();
-
-	if (Mouse::Pos().x - leftX >= 0)
-	{
-		x = BOARD_SIZE - static_cast<float>(Mouse::Pos().x - leftX) / mKomaTextureWidth;
-	}
-	else
-	{
-		x = BOARD_SIZE + static_cast<float>(leftX - Mouse::Pos().x) / mKomaTextureWidth;
-	}
-
-	y = static_cast<float>( (Mouse::Pos().y - topY) / mKomaTextureHeight );
-}
-
-
 
 void BoardSiv3D::UpdateDecided(string& te, wstring& teJap, bool& isMoved)
 {
@@ -419,7 +417,7 @@ bool BoardSiv3D::Update(string& te, wstring& teJap)
 				// 成りのチェック
 				SetMoveToPos(gp);
 
-				if (IsNarubeki( GetMoveFromPos(), gp, GetTeban()))
+				if (IsNarubeki(GetMoveFromPos(), gp, GetTeban()))
 				{
 					// 行き止まりなので、強制的に成る（歩・香車・桂馬）
 					SetNaru(true);
@@ -450,17 +448,20 @@ bool BoardSiv3D::Update(string& te, wstring& teJap)
 		break;
 
 		case E_CHOICE:
-			// 成り成らずを選択する
-			if (IsNaruChoice() || IsNarazuChoice())
+		// 成り成らずを選択する
+		{
+			GridPos gp = GetMoveToPos();
+			if (IsNariChoice(gp))
 			{
-				if (IsNaruChoice())
-				{
-					SetNaru(true);
-				}
-
+				SetNaru(true);
 				UpdateDecided(te, teJap, isMoved);
 			}
-			break;
+			else if (IsNarazuChoice(gp))
+			{
+				UpdateDecided(te, teJap, isMoved);
+			}
+		}
+		break;
 
 		default:
 			break;
@@ -488,17 +489,15 @@ bool BoardSiv3D::Update(string& te, wstring& teJap)
 	return isMoved;
 }
 
-template <class T>
-void BoardSiv3D::NariOffsetY(T& y) const
+int BoardSiv3D::NariOffsetY(int y) const
 {
+
 	if (y <= BOARD_SIZE / 2)
 	{
-		y++;
+		return +1; // 0, 1, 2, 3, 4
 	}
-	else
-	{
-		y--;
-	}
+
+	return -1; // 5, 6, 7, 8
 }
 
 void BoardSiv3D::GetMochigomaPos(int sengo, int k, int& y, int& x) const
@@ -520,15 +519,16 @@ void BoardSiv3D::GetMochigomaPos(int sengo, int k, int& y, int& x) const
 
 bool BoardSiv3D::CalcUtsuKomaType(EKomaType& utsuKomaType) const
 {
-	int y, x;
-	GetXYNaruNarazuChoice(y, x);
+	GridPos gridPos;
+	GetGridPosFromMouse(gridPos, false);
+
 	for (int k = 0; k < NUM_NARAZU_KOMA_TYPE; ++k)
 	{
 		if (GetNumMochigoma(GetTeban(), k) >= 1)
 		{
 			int my, mx;
 			GetMochigomaPos(GetTeban(), k, my, mx);
-			if (my == y && mx == x)
+			if (my == gridPos.y && mx == gridPos.x)
 			{
 				utsuKomaType = static_cast<EKomaType>(k);
 				return true;
@@ -537,41 +537,6 @@ bool BoardSiv3D::CalcUtsuKomaType(EKomaType& utsuKomaType) const
 	}
 
 	return false;
-}
-
-
-bool BoardSiv3D::IsNaruChoice() const
-{
-	float y, x;
-	GetXYNaruNarazuChoice(y, x);
-	if (GetReverse())
-	{
-		y = BOARD_SIZE - 1 - y;
-		x = BOARD_SIZE - 1 - x;
-	}
-
-	float		cy = static_cast<float>(GetMoveToPos().y);
-	const float	cx = static_cast<float>(GetMoveToPos().x);
-	NariOffsetY(cy);
-
-	return (INRANGE(x, cx - 0.5f, cx + 0.5f) && INRANGE(y, cy, cy + 1.0f));
-}
-
-bool BoardSiv3D::IsNarazuChoice() const
-{
-	float y, x;
-	GetXYNaruNarazuChoice(y, x);
-	if (GetReverse())
-	{
-		y = BOARD_SIZE - 1 - y;
-		x = BOARD_SIZE - 1 - x + 2;
-	}
-
-	float		cy = static_cast<float>(GetMoveToPos().y);
-	const float	cx = static_cast<float>(GetMoveToPos().x);
-	NariOffsetY(cy);
-
-	return (INRANGE(x, cx + 0.5f, cx + 1.5f) && INRANGE(y, cy, cy + 1.0f));
 }
 
 // 移動をあらわす表示。また、その中央座標をcy,cxで返す（矢印の上の評価値表示など、tree側で使用する目的）
@@ -586,8 +551,8 @@ void BoardSiv3D::DrawMove(const string& te, const Color& color, int& cy, int& cx
 
 		if (GetReverse())
 		{
-			startY = BOARD_SIZE - 1 - startY;
-			startX = BOARD_SIZE - 1 - startX;
+			startY = BoardReverse(startY);
+			startX = BoardReverse(startX);
 		}
 	}
 	else
@@ -599,8 +564,8 @@ void BoardSiv3D::DrawMove(const string& te, const Color& color, int& cy, int& cx
 
 	if (GetReverse())
 	{
-		mv.to.y = BOARD_SIZE - 1 - mv.to.y;
-		mv.to.x = BOARD_SIZE - 1 - mv.to.x;
+		mv.to.y = BoardReverse(mv.to.y);
+		mv.to.x = BoardReverse(mv.to.x);
 	}
 
 	DrawArrow(startY, startX, mv.to.y, mv.to.x, color, cy, cx);
@@ -613,9 +578,9 @@ void BoardSiv3D::DrawArrow(int startY, int startX, int destY, int destX, const C
 	const int topY = GetGridTopY();
 
 
-	const float sx = leftX + (BOARD_SIZE - 1 - startX + 0.5f) * mKomaTextureWidth;
+	const float sx = leftX + (BoardReverse(startX) + 0.5f) * mKomaTextureWidth;
 	const float sy = topY  + (startY + 0.5f) * mKomaTextureHeight;
-	const float dx = leftX + (BOARD_SIZE - 1 - destX + 0.5f) * mKomaTextureWidth;
+	const float dx = leftX + (BoardReverse(destX) + 0.5f) * mKomaTextureWidth;
 	const float dy = topY +  (destY + 0.5f) * mKomaTextureHeight;
 
 	cy = static_cast<int>((sy + dy) * 0.5f);
