@@ -33,6 +33,8 @@ bld/
 [Oo]ut/
 [Ll]og/
 [Ll]ogs/
+application/
+application_x64/
 
 # Build results on 'Bin' directories
 **/[Bb]in/*
