@@ -2,10 +2,10 @@
 #include "tree.h"
 #include "evaluator.h"
 
-// •]‰¿ƒ\ƒtƒg‚ğŠJ‚­
+// è©•ä¾¡ã‚½ãƒ•ãƒˆã‚’é–‹ã
 void Evaluator::Open()
 {
-	const auto path = Dialog::GetOpen({ { L"Àsƒtƒ@ƒCƒ‹ (*.exe)", L"*.exe" } });
+	const auto path = Dialog::GetOpen({ { L"å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ« (*.exe)", L"*.exe" } });
 
 	if (path)
 	{
@@ -13,10 +13,10 @@ void Evaluator::Open()
 	}
 }
 
-// •]‰¿ƒ\ƒtƒg‚Ì‰Šúİ’èƒIƒvƒVƒ‡ƒ“‚ğŠJ‚­
+// è©•ä¾¡ã‚½ãƒ•ãƒˆã®åˆæœŸè¨­å®šã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’é–‹ã
 void Evaluator::OpenOption()
 {
-	const auto path = Dialog::GetOpen({ { L"ƒeƒLƒXƒgƒtƒ@ƒCƒ‹ (*.txt)", L"*.txt" } });
+	const auto path = Dialog::GetOpen({ { L"ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ« (*.txt)", L"*.txt" } });
 	if (path)
 	{
 		mOptions.clear();
@@ -34,10 +34,10 @@ void Evaluator::OpenOption()
 
 void Evaluator::OpenSub(const FilePath& newEvaluatorPath)
 {
-	// Œ»İAƒm[ƒh‚ğ•]‰¿’†‚Å‚ ‚ê‚Î“Ç‚İÌ‚Ä
+	// ç¾åœ¨ã€ãƒãƒ¼ãƒ‰ã‚’è©•ä¾¡ä¸­ã§ã‚ã‚Œã°èª­ã¿æ¨ã¦
 	RequestCancel();
 
-	// Œ»İ‚Ì•]‰¿ƒ\ƒtƒg‚ª‚ ‚ê‚ÎA“¯‚¶‚à‚Ì‚ğ‘I‚ñ‚Å‚¢‚½‚Æ‚µ‚Ä‚àA•Â‚¶‚é
+	// ç¾åœ¨ã®è©•ä¾¡ã‚½ãƒ•ãƒˆãŒã‚ã‚Œã°ã€åŒã˜ã‚‚ã®ã‚’é¸ã‚“ã§ã„ãŸã¨ã—ã¦ã‚‚ã€é–‰ã˜ã‚‹
 	if (mServer != nullptr)
 	{
 		Close();
@@ -51,13 +51,13 @@ void Evaluator::OpenSub(const FilePath& newEvaluatorPath)
 
 		if (mServer->write("usi\n"))
 		{
-			// usiok‚ğó‚¯æ‚é‚Ü‚Å‘Ò‚ÂB
+			// usiokã‚’å—ã‘å–ã‚‹ã¾ã§å¾…ã¤ã€‚
 			while (!IsUSIOKReceived())
 			{
 				UpdateReadFromStdio();
 			}
 
-			// •]‰¿ƒ\ƒtƒg–¼‚ğó‚¯æ‚é
+			// è©•ä¾¡ã‚½ãƒ•ãƒˆåã‚’å—ã‘å–ã‚‹
 			for (const string& s : mReadLogs)
 			{
 				vector <string> tmp;
@@ -66,7 +66,7 @@ void Evaluator::OpenSub(const FilePath& newEvaluatorPath)
 
 				if (SZ(tmp) >= 3 && tmp[0] == "id" && tmp[1] == "name")
 				{
-					// ƒXƒy[ƒX‚ª‚Í‚¢‚Á‚½•]‰¿ƒ\ƒtƒg–¼‚à‚ ‚é‚Ì‚ÅA‘S•”Œq‚°‚éB
+					// ã‚¹ãƒšãƒ¼ã‚¹ãŒã¯ã„ã£ãŸè©•ä¾¡ã‚½ãƒ•ãƒˆåã‚‚ã‚ã‚‹ã®ã§ã€å…¨éƒ¨ç¹‹ã’ã‚‹ã€‚
 					mName = "";
 					for (int i=2;i<SZ(tmp);++i)
 					{
@@ -74,23 +74,36 @@ void Evaluator::OpenSub(const FilePath& newEvaluatorPath)
 					}
 					break;
 				}
-			}
-			mReadLogs.clear();
+				}
+				mReadLogs.clear();
 
-			// ƒIƒvƒVƒ‡ƒ“‚ğ‘—‚é
-			vector <string> options = mOptions;
-			options.push_back("isready\n");
-			string allOptions = accumulate(options.begin(), options.end(), string());
-			if (mServer->write(allOptions))
-			{
-				// usiok‚ğó‚¯æ‚é‚Ü‚Å‘Ò‚ÂB
+				// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’é€ã‚‹
+				vector <string> options = mOptions;
+				bool hasMultiPV = false;
+				for (const auto& option : options)
+				{
+					if (option.find("MultiPV") != string::npos)
+					{
+						hasMultiPV = true;
+						break;
+					}
+				}
+				if (!hasMultiPV)
+				{
+					options.push_back("setoption name MultiPV value " + to_string(DEFAULT_SAVE_EVAL_RANK) + "\n");
+				}
+				options.push_back("isready\n");
+				string allOptions = accumulate(options.begin(), options.end(), string());
+				if (mServer->write(allOptions))
+				{
+					// usiokã‚’å—ã‘å–ã‚‹ã¾ã§å¾…ã¤ã€‚
 				while (!IsReadyOKReceived())
 				{
 					UpdateReadFromStdio();
 				}
 				mReadLogs.clear();
 
-				// ƒXƒ^[ƒgI
+				// ã‚¹ã‚¿ãƒ¼ãƒˆï¼
 				if (mServer->write("usinewgame\n"))
 				{
 				}
@@ -111,12 +124,12 @@ void Evaluator::OpenSub(const FilePath& newEvaluatorPath)
 	}
 }
 
-// •]‰¿‚ğI—¹‚·‚é
+// è©•ä¾¡ã‚’çµ‚äº†ã™ã‚‹
 void Evaluator::Close()
 {
 	if (mServer != nullptr)
 	{
-		// ‚±‚Ì“_‚Å“Ç‚İÌ‚Ä‚ÍI—¹‚µ‚Ä‚é‚Í‚¸B
+		// ã“ã®æ™‚ç‚¹ã§èª­ã¿æ¨ã¦ã¯çµ‚äº†ã—ã¦ã‚‹ã¯ãšã€‚
 		mServer->write("quit\n");
 
 		delete mServer;
@@ -124,13 +137,13 @@ void Evaluator::Close()
 	}
 }
 
-// ƒƒCƒ“ƒ‹[ƒv
+// ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—
 bool Evaluator::Update()
 {
 	if (mServer)
 	{
 
-		// •]‰¿‚Ìó‘Ô‘JˆÚ
+		// è©•ä¾¡ã®çŠ¶æ…‹é·ç§»
 		switch (mEStateEvaluation)
 		{
 		case EStateEvaluation_FindingNode:
@@ -147,7 +160,7 @@ bool Evaluator::Update()
 			}
 			else
 			{
-				// ‘Sƒm[ƒh‚Ì•]‰¿‚ªI—¹
+				// å…¨ãƒãƒ¼ãƒ‰ã®è©•ä¾¡ãŒçµ‚äº†
 				return true;
 			}
 		}
@@ -173,7 +186,7 @@ bool Evaluator::Update()
 	return false;
 }
 
-// •]‰¿‚ğŠJn‚·‚é
+// è©•ä¾¡ã‚’é–‹å§‹ã™ã‚‹
 bool Evaluator::Go()
 {
 	assert(mEvaludatingNodeID != NG);
@@ -218,11 +231,11 @@ void Evaluator::RequestCancel()
 	mReadLogs.clear();
 }
 
-// ’èŠú“I‚ÉA•]‰¿ƒ\ƒtƒg‚©‚çA•W€“ü—ÍŒo—R‚ÅA‰½‚©‚ğó‚¯æ‚Á‚½‚©Šm”F‚·‚éB
-// XV‚ª‚ ‚Á‚½‚çtrue‚ğ•Ô‚·B
+// å®šæœŸçš„ã«ã€è©•ä¾¡ã‚½ãƒ•ãƒˆã‹ã‚‰ã€æ¨™æº–å…¥åŠ›çµŒç”±ã§ã€ä½•ã‹ã‚’å—ã‘å–ã£ãŸã‹ç¢ºèªã™ã‚‹ã€‚
+// æ›´æ–°ãŒã‚ã£ãŸã‚‰trueã‚’è¿”ã™ã€‚
 bool Evaluator::UpdateReadFromStdio()
 {
-	if (mPollingStopwatch.ms() > mDurationMilliSecPolling) // ŠÔŒo‰ß‚µ‚½‚çó‚¯æ‚è‚É
+	if (mPollingStopwatch.ms() > mDurationMilliSecPolling) // æ™‚é–“çµŒéã—ãŸã‚‰å—ã‘å–ã‚Šã«
 	{
 		string readStr;
 		if (mServer->read(readStr))
@@ -244,7 +257,7 @@ bool Evaluator::UpdateReadFromStdio()
 }
 
 
-// •]‰¿ƒ\ƒtƒg‚©‚çA•]‰¿’l‚ÆÅ‘Pè‚ğ“¾‚é
+// è©•ä¾¡ã‚½ãƒ•ãƒˆã‹ã‚‰ã€è©•ä¾¡å€¤ã¨æœ€å–„æ‰‹ã‚’å¾—ã‚‹
 bool Evaluator::ReceiveBestMoveAndScore()
 {
 	assert(mEvaludatingNodeID != NG);
@@ -254,11 +267,15 @@ bool Evaluator::ReceiveBestMoveAndScore()
 		return false;
 	}
 
+	bool isMate = false;
 	bool isScoreFound = false;
 
-	// bestmove‚Åƒ`ƒFƒbƒN‚·‚é‚µ‚©‚È‚¢ƒP[ƒX
-	// ‹ZIFI‹Ç‚ÉƒXƒRƒA‚ğŠÜ‚Ü‚È‚¢B
-	// AperyFI‹Ç‚ÌƒXƒRƒA‚ªA‚È‚º‚©©•ª‚ªŸ‚¿‚É(mate 1)
+	vector<Node::EvaluationResult> collected(DEFAULT_SAVE_EVAL_RANK);
+	vector<bool> filled(DEFAULT_SAVE_EVAL_RANK, false);
+
+	// bestmoveã§ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã—ã‹ãªã„ã‚±ãƒ¼ã‚¹
+	// æŠ€å·§ï¼šçµ‚å±€æ™‚ã«ã‚¹ã‚³ã‚¢ã‚’å«ã¾ãªã„ã€‚
+	// Aperyï¼šçµ‚å±€æ™‚ã®ã‚¹ã‚³ã‚¢ãŒã€ãªãœã‹è‡ªåˆ†ãŒå‹ã¡ã«(mate 1)
 	{
 		const int lastIndex = SZ(mReadLogs) - 1;
 		if (lastIndex >= 0)
@@ -267,37 +284,53 @@ bool Evaluator::ReceiveBestMoveAndScore()
 
 			vector <string> tmp;
 			Split1(lastInfo, tmp, ' ');
+			if (tmp.empty())
+			{
+				return false;
+			}
 			Trim(tmp.back());
 
 			assert(tmp[0] == "bestmove");
 			if (tmp[1] == "resign")
 			{
 				isScoreFound = true;
-				mTree->UpdateNode(mEvaludatingNodeID, Node::ConvertMateToScore(0), "", true);
+				isMate = true;
+				collected[0].score = Node::ConvertMateToScore(0);
+				collected[0].tejun.clear();
+				filled[0] = true;
 			}
 		}
 	}
 
-	for (int i = SZ(mReadLogs) - 2; i >= 0; --i) // ÅŒã‚Ìs‚Íbestmove‚È‚Ì‚ÅA-2‚©‚çƒ`ƒFƒbƒN‚Å³‚µ‚¢
+	for (int i = SZ(mReadLogs) - 2; i >= 0; --i) // æœ€å¾Œã®è¡Œã¯bestmoveãªã®ã§ã€-2ã‹ã‚‰ãƒã‚§ãƒƒã‚¯ã§æ­£ã—ã„
 	{
 		const string& lastInfo = mReadLogs[i];
-// 		std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
-// 		Print(wsTmp);
 
 		vector <string> tmp;
 		Split1(lastInfo, tmp, ' ');
+		if (tmp.empty())
+		{
+			continue;
+		}
 		Trim(tmp.back());
+
+		if (tmp[0] != "info")
+		{
+			continue;
+		}
 
 		int score = 0;
 		string tejun;
-
-		assert(tmp[0]=="info");
-
+		int multipv = 1;
 		bool isJustNowScoreFound = false;
 
 		for (int k = 0; k < SZ(tmp); ++k)
 		{
-			if (!isScoreFound && tmp[k] == "score" && k + 2 < SZ(tmp))
+			if (tmp[k] == "multipv" && k + 1 < SZ(tmp))
+			{
+				multipv = stoi(tmp[k + 1]);
+			}
+			else if (tmp[k] == "score" && k + 2 < SZ(tmp))
 			{
 				if (tmp[k + 1] == "cp")
 				{
@@ -337,15 +370,30 @@ bool Evaluator::ReceiveBestMoveAndScore()
 			}
 		}
 
-		if (isJustNowScoreFound)
+		if (isJustNowScoreFound && 1 <= multipv && multipv <= DEFAULT_SAVE_EVAL_RANK)
 		{
-			isScoreFound = true;
-			mTree->UpdateNode(mEvaludatingNodeID, score, tejun, false);
-			break;
+			if (!filled[multipv - 1])
+			{
+				collected[multipv - 1].score = score;
+				collected[multipv - 1].tejun = tejun;
+				filled[multipv - 1] = true;
+				isScoreFound = true;
+			}
+		}
+	}
+
+	vector<Node::EvaluationResult> evaluations;
+	for (int i = 0; i < DEFAULT_SAVE_EVAL_RANK; ++i)
+	{
+		if (filled[i])
+		{
+			evaluations.push_back(collected[i]);
 		}
 	}
 
 	assert(isScoreFound);
+
+	mTree->UpdateNode(mEvaludatingNodeID, evaluations, isMate);
 
 	mReadLogs.clear();
 	return true;

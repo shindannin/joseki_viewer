@@ -43,10 +43,28 @@ int Node::HasLink(const string& te) const
 	return NG;
 }
 
+void Node::SetEvaluations(const vector<EvaluationResult>& evaluations)
+{
+	mEvaluationResults = evaluations;
+
+	if (!mEvaluationResults.empty())
+	{
+		mScore = mEvaluationResults.front().score;
+		mBestTejun = mEvaluationResults.front().tejun;
+		mTejunJap = mEvaluationResults.front().tejunJap;
+	}
+	else
+	{
+		mScore = SCORE_NOT_EVALUATED;
+		mBestTejun.clear();
+		mTejunJap.clear();
+	}
+}
+
 Tree::Tree(Board* board)
 {
 	mVersion = VERSION_DATA;
-	mBoard = board; // ŠO‚Ånew delete‚·‚é‚Ì‚ÅAƒ|ƒCƒ“ƒ^“n‚·‚¾‚¯
+	mBoard = board; // å¤–ã§new deleteã™ã‚‹ã®ã§ã€ãƒã‚¤ãƒ³ã‚¿æ¸¡ã™ã ã‘
 	Init();
 }
 
@@ -79,7 +97,7 @@ void Tree::AddLink(const string& te, const wstring* pTeJap)
 	int nextNodeID = mNodes[mSelectedNodeID].HasLink(te);
 	if (nextNodeID == NG)
 	{
-		// ƒŠƒ“ƒN‚ª‚È‚¢‚Æ‚«‚ÍAƒŠƒ“ƒN‚àŸ‚Ìƒm[ƒh‚à‘«‚µ‚ÄA
+		// ãƒªãƒ³ã‚¯ãŒãªã„ã¨ãã¯ã€ãƒªãƒ³ã‚¯ã‚‚æ¬¡ã®ãƒãƒ¼ãƒ‰ã‚‚è¶³ã—ã¦ã€
 		Node nextNode;
 
 		nextNode.mState = mBoard->GetState();
@@ -94,7 +112,7 @@ void Tree::AddLink(const string& te, const wstring* pTeJap)
 	}
 	else
 	{
-		// ‚à‚µƒŠƒ“ƒN‚ª‚ ‚é‚Æ‚«‚ÍA‚»‚¿‚ç‚Öi‚ß‚é
+		// ã‚‚ã—ãƒªãƒ³ã‚¯ãŒã‚ã‚‹ã¨ãã¯ã€ãã¡ã‚‰ã¸é€²ã‚ã‚‹
 		SetSelectedNodeID(nextNodeID);
 	}
 }
@@ -146,7 +164,7 @@ float Tree::DfsWidth(int nodeID)
 	return node.mWidth;
 }
 
-// ƒm[ƒh‚ÌÀ•W‚ğÄ‹A‚Å‹‚ß‚éB
+// ãƒãƒ¼ãƒ‰ã®åº§æ¨™ã‚’å†å¸°ã§æ±‚ã‚ã‚‹ã€‚
 void Tree::DfsVisualPos(int nodeID, float y, float x)
 {
 	Node& node = mNodes[nodeID];
@@ -215,53 +233,89 @@ void Tree::InitializeAfterLoad()
 	const int rootNodeID = GetRootNodeID();
 	DfsState(rootNodeID);
 
-	// “ú–{Œêè‡‚¾‚¯ŒvZ
+	// æ—¥æœ¬èªæ‰‹é †ã ã‘è¨ˆç®—
 	for (Node& node : mNodes)
 	{
-		if (!node.mBestTejun.empty())
+		if (!node.GetEvaluations().empty() || !node.mBestTejun.empty())
 		{
 			mBoard->SetState(node.mState);
-			node.mTejunJap = mBoard->MoveByTejun(node.mBestTejun);
+			vector<Node::EvaluationResult> evaluations = node.GetEvaluations();
+
+			if (evaluations.empty())
+			{
+				Node::EvaluationResult evaluation;
+				evaluation.score = node.mScore;
+				evaluation.tejun = node.mBestTejun;
+				evaluations.push_back(evaluation);
+			}
+
+			for (auto& evaluation : evaluations)
+			{
+				mBoard->SetState(node.mState);
+				evaluation.tejunJap = mBoard->MoveByTejun(evaluation.tejun);
+			}
+
+			node.SetEvaluations(evaluations);
 		}
 	}
 
 	SetSelectedNodeID(rootNodeID);
 }
 
-void Tree::UpdateNode(int nodeID, int score, const string& tejun, bool isMate)
+void Tree::UpdateNode(int nodeID, const vector<Node::EvaluationResult>& evaluations, bool isMate)
 {
 	Node& node = mNodes[nodeID];
 
-	// ‚±‚Ìƒm[ƒh‚ªæè”Ô‚©Œãè”Ô‚©
-
-	node.mBestTejun = tejun;
+	// è‡ªåˆ†ã®ãƒãƒ¼ãƒ‰ã‚’æ›´æ–°ã™ã‚‹
 
 	Board tmpBoard;
 	tmpBoard.SetState(node.mState);
-	switch (tmpBoard.GetTeban())
+	const int teban = tmpBoard.GetTeban();
+
+	vector<Node::EvaluationResult> adjustedEvaluations;
+	adjustedEvaluations.reserve(evaluations.size());
+
+	for (const auto& evaluation : evaluations)
 	{
-	case E_SEN:
-		node.mScore = score;
-		break;
+		Node::EvaluationResult adjusted = evaluation;
 
-	case E_GO:
-		node.mScore = -score;
-		break;
+		switch (teban)
+		{
+		case E_SEN:
+			break;
 
-	default:
-		assert(0);
-		break;
+		case E_GO:
+			adjusted.score = -adjusted.score;
+			break;
+
+		default:
+			assert(0);
+			break;
+		}
+
+		if (isMate)
+		{
+			adjusted.score = -adjusted.score;
+		}
+
+		Board boardForMove;
+		boardForMove.SetState(node.mState);
+		adjusted.tejunJap = boardForMove.MoveByTejun(adjusted.tejun);
+
+		adjustedEvaluations.push_back(adjusted);
 	}
 
-	if (isMate)
+	if (adjustedEvaluations.empty())
 	{
-		node.mScore = -node.mScore;
+		node.ResetScore();
 	}
-
-	node.mTejunJap = tmpBoard.MoveByTejun(tejun);
+	else
+	{
+		node.SetEvaluations(adjustedEvaluations);
+	}
 }
 
-// nodeID‚Ìq‘·‚Ìƒm[ƒh‚ğAÄ‹A‚ÅnewNodeIDs‚É—ñ‹“‚·‚éB
+// nodeIDã®å­å­«ã®ãƒãƒ¼ãƒ‰ã‚’ã€å†å¸°ã§newNodeIDsã«åˆ—æŒ™ã™ã‚‹ã€‚
 void Tree::DfsCalcNewNodeID(int nodeID, vector <int>& newNodeIDs)
 {
 	newNodeIDs.push_back(nodeID);
@@ -277,12 +331,12 @@ void Tree::DfsCalcNewNodeID(int nodeID, vector <int>& newNodeIDs)
 	}
 }
 
-// nodeID‚Ìq‘·‚Ìƒm[ƒh‚Ì’†‚ÅAŒ»İ‘I‘ğ’†ƒm[ƒh‚Ìq‘·ˆÈŠO‚ğAÄ‹A‚ÅnewNodeIDs‚É—ñ‹“‚·‚éB
+// nodeIDã®å­å­«ã®ãƒãƒ¼ãƒ‰ã®ä¸­ã§ã€ç¾åœ¨é¸æŠä¸­ãƒãƒ¼ãƒ‰ã®å­å­«ä»¥å¤–ã‚’ã€å†å¸°ã§newNodeIDsã«åˆ—æŒ™ã™ã‚‹ã€‚
 void Tree::DfsCalcNewNodeIDExceptSelected(int nodeID, vector <int>& newNodeIDs)
 {
 	if (nodeID == mSelectedNodeID)
 	{
-		return;	// ‘I‘ğƒm[ƒh‚Æ‚»‚±‚©‚çæ‚ğÁ‚·‚Ì‚ÅAnewNodeIDs‚Í“o˜^‚µ‚È‚¢
+		return;	// é¸æŠãƒãƒ¼ãƒ‰ã¨ãã“ã‹ã‚‰å…ˆã‚’æ¶ˆã™ã®ã§ã€newNodeIDsã¯ç™»éŒ²ã—ãªã„
 	}
 
 	newNodeIDs.push_back(nodeID);
@@ -298,12 +352,12 @@ void Tree::DfsCalcNewNodeIDExceptSelected(int nodeID, vector <int>& newNodeIDs)
 	}
 }
 
-// mSelectedNodeID‚Ì‰ß‹‚Ìƒm[ƒh+•]‰¿Ï‚İ‚Ì’†‚ÅƒxƒXƒgƒ‹[ƒg‚ğ‚½‚Ç‚Á‚½‚Æ‚«‚Ì
+// mSelectedNodeIDã®éå»ã®ãƒãƒ¼ãƒ‰+è©•ä¾¡æ¸ˆã¿ã®ä¸­ã§ãƒ™ã‚¹ãƒˆãƒ«ãƒ¼ãƒˆã‚’ãŸã©ã£ãŸã¨ãã®
 void Tree::UpdateBestRouteNodeIDs()
 {
 	mBestRouteNodeIDs.clear();
 
-	// ‰ß‹‚Ìƒm[ƒh‚ğ‚½‚Ç‚é
+	// éå»ã®ãƒãƒ¼ãƒ‰ã‚’ãŸã©ã‚‹
 	mTesu = 0;
 	for (int nodeID = mSelectedNodeID; nodeID!=NG;)
 	{
@@ -315,17 +369,17 @@ void Tree::UpdateBestRouteNodeIDs()
 	reverse(mBestRouteNodeIDs.begin(), mBestRouteNodeIDs.end());
 
 
-	// –¢—ˆ‚Ìƒm[ƒh‚ğ‚½‚Ç‚é
+	// æœªæ¥ã®ãƒãƒ¼ãƒ‰ã‚’ãŸã©ã‚‹
 	for (int nodeID = mSelectedNodeID; ;)
 	{
-		// ƒ‹[ƒg‚Ü‚Å–ß‚é‚ğ‘O’ñ‚Æ‚µ‚Ä‚¢‚é‚Ì‚ÅA‚±‚ê‚ÅæèŒãè‚ª•ª‚©‚é
+		// ãƒ«ãƒ¼ãƒˆã¾ã§æˆ»ã‚‹ã‚’å‰æã¨ã—ã¦ã„ã‚‹ã®ã§ã€ã“ã‚Œã§å…ˆæ‰‹å¾Œæ‰‹ãŒåˆ†ã‹ã‚‹
 		int sengo = (SZ(mBestRouteNodeIDs) + 1) % 2;
 		assert(sengo != E_NO_SENGO);
 
-		int bestScore = Node::SCORE_RESIGN + 10000; // Œãè‚ÍƒXƒRƒAÅ¬‰»iÅˆ«Å‘åj
+		int bestScore = Node::SCORE_RESIGN + 10000; // å¾Œæ‰‹ã¯ã‚¹ã‚³ã‚¢æœ€å°åŒ–ï¼ˆæœ€æ‚ªï¼æœ€å¤§ï¼‰
 		if (sengo == E_SEN)
 		{
-			bestScore = -bestScore;	// æè‚ÍƒXƒRƒAÅ‘å‰»iÅˆ«Å¬j
+			bestScore = -bestScore;	// å…ˆæ‰‹ã¯ã‚¹ã‚³ã‚¢æœ€å¤§åŒ–ï¼ˆæœ€æ‚ªï¼æœ€å°ï¼‰
 		}
 		int bestNextNodeID = NG;
 
@@ -346,7 +400,7 @@ void Tree::UpdateBestRouteNodeIDs()
 			}
 			else
 			{
-				// •]‰¿‚³‚ê‚Ä‚¢‚È‚¢ƒm[ƒh‚àŠÜ‚ß‚éê‡
+				// è©•ä¾¡ã•ã‚Œã¦ã„ãªã„ãƒãƒ¼ãƒ‰ã‚‚å«ã‚ã‚‹å ´åˆ
 				if (bestNextNodeID == NG)
 				{
 					bestNextNodeID = nextNodeID;
@@ -396,7 +450,7 @@ void Tree::DeleteSelectedAncientNode()
 		if (newNode.mParentNodeID != NG)
 		{
 			newNode.mParentNodeID = invNewNodeIDs[newNode.mParentNodeID];
-			assert(newNode.mParentNodeID != NG);	// e‚ªÁ‚¦‚Ä‚¢‚é‰Â”\«‚Í‚È‚¢
+			assert(newNode.mParentNodeID != NG);	// è¦ªãŒæ¶ˆãˆã¦ã„ã‚‹å¯èƒ½æ€§ã¯ãªã„
 		}
 
 		vector <Link>	newLinks;
@@ -438,5 +492,4 @@ void Tree::ResetSelectedAncientScore()
 	}
 	UpdateBestRouteNodeIDs();
 }
-
 

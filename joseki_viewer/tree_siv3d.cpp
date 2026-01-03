@@ -9,24 +9,24 @@
 #include <unordered_set>
 
 
-// •\¦
+// è¡¨ç¤º
 void TreeSiv3D::Draw()
 {
 	mTextureBackground.map(Window::Width(), Window::Height()).draw();
 
-	// •’Ê‚Ì•\¦i«Šû”Õ‚Ì— ‚É‚È‚éj
+	// æ™®é€šã®è¡¨ç¤ºï¼ˆå°†æ£‹ç›¤ã®è£ã«ãªã‚‹ï¼‰
 	DrawBeforeBoard();
 
-	// «Šû”Õ‚Ì•\¦
+	// å°†æ£‹ç›¤ã®è¡¨ç¤º
 	Tree::Draw();
 	
-	// «Šû”Õã‚Ì•\¦
+	// å°†æ£‹ç›¤ä¸Šã®è¡¨ç¤º
 	DrawAfterBoard();
 }
 
 void TreeSiv3D::DrawBeforeBoard() const
 {
-	// ƒfƒoƒbƒO—pÀ•W‚ÆŠg‘åk¬î•ñ
+	// ãƒ‡ãƒãƒƒã‚°ç”¨åº§æ¨™ã¨æ‹¡å¤§ç¸®å°æƒ…å ±
 	if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_DEBUG))
 	{
 		mFont(L"Offset=(", mOffsetX, L",", mOffsetY, L") GridScale=", mGridScale).draw(WINDOW_W / 2 + 20.f, 20.0f, Palette::Orange);
@@ -51,7 +51,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 			}
 		}
 
-		// ’ÊMƒfƒoƒbƒOƒƒO
+		// é€šä¿¡ãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°
 		const vector <string>& logs = mEvaluator.GetReadLogs();
 
 		for (int i=0;i<SZ(logs);++i)
@@ -59,7 +59,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 			mFont(Widen(logs[i])).draw(800, 200+15*i, Palette::Orange);
 		}
 
-		// ƒxƒXƒgƒ‹[ƒg
+		// ãƒ™ã‚¹ãƒˆãƒ«ãƒ¼ãƒˆ
 		const vector <int> bestRouteNodeIDs = GetBestRouteNodeIDs();
 		string s;
 		for (int i=0; i< SZ(bestRouteNodeIDs); ++i)
@@ -69,33 +69,33 @@ void TreeSiv3D::DrawBeforeBoard() const
 		mFont(Widen(s)).draw(650, 400, Palette::Orange);
 	}
 
-	// “Ç‚ñ‚¾•]‰¿ƒ\ƒtƒgE“Ç‚ñ‚¾è”E“Ç‚ñ‚¾ŠÔ‚Ì•\¦
+	// èª­ã‚“ã è©•ä¾¡ã‚½ãƒ•ãƒˆãƒ»èª­ã‚“ã æ‰‹æ•°ãƒ»èª­ã‚“ã æ™‚é–“ã®è¡¨ç¤º
 	if (mEvaluator.IsActive())
 	{
 		wstring wname(mEvaluator.GetName().begin(), mEvaluator.GetName().end());
-		mGui.mEvaluator.text(L"evaluator_name").text = Format(L"•]‰¿ƒ\ƒtƒg ", wname, L"  “Ç‚ñ‚¾è” ", mEvaluator.GetPonderNodes(), L"è  “Ç‚ñ‚¾ŠÔ ", mEvaluator.GetPonderTime(), L"ƒ~ƒŠ•b");
+		mGui.mEvaluator.text(L"evaluator_name").text = Format(L"è©•ä¾¡ã‚½ãƒ•ãƒˆ ", wname, L"  èª­ã‚“ã æ‰‹æ•° ", mEvaluator.GetPonderNodes(), L"æ‰‹  èª­ã‚“ã æ™‚é–“ ", mEvaluator.GetPonderTime(), L"ãƒŸãƒªç§’");
 	}
 
-	// ƒIƒvƒVƒ‡ƒ“‚Ìİ’è
+	// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¨­å®š
 	{
 		String optionString;
 		if (mEvaluator.IsOptionRead())
 		{
-			optionString = Format(L"İ’èÏ‚İ");
+			optionString = Format(L"è¨­å®šæ¸ˆã¿");
 		}
 		else
 		{
-			optionString = Format(L"–¢İ’è");
+			optionString = Format(L"æœªè¨­å®š");
 		}
 		mGui.mEvaluator.text(L"option_name").text = optionString;
 	}
 
-	// ˜A‘±‰ğÍ c‚èƒtƒ@ƒCƒ‹”
+	// é€£ç¶šè§£æ æ®‹ã‚Šãƒ•ã‚¡ã‚¤ãƒ«æ•°
 	{
 		String waitingNumString;
 		if (mFolderAnalysis)
 		{
-			waitingNumString = Format(L"c‚è " + to_wstring(mWaitingEvaluationFileList.size()));
+			waitingNumString = Format(L"æ®‹ã‚Š " + to_wstring(mWaitingEvaluationFileList.size()));
 		}
 		else
 		{
@@ -105,7 +105,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 
 	}
 
-	// –Ø‚ÌƒŠƒ“ƒN
+	// æœ¨ã®ãƒªãƒ³ã‚¯
 	for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
 	{
 		const Node& node = mNodes[nodeID];
@@ -141,7 +141,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 		}
 	}
 
-	// –Ø‚Ìƒm[ƒh
+	// æœ¨ã®ãƒãƒ¼ãƒ‰
 	for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
 	{
 		const Node& node = mNodes[nodeID];
@@ -149,11 +149,11 @@ void TreeSiv3D::DrawBeforeBoard() const
 		const int centerY = static_cast<int>(ScaleY(node.mVisualY));
 		if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_DEBUG))
 		{
-			// ƒfƒoƒbƒO—pF•\¦êŠ‚Ì•\¦
+			// ãƒ‡ãƒãƒƒã‚°ç”¨ï¼šè¡¨ç¤ºå ´æ‰€ã®è¡¨ç¤º
 			mFont(centerX, L",", centerY).draw(centerX, centerY, Palette::Orange);
 		}
 
-		// ƒm[ƒh”wŒi‚Ì•\¦
+		// ãƒãƒ¼ãƒ‰èƒŒæ™¯ã®è¡¨ç¤º
 		Color color = Palette::White;
 		const NodeSize nodeSize = mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SMALL_NODE) ? NS_SMALL : NS_BIG;
 		const s3d::RoundRect& roundRect = GetNodeShape(centerX, centerY, nodeSize);
@@ -184,7 +184,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 		const float centerX = ScaleX(node.mVisualX);
 		const float centerY = ScaleY(node.mVisualY);
 
-		// ƒ^ƒO‚Ì•\¦
+		// ã‚¿ã‚°ã®è¡¨ç¤º
 		if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_TAG))
 		{
 			if (!node.mSummary.empty())
@@ -201,22 +201,22 @@ void TreeSiv3D::DrawBeforeBoard() const
 	}
 
 
-	// è‡
+	// æ‰‹é †
 	{
 		const Node& node = mNodes[GetSelectedNodeID()];
 		if (node.IsScoreEvaluated())
 		{
-			mGui.mScore.text(L"score").text = Format(L"•]‰¿’l ", node.ConverScoreToWString());
+			mGui.mScore.text(L"score").text = Format(L"è©•ä¾¡å€¤ ", node.ConverScoreToWString());
 			mGui.mScore.text(L"tejunJap").text = AddNewLine(node.mTejunJap, 1);
 		}
 		else
 		{
-			mGui.mScore.text(L"score").text = Format(L"–¢•]‰¿ -----");
+			mGui.mScore.text(L"score").text = Format(L"æœªè©•ä¾¡ -----");
 			mGui.mScore.text(L"tejunJap").text = L"";
 		}
 	}
 
-	// •]‰¿’lƒOƒ‰ƒt
+	// è©•ä¾¡å€¤ã‚°ãƒ©ãƒ•
 	if(mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_SCOREGRAPH))
 	{
 		const int offW = SCORE_GRAPH_W;
@@ -250,7 +250,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 
 		int current_score = 0;
 
-		// Ü‚êüƒOƒ‰ƒt
+		// æŠ˜ã‚Œç·šã‚°ãƒ©ãƒ•
 		for (int i = 0; i < SZ(scores) - 1; ++i)
 		{
 			const float scaleY = (float)halfH / maxScore;
@@ -288,7 +288,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 			}
 		}
 
-		// ×’·‘I‘ğƒo[
+		// ç´°é•·é¸æŠãƒãƒ¼
 		if (IsInScoreGraph(Mouse::Pos().x, Mouse::Pos().y))
 		{
 			const int order = CalcOrder(static_cast<float>(Mouse::Pos().x), static_cast<float>(offX), static_cast<float>(scaleX));
@@ -313,6 +313,8 @@ void TreeSiv3D::DrawAfterBoard() const
 				int cy;
 				int cx;
 				const Node* pDestNode;
+				int evalScore;
+				bool hasEvalScore;
 			};
 
 			vector <ScoreOnArrow> scoreOnArrows;
@@ -320,7 +322,7 @@ void TreeSiv3D::DrawAfterBoard() const
 			const Node& node = GetSelectedNode();
 
 
-			// Ÿ‚Ìè‚Ì•\¦
+			// æ¬¡ã®æ‰‹ã®è¡¨ç¤º
 			for (const Link& link : node.mLinks)
 			{
 				const Color grabbedColor[NUM_SEN_GO] =
@@ -331,30 +333,30 @@ void TreeSiv3D::DrawAfterBoard() const
 
 				int cy, cx;
 
-				// –îˆó•\¦
+				// çŸ¢å°è¡¨ç¤º
 				boardSiv3D->DrawMove(link.te, grabbedColor[boardSiv3D->GetTeban()], cy, cx);
 
-				// ‚à‚µ1èæ‚Ìƒm[ƒh‚Ì•]‰¿’l‚ª•ª‚©‚ê‚ÎA‚»‚ê‚ğŒã‚Å•\¦
+				// ã‚‚ã—1æ‰‹å…ˆã®ãƒãƒ¼ãƒ‰ã®è©•ä¾¡å€¤ãŒåˆ†ã‹ã‚Œã°ã€ãã‚Œã‚’å¾Œã§è¡¨ç¤º
 				const Node& destNode = GetNode(link.destNodeID);
 				if (destNode.IsScoreEvaluated())
 				{
-					ScoreOnArrow tmp = { cy, cx, &destNode };
+					ScoreOnArrow tmp = { cy, cx, &destNode, destNode.mScore, false };
 					scoreOnArrows.push_back(tmp);
 				}
 			}
 
-			// Å‘Pè‚Ì•\¦i‡j
+			// æœ€å–„æ‰‹ã®è¡¨ç¤ºï¼ˆç´«ï¼‰
 			if (node.IsScoreEvaluated())
 			{
 				int cy, cx;
 				const string firstTe = boardSiv3D->GetFirstTeFromTejun(node.mBestTejun);
 
-				// –îˆó•\¦
+				// çŸ¢å°è¡¨ç¤º
 				if (!firstTe.empty())
 				{
 					boardSiv3D->DrawMove(firstTe, { 255, 0, 255, 127 }, cy, cx);
 
-					// ƒXƒRƒA•\¦‚Ì’Ç‰ÁB‚à‚µAÅ‘Pè‚ÌŸ‚Ìè‚ª•]‰¿‚³‚ê‚Ä‚¢‚éê‡‚ÍA‚»‚¿‚ç‚Ì‚Ù‚¤‚ª³Šm‚È‚Ì‚ÅA‘«‚³‚È‚¢
+					// ã‚¹ã‚³ã‚¢è¡¨ç¤ºã®è¿½åŠ ã€‚ã‚‚ã—ã€æœ€å–„æ‰‹ã®æ¬¡ã®æ‰‹ãŒè©•ä¾¡ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ã€ãã¡ã‚‰ã®ã»ã†ãŒæ­£ç¢ºãªã®ã§ã€è¶³ã•ãªã„
 					bool ok = true;
 					for ( const auto& a : scoreOnArrows)
 					{
@@ -367,28 +369,69 @@ void TreeSiv3D::DrawAfterBoard() const
 
 					if (ok)
 					{
-						ScoreOnArrow tmp = { cy, cx, &node };
+						ScoreOnArrow tmp = { cy, cx, &node, node.mScore, true };
 						scoreOnArrows.push_back(tmp);
 					}
 				}
 			}
 
+			// ä¸Šä½è©•ä¾¡ã®è¡¨ç¤ºï¼ˆãƒªãƒ³ã‚¯ã«å­˜åœ¨ã—ãªã„æ‰‹ã®ã¿ï¼‰
+			const vector<Node::EvaluationResult>& evaluations = node.GetEvaluations();
+			for (int i = 1; i < SZ(evaluations); ++i)
+			{
+				const auto& evaluation = evaluations[i];
+				const string firstTe = boardSiv3D->GetFirstTeFromTejun(evaluation.tejun);
+
+				if (firstTe.empty() || node.HasLink(firstTe) != NG)
+				{
+					continue;
+				}
+
+				int cy, cx;
+				boardSiv3D->DrawMove(firstTe, { 255, 0, 255, 127 }, cy, cx);
+
+				bool ok = true;
+				for (const auto& a : scoreOnArrows)
+				{
+					if (a.cy == cy && a.cx == cx)
+					{
+						ok = false;
+						break;
+					}
+				}
+
+				if (ok)
+				{
+					ScoreOnArrow tmp = { cy, cx, &node, evaluation.score, true };
+					scoreOnArrows.push_back(tmp);
+				}
+			}
+
 			for (const ScoreOnArrow& tmp : scoreOnArrows)
 			{
-				// ƒm[ƒh”wŒi‚Ì•\¦
+				// ãƒãƒ¼ãƒ‰èƒŒæ™¯ã®è¡¨ç¤º
 				Color color = Palette::White;
 				const s3d::RoundRect& roundRect = GetNodeShape(tmp.cx, tmp.cy, NS_MEDIUM);
 				roundRect.draw(color);
 
-				// ƒm[ƒhƒXƒRƒA‚Ì•\¦
-				DrawScore(tmp.cx, tmp.cy, *tmp.pDestNode, NS_MEDIUM);
+				// ãƒãƒ¼ãƒ‰ã‚¹ã‚³ã‚¢ã®è¡¨ç¤º
+				if (tmp.hasEvalScore)
+				{
+					Node dummyNode;
+					dummyNode.mScore = tmp.evalScore;
+					DrawScore(tmp.cx, tmp.cy, dummyNode, NS_MEDIUM);
+				}
+				else
+				{
+					DrawScore(tmp.cx, tmp.cy, *tmp.pDestNode, NS_MEDIUM);
+				}
 			}
 		}
 	}
 }
 
 
-// •]‰¿’l‚Ì•\¦
+// è©•ä¾¡å€¤ã®è¡¨ç¤º
 void TreeSiv3D::DrawScore(int centerX, int centerY, const Node& node, NodeSize nodeSize) const
 {
 	if (node.IsScoreEvaluated())
@@ -439,7 +482,7 @@ void TreeSiv3D::DrawScore(int centerX, int centerY, const Node& node, NodeSize n
 	}
 }
 
-// ƒm[ƒh‚Ì•\¦‚Ég‚¤}Œ`‚ğ•Ô‚·
+// ãƒãƒ¼ãƒ‰ã®è¡¨ç¤ºã«ä½¿ã†å›³å½¢ã‚’è¿”ã™
 s3d::RoundRect TreeSiv3D::GetNodeShape(int centerX, int centerY, NodeSize nodeSize) const
 {
 	const static int halfWidth[NUM_NS]=
@@ -459,7 +502,7 @@ s3d::RoundRect TreeSiv3D::GetNodeShape(int centerX, int centerY, NodeSize nodeSi
 	return s3d::RoundRect(centerX - halfWidth[nodeSize], centerY - radius[nodeSize], halfWidth[nodeSize] * 2, radius[nodeSize]* 2, radius[nodeSize]);
 }
 
-// Œ»İ‘I‘ğ’†‚Ìƒm[ƒh‚ª•ÏX‚µ‚½uŠÔ‚ÉŒÄ‚Î‚ê‚éŠÖ”
+// ç¾åœ¨é¸æŠä¸­ã®ãƒãƒ¼ãƒ‰ãŒå¤‰æ›´ã—ãŸç¬é–“ã«å‘¼ã°ã‚Œã‚‹é–¢æ•°
 void TreeSiv3D::OnSelectedNodeIDChanged()
 {
 	Node& node = mNodes[GetSelectedNodeID()];
@@ -508,10 +551,10 @@ void TreeSiv3D::LoadKifFile(FilePath path)
 	mEvaluator.RequestCancel();
 }
 
-// ƒƒCƒ“ƒ‹[ƒv
+// ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—
 void TreeSiv3D::Update()
 {
-	// TODO ƒƒjƒ…[‚Ítree3d‚©‚ç•ª—£‚µ‚ÄATreeSiv3D->BoardSiv3D‚ÆQÆ‚µ‚È‚¢‚æ‚¤‚ÉB
+	// TODO ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã¯tree3dã‹ã‚‰åˆ†é›¢ã—ã¦ã€TreeSiv3D->BoardSiv3Dã¨å‚ç…§ã—ãªã„ã‚ˆã†ã«ã€‚
 	{
 		BoardSiv3D* boardSiv3D = dynamic_cast<BoardSiv3D*>(mBoard);
 		if (boardSiv3D != nullptr)
@@ -521,10 +564,10 @@ void TreeSiv3D::Update()
 	}
 
 
-	// ƒƒjƒ…[
+	// ãƒ¡ãƒ‹ãƒ¥ãƒ¼
 	if (mGui.mFile.button(L"kifu_load").pushed)
 	{
-		const auto path = Dialog::GetOpen({ { L"«Šûƒrƒ…[ƒƒtƒ@ƒCƒ‹ (*.jsv)", L"*.jsv" } });
+		const auto path = Dialog::GetOpen({ { L"å°†æ£‹ãƒ“ãƒ¥ãƒ¼ãƒ¯ãƒ•ã‚¡ã‚¤ãƒ« (*.jsv)", L"*.jsv" } });
 		if (path.has_value())
 		{
 			LoadJsvFile(path.value());
@@ -533,7 +576,7 @@ void TreeSiv3D::Update()
 	}
 	else if (mGui.mFile.button(L"kifu_save").pushed)
 	{
-		const auto path = Dialog::GetSave({ { L"«Šûƒrƒ…[ƒƒtƒ@ƒCƒ‹ (*.jsv)", L"*.jsv" } });
+		const auto path = Dialog::GetSave({ { L"å°†æ£‹ãƒ“ãƒ¥ãƒ¼ãƒ¯ãƒ•ã‚¡ã‚¤ãƒ« (*.jsv)", L"*.jsv" } });
 		if (path.has_value())
 		{
 			Save(path.value().str());
@@ -543,7 +586,7 @@ void TreeSiv3D::Update()
 	}
 	else if (mGui.mFile.button(L"kif_format_load").pushed)
 	{
-		const auto path = Dialog::GetOpen({ { L"kifƒtƒ@ƒCƒ‹ (*.kif)", L"*.kif" } });
+		const auto path = Dialog::GetOpen({ { L"kifãƒ•ã‚¡ã‚¤ãƒ« (*.kif)", L"*.kif" } });
 		if (path.has_value())
 		{
 			LoadKifFile(path.value());
@@ -552,7 +595,7 @@ void TreeSiv3D::Update()
 	}
 	else if ((Input::KeyControl + Input::KeyV).clicked)
 	{
-		// kifƒtƒ@ƒCƒ‹i”Õ–Ê‚Å‚Í‚È‚¢j‚ğƒy[ƒXƒg
+		// kifãƒ•ã‚¡ã‚¤ãƒ«ï¼ˆç›¤é¢ã§ã¯ãªã„ï¼‰ã‚’ãƒšãƒ¼ã‚¹ãƒˆ
 		wstring ws = Clipboard::GetText().str();
 		PasteKif(ws);
 		Window::SetTitle(GetVersionTitle(mKifHeader.mSente + L" VS " + mKifHeader.mGote));
@@ -572,9 +615,9 @@ void TreeSiv3D::Update()
 		const auto path = Dialog::GetFolder();
 		if (path.has_value())
 		{
-			// kifƒtƒ@ƒCƒ‹ ‚ ‚è, jsvƒtƒ@ƒCƒ‹ ‚ ‚è, ‰ğÍÏ‚İ ¨ ‚È‚É‚à‚µ‚È‚¢
-			// kifƒtƒ@ƒCƒ‹ ‚ ‚è, jsvƒtƒ@ƒCƒ‹ ‚ ‚è, ‰ğÍ‚È‚µ ¨ ‰ğÍ‚¾‚¯‚·‚é
-			// kifƒtƒ@ƒCƒ‹ ‚ ‚è, jsvƒtƒ@ƒCƒ‹ ‚È‚µ, ‰ğÍ‚È‚µ ¨ jsvƒtƒ@ƒCƒ‹‚É‚µ‚Ä‰ğÍ‚¾‚¯‚·‚é
+			// kifãƒ•ã‚¡ã‚¤ãƒ« ã‚ã‚Š, jsvãƒ•ã‚¡ã‚¤ãƒ« ã‚ã‚Š, è§£ææ¸ˆã¿ â†’ ãªã«ã‚‚ã—ãªã„
+			// kifãƒ•ã‚¡ã‚¤ãƒ« ã‚ã‚Š, jsvãƒ•ã‚¡ã‚¤ãƒ« ã‚ã‚Š, è§£æãªã— â†’ è§£æã ã‘ã™ã‚‹
+			// kifãƒ•ã‚¡ã‚¤ãƒ« ã‚ã‚Š, jsvãƒ•ã‚¡ã‚¤ãƒ« ãªã—, è§£æãªã— â†’ jsvãƒ•ã‚¡ã‚¤ãƒ«ã«ã—ã¦è§£æã ã‘ã™ã‚‹
 			Array<FilePath> contents = FileSystem::DirectoryContents(path.value());
 			mWaitingEvaluationFileList.clear();
 
@@ -590,7 +633,7 @@ void TreeSiv3D::Update()
 		}
 	}
 
-	// ŠÔ‚ÌXV
+	// æ™‚é–“ã®æ›´æ–°
 	if (mGui.mEvaluator.textField(L"time_sec").hasChanged)
 	{
 		string text = mGui.mEvaluator.textField(L"time_sec").text.narrow();
@@ -609,7 +652,7 @@ void TreeSiv3D::Update()
 
 		if (Input::MouseR.clicked && IsInShogiban(Mouse::Pos().x, Mouse::Pos().y))
 		{
-			// 1è–ß‚é
+			// 1æ‰‹æˆ»ã‚‹
 			BoardSiv3D* boardSiv3D = dynamic_cast<BoardSiv3D*>(mBoard);
 			if (boardSiv3D != nullptr && boardSiv3D->IsInputStateIdle())
 			{
@@ -623,7 +666,7 @@ void TreeSiv3D::Update()
 		}
 		else if (Input::KeyLeft.clicked)
 		{
-			// 1è–ß‚é
+			// 1æ‰‹æˆ»ã‚‹
 			const Node& node = mNodes[GetSelectedNodeID()];
 			if (!node.IsRoot())
 			{
@@ -633,7 +676,7 @@ void TreeSiv3D::Update()
 		}
 		else if (Input::KeyRight.clicked)
 		{
-			// 1èi‚Ş
+			// 1æ‰‹é€²ã‚€
 			const int tesu = GetTesu();
 			const vector <int>& bestRouteNodeID = GetBestRouteNodeIDs();
 
@@ -645,17 +688,17 @@ void TreeSiv3D::Update()
 		}
 		else if (Input::MouseR.pressed)
 		{
-			// ’†SÀ•W‚Ì•ÏXi‘OƒtƒŒ[ƒ€‚©‚ç‚ÌƒJ[ƒ\ƒ‹‚ÌˆÚ“®—Êj
+			// ä¸­å¿ƒåº§æ¨™ã®å¤‰æ›´ï¼ˆå‰ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰ã®ã‚«ãƒ¼ã‚½ãƒ«ã®ç§»å‹•é‡ï¼‰
 			const Point delta = Mouse::Delta();
 			mOffsetX += delta.x;
 			mOffsetY += delta.y;
 		}
 		else if (Input::MouseL.pressed && IsInScoreGraph(Mouse::Pos().x, Mouse::Pos().y))
 		{
-			// •]‰¿’lƒOƒ‰ƒtã‚Ì‘I‘ğ
+			// è©•ä¾¡å€¤ã‚°ãƒ©ãƒ•ä¸Šã®é¸æŠ
 			if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_SCOREGRAPH))
 			{
-				// Œ»İ‰½”Ô–Ú‚ğ‘I‘ğ‚µ‚Ä‚¢‚é‚©H
+				// ç¾åœ¨ä½•ç•ªç›®ã‚’é¸æŠã—ã¦ã„ã‚‹ã‹ï¼Ÿ
 				int order = CalcOrder(static_cast<float>(Mouse::Pos().x), static_cast<float>(SCORE_GRAPH_X), static_cast<float>(SCORE_GRAPH_SW));
 
 				const vector <int>& bestRoundNodeIDs = GetBestRouteNodeIDs();
@@ -667,7 +710,7 @@ void TreeSiv3D::Update()
 		}
 		else if (Input::MouseL.clicked)
 		{
-			// ƒm[ƒh‚Ì‘I‘ğ
+			// ãƒãƒ¼ãƒ‰ã®é¸æŠ
 			const NodeSize nodeSize = mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SMALL_NODE) ? NS_SMALL : NS_BIG;
 			for (int nodeID = 0; nodeID < SZ(mNodes); ++nodeID)
 			{
@@ -688,7 +731,7 @@ void TreeSiv3D::Update()
 
 		}
 
-		// Šg‘åk¬
+		// æ‹¡å¤§ç¸®å°
 		const int wheelY = Mouse::Wheel();
 		if (wheelY != 0)
 		{
@@ -702,7 +745,7 @@ void TreeSiv3D::Update()
 			mOffsetY -= invScaledRightCenterY * diffGridScale;
 		}
 
-		// íœ
+		// å‰Šé™¤
 		if (Input::KeyDelete.clicked)
 		{
 			const bool nextFlip = !mGui.mDelete.button(L"delete_score").enabled;
@@ -728,7 +771,7 @@ void TreeSiv3D::Update()
 		}
 	}
 
-	// ƒm[ƒhî•ñ
+	// ãƒãƒ¼ãƒ‰æƒ…å ±
 	{
 		Node& node = mNodes[GetSelectedNodeID()];
 
@@ -742,25 +785,25 @@ void TreeSiv3D::Update()
 
 		if (mGui.mBoard.textField(L"summary").active)
 		{
-			const Point delta(20, 26); // ƒEƒBƒ“ƒhƒE‚©‚çƒTƒ}ƒŠ˜g‚Ö‚Ì‘Š‘ÎÀ•W
+			const Point delta(20, 26); // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‹ã‚‰ã‚µãƒãƒªæ ã¸ã®ç›¸å¯¾åº§æ¨™
 			const Rect rect = mFontGuiDefault(node.mSummary).region(mGui.mBoard.getPos() + delta);
 			IME::SetCompositionWindowPos(Point(rect.x + rect.w, rect.y));
 		}
 	}
 
-	// eƒNƒ‰ƒX‚ÌXV
+	// è¦ªã‚¯ãƒ©ã‚¹ã®æ›´æ–°
 	Tree::Update();
 
 	bool isEvaludationDone = mEvaluator.Update();
 	if (isEvaludationDone && mFolderAnalysis)
 	{
-		// ‚Ü‚¸“¯–¼‚Ìjsvƒtƒ@ƒCƒ‹‚É•Û‘¶‚·‚é
+		// ã¾ãšåŒåã®jsvãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜ã™ã‚‹
 		if (!mCurrentPath.str().empty())
 		{
 			Save(FileSystem::ParentPath(mCurrentPath).str() + FileSystem::BaseName(mCurrentPath).str() + L".jsv");
 		}
 
-		// ƒ[ƒh‚·‚é
+		// ãƒ­ãƒ¼ãƒ‰ã™ã‚‹
 		if (mWaitingEvaluationFileList.size() >= 1)
 		{
 			FilePath path = mWaitingEvaluationFileList.back();
@@ -779,7 +822,7 @@ void TreeSiv3D::Update()
 	}
 }
 
-// ƒm[ƒh‘I‘ğ‰¹‚ğ–Â‚ç‚·
+// ãƒãƒ¼ãƒ‰é¸æŠéŸ³ã‚’é³´ã‚‰ã™
 void TreeSiv3D::PlayNodeSelectSound()
 {
 	if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SOUND))
@@ -788,7 +831,7 @@ void TreeSiv3D::PlayNodeSelectSound()
 		{
 			if (mNodeSelectSound.isPlaying())
 			{
-				// ’â~‚µ‚Ä‹È‚Ìæ“ª‚É–ß‚é
+				// åœæ­¢ã—ã¦æ›²ã®å…ˆé ­ã«æˆ»ã‚‹
 				mNodeSelectSound.stop();
 			}
 			mNodeSelectSound.play();
@@ -796,14 +839,14 @@ void TreeSiv3D::PlayNodeSelectSound()
 	}
 }
 
-// À•W‚ª«Šû”Õ‚Ì’†‚©‚Ç‚¤‚©‚ğƒ`ƒFƒbƒN
+// åº§æ¨™ãŒå°†æ£‹ç›¤ã®ä¸­ã‹ã©ã†ã‹ã‚’ãƒã‚§ãƒƒã‚¯
 bool TreeSiv3D::IsInShogiban(int x, int y) const
 {
 	return	INRANGE(x, mGui.mBoard.getPos().x, mGui.mBoard.getPos().x + SHOGIBAN_W) &&
 			INRANGE(y, mGui.mBoard.getPos().y, mGui.mBoard.getPos().y + SHOGIBAN_H);
 }
 
-// À•W‚ª•]‰¿’lƒOƒ‰ƒt‚Ì’†‚©‚Ç‚¤‚©ƒ`ƒFƒbƒN
+// åº§æ¨™ãŒè©•ä¾¡å€¤ã‚°ãƒ©ãƒ•ã®ä¸­ã‹ã©ã†ã‹ãƒã‚§ãƒƒã‚¯
 bool TreeSiv3D::IsInScoreGraph(int x, int y) const
 {
 	return	INRANGE(x, SCORE_GRAPH_X, SCORE_GRAPH_X + SCORE_GRAPH_W) &&
