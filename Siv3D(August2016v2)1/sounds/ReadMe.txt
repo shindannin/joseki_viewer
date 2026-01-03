@@ -1,14 +1,14 @@
-�ȉ��̑f�ނ��g�p���Ă���܂��B
+以下の素材を使用しております。
 
 -------------------------------------------------------------------------
-� komaoto5.wav �� http://shineleckoma.web.fc2.com/ �̂��̂��g�p���Ă��܂��B
+駒音 komaoto5.wav は http://shineleckoma.web.fc2.com/ のものを使用しています。
 
-�{��i�́A�����A�v���p�N���G�C�e�B�u�R�����Y�摜�̓񎟓I���앨�ł��B
-���̍�i���c���ړI�ŗ��p���Ă͂Ȃ�܂���B
-�N���G�C�e�B�u�E�R�����Y�E���C�Z���X
-���̃T�C�g�̍�i �� �N���G�C�e�B�u�E�R�����Y �\�� - ��c�� 2.1 ���{ ���C�Z���X�̉��ɒ񋟂���Ă��܂��B 
+本作品は、将棋アプリ用クリエイティブコモンズ画像の二次的著作物です。
+この作品を営利目的で利用してはなりません。
+クリエイティブ・コモンズ・ライセンス
+このサイトの作品 は クリエイティブ・コモンズ 表示 - 非営利 2.1 日本 ライセンスの下に提供されています。 
 
 -------------------------------------------------------------------------
-�m�[�h�I���� cursor4.mp3 �� http://soundeffect-lab.info/sound/button/ �̂��̂��g�p���Ă��܂��B
+ノード選択音 cursor4.mp3 は http://soundeffect-lab.info/sound/button/ のものを使用しています。
 
 

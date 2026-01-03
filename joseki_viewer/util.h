@@ -30,7 +30,7 @@ const int SCORE_GRAPH_SW = 4;
 
 const int DEFAULT_EVALUATION_SEC = 2;
 
-#define VERSION_TITLE L"Siv3D «Šûƒrƒ…[ƒA Ver 0.07 (2020/03/15)  "
+#define VERSION_TITLE L"Siv3D å°†æ£‹ãƒ“ãƒ¥ãƒ¼ã‚¢ Ver 0.07 (2020/03/15)  "
 #define VERSION_DATA (2)
 
 struct KifHeader

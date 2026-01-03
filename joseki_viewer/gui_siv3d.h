@@ -9,22 +9,22 @@ class GuiSiv3D
 public:
 	enum EGUICheckBox
 	{
-		SHOW_SCORE,			// "•]‰¿’l" 
-		SHOW_TE,			// "w‚µè"
-		SHOW_TAG,			// "ƒ^ƒO"
-		SMALL_NODE,			// "¬‚³‚¢ƒm[ƒh"
-		SHOW_ARROW,			// "–îˆó"
-		SHOW_SCOREGRAPH,	// "•]‰¿’lƒOƒ‰ƒt"
-		FIX_SELECTED_NODE,	// "‘I‘ğƒm[ƒh‚ÌŒÅ’è"
-		FIX_UPDATED_NODE,	// "•]‰¿ƒm[ƒh‚ÌŒÅ’è"
-		REVERSE_BOARD,		// "”Õ–Ê”½“]"
-		SOUND,				// "ƒTƒEƒ“ƒh"
-		SHOW_DEBUG,			// "ƒfƒoƒbƒO"
+		SHOW_SCORE,			// "è©•ä¾¡å€¤" 
+		SHOW_TE,			// "æŒ‡ã—æ‰‹"
+		SHOW_TAG,			// "ã‚¿ã‚°"
+		SMALL_NODE,			// "å°ã•ã„ãƒãƒ¼ãƒ‰"
+		SHOW_ARROW,			// "çŸ¢å°"
+		SHOW_SCOREGRAPH,	// "è©•ä¾¡å€¤ã‚°ãƒ©ãƒ•"
+		FIX_SELECTED_NODE,	// "é¸æŠãƒãƒ¼ãƒ‰ã®å›ºå®š"
+		FIX_UPDATED_NODE,	// "è©•ä¾¡ãƒãƒ¼ãƒ‰ã®å›ºå®š"
+		REVERSE_BOARD,		// "ç›¤é¢åè»¢"
+		SOUND,				// "ã‚µã‚¦ãƒ³ãƒ‰"
+		SHOW_DEBUG,			// "ãƒ‡ãƒãƒƒã‚°"
 	};
 
 	GuiSiv3D()
 	{
-		mFont = Font(8, L"ƒƒCƒŠƒI");
+		mFont = Font(8, L"ãƒ¡ã‚¤ãƒªã‚ª");
 
 		GUIStyle style = GUIStyle::Default;
 		style.font = mFont;
@@ -55,47 +55,47 @@ public:
 		style4.background.color = COLOR_NEUTRAL;
 
 		mFile = GUI(style2);
-		mFile.setTitle(L"ƒtƒ@ƒCƒ‹");
-		mFile.addln(L"kifu_load", GUIButton::Create(L"ƒtƒ@ƒCƒ‹‚ğŠJ‚­", widgetStyle2));
-		mFile.addln(L"kifu_save", GUIButton::Create(L"ƒtƒ@ƒCƒ‹‚ğ•Û‘¶", widgetStyle2));
-		mFile.addln(L"kif_format_load", GUIButton::Create(L"kifƒtƒ@ƒCƒ‹‚ğŠJ‚­", widgetStyle2));
+		mFile.setTitle(L"ãƒ•ã‚¡ã‚¤ãƒ«");
+		mFile.addln(L"kifu_load", GUIButton::Create(L"ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã", widgetStyle2));
+		mFile.addln(L"kifu_save", GUIButton::Create(L"ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¿å­˜", widgetStyle2));
+		mFile.addln(L"kif_format_load", GUIButton::Create(L"kifãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã", widgetStyle2));
 
 		mEvaluator = GUI(style3);
-		mEvaluator.setTitle(L"•]‰¿ƒ\ƒtƒg");
+		mEvaluator.setTitle(L"è©•ä¾¡ã‚½ãƒ•ãƒˆ");
 		mEvaluator.setPos(132, 0);
-		mEvaluator.add(L"evaluator_load", GUIButton::Create(L"•]‰¿ƒ\ƒtƒg‚ğŠJ‚­", widgetStyle2));
+		mEvaluator.add(L"evaluator_load", GUIButton::Create(L"è©•ä¾¡ã‚½ãƒ•ãƒˆã‚’é–‹ã", widgetStyle2));
 		mEvaluator.addln(L"evaluator_name", GUIText::Create(L"", widgetStyle));
-		mEvaluator.add(L"option_load", GUIButton::Create(L"ƒIƒvƒVƒ‡ƒ“‚ğŠJ‚­", widgetStyle2));
+		mEvaluator.add(L"option_load", GUIButton::Create(L"ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’é–‹ã", widgetStyle2));
 		mEvaluator.add(L"option_name", GUIText::Create(L"", widgetStyle));
-		mEvaluator.add(L"time_prefix", GUIText::Create(L"@@vlŠÔ", widgetStyle));
+		mEvaluator.add(L"time_prefix", GUIText::Create(L"ã€€ã€€æ€è€ƒæ™‚é–“", widgetStyle));
 		mEvaluator.add(L"time_sec", GUITextField::Create(DEFAULT_EVALUATION_SEC, widgetStyle2));
-		mEvaluator.addln(L"time_suffix", GUIText::Create(L"•b", widgetStyle));
+		mEvaluator.addln(L"time_suffix", GUIText::Create(L"ç§’", widgetStyle));
 		mEvaluator.textField(L"time_sec").setText(to_wstring(DEFAULT_EVALUATION_SEC));
-		mEvaluator.add(L"folder_analysis", GUIButton::Create(L"ƒtƒHƒ‹ƒ_“à˜A‘±‰ğÍ", widgetStyle2));
+		mEvaluator.add(L"folder_analysis", GUIButton::Create(L"ãƒ•ã‚©ãƒ«ãƒ€å†…é€£ç¶šè§£æ", widgetStyle2));
 		mEvaluator.add(L"folder_analysis_waiting_num", GUIText::Create(L"0", widgetStyle));
 
 		const int syogibanY = 100;
 
 		mScore = GUI(style);
-		mScore.setTitle(L"•]‰¿’l");
+		mScore.setTitle(L"è©•ä¾¡å€¤");
 		mScore.setPos(SHOGIBAN_W, syogibanY);
 		mScore.addln(L"score", GUIText::Create(L"", widgetStyle));
 		mScore.addln(L"tejunJap", GUIText::Create(L"", widgetStyle));
 
 		mSettings = GUI(style2);
-		mSettings.setTitle(L"İ’è");
+		mSettings.setTitle(L"è¨­å®š");
 		mSettings.setPos(WINDOW_W - 114, 0);
 		mSettings.add(L"settings",
-			GUICheckBox::Create({ L"•]‰¿’l", L"w‚µè", L"ƒ^ƒO", L"¬‚³‚¢ƒm[ƒh", L"–îˆó", L"•]‰¿’lƒOƒ‰ƒt", L"‘I‘ğƒm[ƒh‚ÌŒÅ’è", L"•]‰¿ƒm[ƒh‚ÌŒÅ’è", L"”Õ–Ê”½“]", L"ƒTƒEƒ“ƒh", L"ƒfƒoƒbƒO" },
-				{ SHOW_SCORE, SHOW_TE, SHOW_TAG, FIX_SELECTED_NODE, SHOW_ARROW, SHOW_SCOREGRAPH, SOUND }, // ƒfƒtƒHƒ‹ƒg‚ÅON‚Ì‚à‚Ì
+			GUICheckBox::Create({ L"è©•ä¾¡å€¤", L"æŒ‡ã—æ‰‹", L"ã‚¿ã‚°", L"å°ã•ã„ãƒãƒ¼ãƒ‰", L"çŸ¢å°", L"è©•ä¾¡å€¤ã‚°ãƒ©ãƒ•", L"é¸æŠãƒãƒ¼ãƒ‰ã®å›ºå®š", L"è©•ä¾¡ãƒãƒ¼ãƒ‰ã®å›ºå®š", L"ç›¤é¢åè»¢", L"ã‚µã‚¦ãƒ³ãƒ‰", L"ãƒ‡ãƒãƒƒã‚°" },
+				{ SHOW_SCORE, SHOW_TE, SHOW_TAG, FIX_SELECTED_NODE, SHOW_ARROW, SHOW_SCOREGRAPH, SOUND }, // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ONã®ã‚‚ã®
 				true, widgetStyle2));
 
 		mDelete = GUI(style4);
 		mDelete.setPos(WINDOW_W - 114, 234);
-		mDelete.setTitle(L"íœ [Del]ƒL[");
-		mDelete.addln(L"delete_score", GUIButton::Create(L"•]‰¿’l   ‚P‚Â", false, widgetStyle2));
-		mDelete.addln(L"delete_all_score", GUIButton::Create(L"•]‰¿’l   ‘S‚Ä", false, widgetStyle2));
-		mDelete.addln(L"delete_all_node", GUIButton::Create(L"‹Ç–Ê   ‘S‚Ä", false, widgetStyle2));
+		mDelete.setTitle(L"å‰Šé™¤ [Del]ã‚­ãƒ¼");
+		mDelete.addln(L"delete_score", GUIButton::Create(L"è©•ä¾¡å€¤   ï¼‘ã¤", false, widgetStyle2));
+		mDelete.addln(L"delete_all_score", GUIButton::Create(L"è©•ä¾¡å€¤   å…¨ã¦", false, widgetStyle2));
+		mDelete.addln(L"delete_all_node", GUIButton::Create(L"å±€é¢   å…¨ã¦", false, widgetStyle2));
 
 
 		GUIStyle style5 = style;
@@ -103,7 +103,7 @@ public:
 		mBoard = GUI(style5);
 		mBoard.setPos(0, syogibanY);
 		mBoard.addln(L"summary", GUITextField::Create(33));
-		mBoard.setTitle(L"«Šû”Õ");
+		mBoard.setTitle(L"å°†æ£‹ç›¤");
 	}
 
 	GUI mFile;

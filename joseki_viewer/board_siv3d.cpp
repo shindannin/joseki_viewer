@@ -27,8 +27,8 @@ BoardSiv3D::BoardSiv3D(GuiSiv3D& gui) : mGui(gui)
 	mBoardTextureWidth = mTextureBoard.width;
 	mBoardTextureHeight = mTextureBoard.height;
 
-	mFont = Font(15, L"ƒƒCƒŠƒI");
-	mFontTeban = Font(10, L"ƒƒCƒŠƒI");
+	mFont = Font(15, L"ãƒ¡ã‚¤ãƒªã‚ª");
+	mFontTeban = Font(10, L"ãƒ¡ã‚¤ãƒªã‚ª");
 
 	mOffsetX = 0;
 	mOffsetY = 0;
@@ -51,13 +51,13 @@ void BoardSiv3D::Init()
 	mInputState = E_IDLE;
 }
 
-// «Šû”Ô‚Ì•üƒOƒŠƒbƒh¶ã‚ÌXÀ•W
+// å°†æ£‹ç•ªã®é»’ç·šã‚°ãƒªãƒƒãƒ‰å·¦ä¸Šã®Xåº§æ¨™
 int BoardSiv3D::GetGridLeftX() const
 {
 	return (mBoardTextureWidth - mKomaTextureWidth * BOARD_SIZE) / 2 + mOffsetX;
 }
 
-// «Šû”Ô‚Ì•üƒOƒŠƒbƒh¶ã‚ÌYÀ•W
+// å°†æ£‹ç•ªã®é»’ç·šã‚°ãƒªãƒƒãƒ‰å·¦ä¸Šã®Yåº§æ¨™
 int BoardSiv3D::GetGridTopY() const
 {
 	return (mBoardTextureHeight - mKomaTextureHeight * BOARD_SIZE) / 2 + mOffsetY;
@@ -100,8 +100,8 @@ void BoardSiv3D::Draw()
 
 
 
-	//----- ƒJ[ƒ\ƒ‹ -----
-	// ƒ}ƒEƒX‚ªw‚µ‚Ä‚¢‚éƒ}ƒX
+	//----- ã‚«ãƒ¼ã‚½ãƒ« -----
+	// ãƒã‚¦ã‚¹ãŒæŒ‡ã—ã¦ã„ã‚‹ãƒã‚¹
 	{
 		GridPos gp;
 		if (GetGridPosFromMouse(gp))
@@ -110,13 +110,13 @@ void BoardSiv3D::Draw()
 		}
 	}
 
-	// ‚Â‚©‚ñ‚¾‹î‚Ìƒ}ƒX
+	// ã¤ã‹ã‚“ã é§’ã®ãƒã‚¹
 	if (mInputState == E_GRABBED || mInputState == E_CHOICE)
 	{
 		DrawCursor(GetMoveFromPos(), grabbedColor[GetTeban()]);
 	}
 
-	//----- ‹î‘ä -----
+	//----- é§’å° -----
 	{
 		const int w = static_cast<int>(mKomaTextureWidth *1.75f);
 		const int h = static_cast<int>(mKomaTextureHeight*7.50f);
@@ -127,7 +127,7 @@ void BoardSiv3D::Draw()
 	
 	}
 
-	//----- ‚¿‹î -----
+	//----- æŒã¡é§’ -----
 	{
 		for (int s = 0; s < NUM_SEN_GO; ++s)
 		{
@@ -142,16 +142,16 @@ void BoardSiv3D::Draw()
 				if (numKoma >= 1)
 				{
 					int y, x;
-					GetMochigomaPos(s, k, y, x); // ‚·‚Å‚ÉæèŒãè‚ğl—¶‚µ‚Ä‚¢‚ÄAêŠ‚à‚ ‚Á‚Ä‚éB
+					GetMochigomaPos(s, k, y, x); // ã™ã§ã«å…ˆæ‰‹å¾Œæ‰‹ã‚’è€ƒæ…®ã—ã¦ã„ã¦ã€å ´æ‰€ã‚‚ã‚ã£ã¦ã‚‹ã€‚
 					DrawKomaDetail(s, k, y, x, numKoma, false, true);
 				}
 			}
 		}
 	}
 
-	//----- è”Ô -----
+	//----- æ‰‹ç•ª -----
 	{
-		wstring name[2] = { L"æè”Ô", L"Œãè”Ô" };
+		wstring name[2] = { L"å…ˆæ‰‹ç•ª", L"å¾Œæ‰‹ç•ª" };
 		const int w = 50;
 		const int rad = 8;
 		const int x = mOffsetX - w / 2 + mTextureBoard.width / 2;
@@ -177,14 +177,14 @@ void BoardSiv3D::Draw()
 		mFontTeban(name[GetTeban()]).draw(x+5, teban_marker_y -1);
 	}
 
-	//----- ”Õ–Ê -----
+	//----- ç›¤é¢ -----
 	for (int y = 0; y < BOARD_SIZE; ++y)
 	{
 		for (int x = 0; x < BOARD_SIZE; ++x)
 		{
 			if (mInputState == E_GRABBED || mInputState == E_CHOICE)
 			{
-				// ‚Â‚©‚ñ‚¾‹î‚ÍA‚Â‚©‚ñ‚¾ˆÊ’u‚É‚Í•\¦‚µ‚È‚¢B
+				// ã¤ã‹ã‚“ã é§’ã¯ã€ã¤ã‹ã‚“ã ä½ç½®ã«ã¯è¡¨ç¤ºã—ãªã„ã€‚
 				if (GridPos(y,x) == GetMoveFromPos())
 				{
 					continue;
@@ -207,7 +207,7 @@ void BoardSiv3D::Draw()
 		}
 	}
 
-	// ‚Â‚©‚ñ‚¾‹î
+	// ã¤ã‹ã‚“ã é§’
 	if (mInputState == E_GRABBED || mInputState == E_UTSU)
 	{
 		const Masu& masu = GetMasu(GetMoveFromPos());
@@ -230,7 +230,7 @@ void BoardSiv3D::Draw()
 		mTexture[sengo][type].draw(Mouse::Pos().x - mKomaTextureWidth / 2, Mouse::Pos().y - mKomaTextureHeight / 2);
 	}
 
-	// ¬‚è‘I‘ğ‰æ–Ê
+	// æˆã‚Šé¸æŠç”»é¢
 	if (mInputState == E_CHOICE)
 	{
 		const Masu& grabbed = GetMasu(GetMoveFromPos());
@@ -262,14 +262,14 @@ void BoardSiv3D::DrawKomaDetail(int baseSengo, int type, int y, int x, int maisu
 	const int drawBaseX = leftX + BoardReverse(x)*mKomaTextureWidth;
 	const int drawBaseY = topY + y * mKomaTextureHeight;
 
-	// ‚Â‚©‚ñ‚Å‚¢‚é‹î‚Ì•\¦
+	// ã¤ã‹ã‚“ã§ã„ã‚‹é§’ã®è¡¨ç¤º
 	mTexture[sengo][type].draw(drawBaseX, drawBaseY);
 
 	if (isChoice)
 	{
 		const EKomaType nariType = mKoma[type].narigoma;
 
-		// ¬‚ç‚¸‚Ì•\¦
+		// æˆã‚‰ãšã®è¡¨ç¤º
 		{
 			const int drawX = static_cast<int>(drawBaseX - 0.5f * mKomaTextureWidth);
 			const int drawY = static_cast<int>(drawBaseY + NariOffsetY(y)*mKomaTextureHeight);
@@ -277,7 +277,7 @@ void BoardSiv3D::DrawKomaDetail(int baseSengo, int type, int y, int x, int maisu
 			mTexture[sengo][type].draw(drawX, drawY);
 		}
 
-		// ¬‚è‚Ì•\¦
+		// æˆã‚Šã®è¡¨ç¤º
 		{
 			const int drawX = static_cast<int>(drawBaseX + 0.5f * mKomaTextureWidth);
 			const int drawY = static_cast<int>(drawBaseY + NariOffsetY(y)*mKomaTextureHeight);
@@ -287,7 +287,7 @@ void BoardSiv3D::DrawKomaDetail(int baseSengo, int type, int y, int x, int maisu
 	}
 
 
-	// ‹î–‡”‚Ì”š
+	// é§’æšæ•°ã®æ•°å­—
 	if (maisu >= 1)
 	{
 		const float dx[] = { +1.0f, -0.25f };
@@ -295,7 +295,7 @@ void BoardSiv3D::DrawKomaDetail(int baseSengo, int type, int y, int x, int maisu
 	}
 }
 
-// ¬æ‚ÌÀ•W(y,x)
+// æˆå…ˆã®åº§æ¨™(y,x)
 bool BoardSiv3D::IsNariChoice(const GridPos& gridPos) const
 {
 	return IsNariNarazuChoice(gridPos.y, gridPos.x, true);
@@ -335,13 +335,13 @@ void BoardSiv3D::SetOffset(int offsetX, int offsetY)
 }
 
 
-// «ŠûÀ•WB”Õ–Ê‚à”½“]‚É‚µ‚Ä(0,0)‚ª‚PˆêA(8,8)‚ª‚X‹ã‚É‚ ‚½‚éB”Õ–Ê“à‚È‚çtrue,”Õ–ÊŠO‚È‚çfalse‚ğ•Ô‚·B
+// å°†æ£‹åº§æ¨™ã€‚ç›¤é¢ã‚‚åè»¢ã«ã—ã¦(0,0)ãŒï¼‘ä¸€ã€(8,8)ãŒï¼™ä¹ã«ã‚ãŸã‚‹ã€‚ç›¤é¢å†…ãªã‚‰true,ç›¤é¢å¤–ãªã‚‰falseã‚’è¿”ã™ã€‚
 bool BoardSiv3D::GetGridPosFromMouse(GridPos& gridPos, bool checkReverseFlag) const
 {
 	const int leftX = GetGridLeftX();
 	const int topY = GetGridTopY();
 
-	gridPos.x = BoardReverse(static_cast<int>(floor(static_cast<float>(Mouse::Pos().x - leftX) / mKomaTextureWidth))); // ‚±‚ê‚Í‚à‚Æ‚à‚Æ‚ÌXÀ•W”½“]
+	gridPos.x = BoardReverse(static_cast<int>(floor(static_cast<float>(Mouse::Pos().x - leftX) / mKomaTextureWidth))); // ã“ã‚Œã¯ã‚‚ã¨ã‚‚ã¨ã®Xåº§æ¨™åè»¢
 	gridPos.y = static_cast<int>(floor(static_cast<float>(Mouse::Pos().y - topY) / mKomaTextureHeight));
 
 	if (checkReverseFlag && GetReverse())
@@ -378,11 +378,11 @@ bool BoardSiv3D::Update(string& te, wstring& teJap)
 		{
 		case E_IDLE:
 		{
-			// ‹î‚ğ‚Â‚©‚Ş
-			GridPos gp; // ˆÚ“®Œ³‚ÌGridPos
+			// é§’ã‚’ã¤ã‹ã‚€
+			GridPos gp; // ç§»å‹•å…ƒã®GridPos
 			if (GetGridPosFromMouse(gp))
 			{
-				// ©•ª‚Ì‹î‚¾‚¯I
+				// è‡ªåˆ†ã®é§’ã ã‘ï¼
 				if (GetMasu(gp).sengo == GetTeban() && GetMasu(gp).type != E_EMPTY)
 				{
 					SetMoveFromPos(gp);
@@ -405,23 +405,23 @@ bool BoardSiv3D::Update(string& te, wstring& teJap)
 
 		case E_GRABBED:
 		{
-			GridPos gp; // ˆÚ“®æ‚ÌGridPos
+			GridPos gp; // ç§»å‹•å…ˆã®GridPos
 			if (GetGridPosFromMouse(gp) &&
 				IsValidMove(gp)
 				)
 			{
-				// ¬‚è‚Ìƒ`ƒFƒbƒN
+				// æˆã‚Šã®ãƒã‚§ãƒƒã‚¯
 				SetMoveToPos(gp);
 
 				if (IsNarubeki(GetMoveFromPos(), gp, GetTeban()))
 				{
-					// s‚«~‚Ü‚è‚È‚Ì‚ÅA‹­§“I‚É¬‚éi•àEÔEŒj”nj
+					// è¡Œãæ­¢ã¾ã‚Šãªã®ã§ã€å¼·åˆ¶çš„ã«æˆã‚‹ï¼ˆæ­©ãƒ»é¦™è»Šãƒ»æ¡‚é¦¬ï¼‰
 					SetNaru(true);
 					UpdateDecided(te, teJap, isMoved);
 				}
 				else if (IsNareru(GetMoveFromPos(), gp, GetTeban()))
 				{
-					// ¬‚è‘I‘ğ‰æ–Ê‚Ö
+					// æˆã‚Šé¸æŠç”»é¢ã¸
 					mInputState = E_CHOICE;
 				}
 				else
@@ -444,7 +444,7 @@ bool BoardSiv3D::Update(string& te, wstring& teJap)
 		break;
 
 		case E_CHOICE:
-		// ¬‚è¬‚ç‚¸‚ğ‘I‘ğ‚·‚é
+		// æˆã‚Šæˆã‚‰ãšã‚’é¸æŠã™ã‚‹
 		{
 			GridPos gp = GetMoveToPos();
 			if (IsNariChoice(gp))
@@ -535,7 +535,7 @@ bool BoardSiv3D::CalcUtsuKomaType(EKomaType& utsuKomaType) const
 	return false;
 }
 
-// ˆÚ“®‚ğ‚ ‚ç‚í‚·•\¦B‚Ü‚½A‚»‚Ì’†‰›À•W‚ğcy,cx‚Å•Ô‚·i–îˆó‚Ìã‚Ì•]‰¿’l•\¦‚È‚ÇAtree‘¤‚Åg—p‚·‚é–Ú“Ij
+// ç§»å‹•ã‚’ã‚ã‚‰ã‚ã™è¡¨ç¤ºã€‚ã¾ãŸã€ãã®ä¸­å¤®åº§æ¨™ã‚’cy,cxã§è¿”ã™ï¼ˆçŸ¢å°ã®ä¸Šã®è©•ä¾¡å€¤è¡¨ç¤ºãªã©ã€treeå´ã§ä½¿ç”¨ã™ã‚‹ç›®çš„ï¼‰
 void BoardSiv3D::DrawMove(const string& te, const Color& color, int& cy, int& cx) const
 {
 	Move mv = GetMoveFromTe(te);
@@ -553,7 +553,7 @@ void BoardSiv3D::DrawMove(const string& te, const Color& color, int& cy, int& cx
 	}
 	else
 	{
-		// ‹î‚ğ‘Å‚Âê‡‚ÌÀ•W‚É’ˆÓ
+		// é§’ã‚’æ‰“ã¤å ´åˆã®åº§æ¨™ã«æ³¨æ„
 		const int s = static_cast<int>(GetTeban());
 		GetMochigomaPos(s, mv.utsuKomaType, startY, startX);
 	}
@@ -567,7 +567,7 @@ void BoardSiv3D::DrawMove(const string& te, const Color& color, int& cy, int& cx
 	DrawArrow(startY, startX, mv.to.y, mv.to.x, color, cy, cx);
 }
 
-// –îˆó‚ğ•\¦
+// çŸ¢å°ã‚’è¡¨ç¤º
 void BoardSiv3D::DrawArrow(int startY, int startX, int destY, int destX, const Color& color, int& cy, int& cx) const
 {
 	const int leftX = GetGridLeftX();

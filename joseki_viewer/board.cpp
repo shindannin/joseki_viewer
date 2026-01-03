@@ -23,7 +23,7 @@ void Board::InitState()
 	SetState("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 }
 
-// •Ô‚è’l true : w’è‚µ‚½yÀ•W‚ÍAtebaniæèorŒãèj‘¤‚É‚Æ‚Á‚ÄA“Gw‚Å‚ ‚éB
+// è¿”ã‚Šå€¤ true : æŒ‡å®šã—ãŸyåº§æ¨™ã¯ã€tebanï¼ˆå…ˆæ‰‹orå¾Œæ‰‹ï¼‰å´ã«ã¨ã£ã¦ã€æ•µé™£ã§ã‚ã‚‹ã€‚
 bool Board::IsTekijin(int y, ESengo teban) const
 {
 	if (teban == E_SEN && INRANGE(y, 0, 2)) return true;
@@ -32,100 +32,100 @@ bool Board::IsTekijin(int y, ESengo teban) const
 	return false;
 }
 
-// •Ô‚è’l true : w’è‚µ‚½GridPos gp‚ÍA«Šû”Õã‚É‚ ‚é
+// è¿”ã‚Šå€¤ true : æŒ‡å®šã—ãŸGridPos gpã¯ã€å°†æ£‹ç›¤ä¸Šã«ã‚ã‚‹
 bool Board::IsBanjyo(const GridPos& gp) const
 {
 	return IsBanjyo(gp.y, gp.x);
 }
 
-// •Ô‚è’l true : w’è‚µ‚½À•W(y,x)‚ÍA«Šû”Õã‚É‚ ‚é
+// è¿”ã‚Šå€¤ true : æŒ‡å®šã—ãŸåº§æ¨™(y,x)ã¯ã€å°†æ£‹ç›¤ä¸Šã«ã‚ã‚‹
 bool Board::IsBanjyo(int y, int x) const
 {
 	return INRANGE(y, 0, BOARD_SIZE - 1) && INRANGE(x, 0, BOARD_SIZE - 1);
 }
 
-// •Ô‚è’l true : â‘Î‚É¬‚ç‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
+// è¿”ã‚Šå€¤ true : çµ¶å¯¾ã«æˆã‚‰ãªã‘ã‚Œã°ãªã‚‰ãªã„
 bool Board::IsNarubeki(const GridPos& from, const GridPos& to, ESengo teban) const
 {
 	return (IsNareru(from, to, teban) && IsIkidomari(to.y, GetMasu(from).type, teban));
 }
 
-// •Ô‚è’l true : ¬‚é‚±‚Æ‚ª‚Å‚«‚é
+// è¿”ã‚Šå€¤ true : æˆã‚‹ã“ã¨ãŒã§ãã‚‹
 bool Board::IsNareru(const GridPos& from, const GridPos& to, ESengo teban) const
 {
 	const EKomaType k = mGrid[from.y][from.x].type;
 
-	// ”Õã‚¶‚á‚È‚¢‚Æƒ_ƒ
+	// ç›¤ä¸Šã˜ã‚ƒãªã„ã¨ãƒ€ãƒ¡
 	if (!IsBanjyo(from)) return false;
 	if (!IsBanjyo(to)) return false;
 
-	// ‚Â‚©‚ñ‚Å‚¢‚é‹î‚ª‚È‚ê‚é‹î‚Å‚È‚¢‚Æƒ_ƒ
+	// ã¤ã‹ã‚“ã§ã„ã‚‹é§’ãŒãªã‚Œã‚‹é§’ã§ãªã„ã¨ãƒ€ãƒ¡
 	if (mKoma[k].narigoma == E_EMPTY)
 	{
 		return false;
 	}
 
-	// ˆÚ“®Œ³‚©ˆÚ“®æ‚ª“Gw‚Å‚È‚¢‚Æƒ_ƒ
+	// ç§»å‹•å…ƒã‹ç§»å‹•å…ˆãŒæ•µé™£ã§ãªã„ã¨ãƒ€ãƒ¡
 	if (!IsTekijin(from.y, teban) && !IsTekijin(to.y, teban))
 	{
 		return false;
 	}
 
-	// TODO : ˆÚ“®‰Â”\
+	// TODO : ç§»å‹•å¯èƒ½
 
 	return true;
 }
 
-// è‚ªŒˆ’è‚µ‚½Œã‚Ìˆ—B‹î‚ğ‚Æ‚Á‚½‚èè”Ô‚ği‚ß‚½‚è‚·‚éB
-// •Ô‚è’l  : “ú–{Œê•\‹L‚Ìè
+// æ‰‹ãŒæ±ºå®šã—ãŸå¾Œã®å‡¦ç†ã€‚é§’ã‚’ã¨ã£ãŸã‚Šæ‰‹ç•ªã‚’é€²ã‚ãŸã‚Šã™ã‚‹ã€‚
+// è¿”ã‚Šå€¤  : æ—¥æœ¬èªè¡¨è¨˜ã®æ‰‹
 wstring Board::DecideMove()
 {
-	// w‚µè‚Ì“ú–{Œê–¼‚Ìì¬
+	// æŒ‡ã—æ‰‹ã®æ—¥æœ¬èªåã®ä½œæˆ
 	wstring teJap;
 
-	// £¢
+	// â–²â–³
 	teJap += mKomaMark[mTeban];
 
 	if (SZ(mMoves)>=1 && mNextMove.to == mMoves.back().to)
 	{
-		// ‘O‚Ìè‚Æˆê¨“¯
+		// å‰ã®æ‰‹ã¨ä¸€ç·’â†’åŒ
 		teJap += mJapDou;
 	}
 	else
 	{
-		// ƒ}ƒX‚Ì•\‹Li‚V˜Z‚Æ‚©j
+		// ãƒã‚¹ã®è¡¨è¨˜ï¼ˆï¼—å…­ã¨ã‹ï¼‰
 		teJap += mJapX[mNextMove.to.x] + mJapY[mNextMove.to.y];
 	}
 
-	if (mNextMove.utsuKomaType != E_EMPTY) // // ‹î‚ğ‘Å‚Â
+	if (mNextMove.utsuKomaType != E_EMPTY) // // é§’ã‚’æ‰“ã¤
 	{
 		teJap += mKoma[mNextMove.utsuKomaType].jap[0] + mJapUtsu;
 	}
-	else // ˆÚ“®‚·‚é
+	else // ç§»å‹•ã™ã‚‹
 	{
 		teJap += mKoma[mGrid[mNextMove.from.y][mNextMove.from.x].type].jap[0];
 
-		// ¬‚é
+		// æˆã‚‹
 		if (mNextMove.naru)
 		{
 			teJap += mJapNaru;
 		}
 
-		// ‹î‚ÌˆÚ“®Œ³
+		// é§’ã®ç§»å‹•å…ƒ
 		teJap += L"(" + mJapSemiNumber[mNextMove.from.x] + mJapSemiNumber[mNextMove.from.y] + L")";
 	}
 
 
 	if (mNextMove.utsuKomaType != E_EMPTY)
 	{
-		// ‹î‚ğ‘Å‚Â
+		// é§’ã‚’æ‰“ã¤
 		mMochigoma[mTeban][mNextMove.utsuKomaType]--;
 		mGrid[mNextMove.to.y][mNextMove.to.x].sengo = mTeban;
 		mGrid[mNextMove.to.y][mNextMove.to.x].type = mNextMove.utsuKomaType;
 	}
 	else
 	{
-		// ˆÚ“®æ‚É‹î‚ª‚ ‚éê‡‚Íæ‚é
+		// ç§»å‹•å…ˆã«é§’ãŒã‚ã‚‹å ´åˆã¯å–ã‚‹
 		if (mGrid[mNextMove.to.y][mNextMove.to.x].type != E_EMPTY)
 		{
 			const int s = 1 - mGrid[mNextMove.to.y][mNextMove.to.x].sengo;
@@ -133,7 +133,7 @@ wstring Board::DecideMove()
 			mMochigoma[s][k]++;
 		}
 
-		// ˆÚ“®‚·‚é
+		// ç§»å‹•ã™ã‚‹
 		{
 			mGrid[mNextMove.to.y][mNextMove.to.x] = mGrid[mNextMove.from.y][mNextMove.from.x];
 			if (mNextMove.naru)
@@ -148,7 +148,7 @@ wstring Board::DecideMove()
 
 
 
-	// è”Ô‚ÌŒğ‘ã
+	// æ‰‹ç•ªã®äº¤ä»£
 	if (mTeban == E_SEN)
 	{
 		mTeban = E_GO;
@@ -164,17 +164,17 @@ wstring Board::DecideMove()
 	return teJap;
 }
 
-// PSNŒ`®‚Ìè‚ğASFENŒ`®‚Ìè‚É•ÏŠ·B
-// PSNŒ`®‚ÍAæ“ª‚É‹î‚Ì•\‹L‚ÆA‹î‚ğ‚Æ‚éæ‚ç‚È‚¢"-x"‚ª‚Â‚¢‚Ä‚¢‚éB
+// PSNå½¢å¼ã®æ‰‹ã‚’ã€SFENå½¢å¼ã®æ‰‹ã«å¤‰æ›ã€‚
+// PSNå½¢å¼ã¯ã€å…ˆé ­ã«é§’ã®è¡¨è¨˜ã¨ã€é§’ã‚’ã¨ã‚‹å–ã‚‰ãªã„"-x"ãŒã¤ã„ã¦ã„ã‚‹ã€‚
 string Board::GetTeFromPSN(const string& tePSN) const
 {
-	// ‹î‚ğ‘Å‚Á‚½‚Æ‚«‚ÌA•\‹L–@‚ÍˆêBA
+	// é§’ã‚’æ‰“ã£ãŸã¨ãã®ã€è¡¨è¨˜æ³•ã¯ä¸€ç·’ã€‚ã€
 	if (tePSN.find('*') != string::npos)
 	{
 		return tePSN;
 	}
 
-	// ‹î‚ğˆÚ“®‚·‚é‚Æ‚«
+	// é§’ã‚’ç§»å‹•ã™ã‚‹ã¨ã
 	string ret(tePSN);
 	RemoveCharsFromString(ret, "-x");
 
@@ -209,9 +209,9 @@ string Board::GetTejunFromKif(const vector <wstring>& kifStrings) const
 {
 	string ret;
 
-	// “¯@‹â‚Æ‚©‚ ‚é‚Ì‚ÅAkifStrings‚Í˜A‘±‚Å‚ ‚é‚±‚Æ‚ªd—vB
+	// åŒã€€éŠ€ã¨ã‹ã‚ã‚‹ã®ã§ã€kifStringsã¯é€£ç¶šã§ã‚ã‚‹ã“ã¨ãŒé‡è¦ã€‚
 	int tesuu = 1;
-	int douX = NG; // “¯@‹â‚Ì‚½‚ß‚ÉA‘O‰ñ‚ÌêŠ‚ğ•Û‘¶‚µ‚Ä‚¨‚­B
+	int douX = NG; // åŒã€€éŠ€ã®ãŸã‚ã«ã€å‰å›ã®å ´æ‰€ã‚’ä¿å­˜ã—ã¦ãŠãã€‚
 	int douY = NG;
 
 	vector <string> vecTe;
@@ -226,7 +226,7 @@ string Board::GetTejunFromKif(const vector <wstring>& kifStrings) const
 		if (firstChunk == tesuu)
 		{
 			const wstring& kifTe = splitted[1];
-			if (kifTe == L"“Š—¹")
+			if (kifTe == L"æŠ•äº†")
 			{
 				break;
 			}
@@ -234,21 +234,21 @@ string Board::GetTejunFromKif(const vector <wstring>& kifStrings) const
 			int x = 0;
 			int y = 0;
 
-			if (mJapDou[0] == kifTe[0]) // u“¯v
+			if (mJapDou[0] == kifTe[0]) // ã€ŒåŒã€
 			{
 				x = douX;
 				y = douY;
 			}
 			else
 			{
-				// u‚Vv
+				// ã€Œï¼—ã€
 				for (x = 0; x < BOARD_SIZE; ++x)
 				{
 					if(mJapX[x][0]==kifTe[0]) break;
 				}
 				assert(x != BOARD_SIZE);
 
-				// u˜Zv
+				// ã€Œå…­ã€
 				for (y = 0; y < BOARD_SIZE; ++y)
 				{
 					if (mJapY[y][0] == kifTe[1]) break;
@@ -279,8 +279,8 @@ string Board::GetTejunFromKif(const vector <wstring>& kifStrings) const
 				{
 					if (kifTe[cur]==mJapUtsu[0])
 					{
-						// ‘Å
-						te += km.notation[E_SEN]; // ‹î‚ğ‘Å‚Â‚Æ‚«‚ÍAæèŒãè‚É‚æ‚ç‚¸í‚É‘å•¶š
+						// æ‰“
+						te += km.notation[E_SEN]; // é§’ã‚’æ‰“ã¤ã¨ãã¯ã€å…ˆæ‰‹å¾Œæ‰‹ã«ã‚ˆã‚‰ãšå¸¸ã«å¤§æ–‡å­—
 						te += "*";
 						te += string(1, static_cast<char>('1' + x));
 						te += string(1, static_cast<char>('a' + y));
@@ -290,13 +290,13 @@ string Board::GetTejunFromKif(const vector <wstring>& kifStrings) const
 						bool naru = false;
 						if (kifTe[cur] == mJapNaru[0])
 						{
-							// ¬
+							// æˆ
 							naru = true;
 							cur++;
 						}
 
-						// ˆÚ“®æ
-						cur++; // (‚ğƒXƒLƒbƒv
+						// ç§»å‹•å…ˆ
+						cur++; // (ã‚’ã‚¹ã‚­ãƒƒãƒ—
 						const int destX = kifTe[cur] - '1';
 						const int destY = kifTe[cur+1] - '1';
 
@@ -343,7 +343,7 @@ string Board::GetTeFromMove(const Move& mv) const
 
 	if (mv.utsuKomaType == E_EMPTY)
 	{
-		// ’Êí‚ÌˆÚ“®
+		// é€šå¸¸ã®ç§»å‹•
 		te += mv.from.Get();
 		te += mv.to.Get();
 		if (mv.naru)
@@ -354,7 +354,7 @@ string Board::GetTeFromMove(const Move& mv) const
 	}
 	else
 	{
-		// ‚¿‹î‚ğ‘Å‚Â‚Æ‚«
+		// æŒã¡é§’ã‚’æ‰“ã¤ã¨ã
 		te += mKoma[mv.utsuKomaType].notation[0];
 		te += "*";
 		te += mv.to.Get();
@@ -380,22 +380,22 @@ string Board::GetFirstTeFromTejun(const string& tejun) const
 
 Move Board::GetMoveFromTe(const string& te) const
 {
-	// http://www.geocities.jp/shogidokoro/usi.html ‚æ‚è
-	// Ÿ‚ÉAw‚µè‚Ì•\‹L‚É‚Â‚¢‚Ä‰ğà‚µ‚Ü‚·B
-	// ‹Ø‚ÉŠÖ‚µ‚Ä‚Í‚P‚©‚ç‚X‚Ü‚Å‚Ì”š‚Å•\‹L‚³‚êA
-	// ’i‚ÉŠÖ‚µ‚Ä‚Ía‚©‚çi‚Ü‚Å‚ÌƒAƒ‹ƒtƒ@ƒxƒbƒgi‚P’i–Ú‚ªaA‚Q’i–Ú‚ªbAEEEA‚X’i–Ú‚ªij‚Æ‚¢‚¤‚æ‚¤‚É•\‹L‚³‚ê‚Ü‚·B
-	// ˆÊ’u‚Ì•\‹L‚ÍA‚±‚Ì‚Q‚Â‚ğ‘g‚İ‡‚í‚¹‚Ü‚·B‚Tˆê‚È‚ç5aA‚P‹ã‚È‚ç1i‚Æ‚È‚è‚Ü‚·B
-	// ‚»‚µ‚ÄAw‚µè‚ÉŠÖ‚µ‚Ä‚ÍA‹î‚ÌˆÚ“®Œ³‚ÌˆÊ’u‚ÆˆÚ“®æ‚ÌˆÊ’u‚ğ•À‚×‚Ä‘‚«‚Ü‚·B
-	// ‚Vµ‚Ì‹î‚ª‚V˜Z‚ÉˆÚ“®‚µ‚½‚Ì‚Å‚ ‚ê‚ÎA7g7f‚Æ•\‹L‚µ‚Ü‚·Bi‹î‚Ìí—Ş‚ğ•\‹L‚·‚é•K—v‚Í‚ ‚è‚Ü‚¹‚ñBj
+	// http://www.geocities.jp/shogidokoro/usi.html ã‚ˆã‚Š
+	// æ¬¡ã«ã€æŒ‡ã—æ‰‹ã®è¡¨è¨˜ã«ã¤ã„ã¦è§£èª¬ã—ã¾ã™ã€‚
+	// ç­‹ã«é–¢ã—ã¦ã¯ï¼‘ã‹ã‚‰ï¼™ã¾ã§ã®æ•°å­—ã§è¡¨è¨˜ã•ã‚Œã€
+	// æ®µã«é–¢ã—ã¦ã¯aã‹ã‚‰iã¾ã§ã®ã‚¢ãƒ«ãƒ•ã‚¡ãƒ™ãƒƒãƒˆï¼ˆï¼‘æ®µç›®ãŒaã€ï¼’æ®µç›®ãŒbã€ãƒ»ãƒ»ãƒ»ã€ï¼™æ®µç›®ãŒiï¼‰ã¨ã„ã†ã‚ˆã†ã«è¡¨è¨˜ã•ã‚Œã¾ã™ã€‚
+	// ä½ç½®ã®è¡¨è¨˜ã¯ã€ã“ã®ï¼’ã¤ã‚’çµ„ã¿åˆã‚ã›ã¾ã™ã€‚ï¼•ä¸€ãªã‚‰5aã€ï¼‘ä¹ãªã‚‰1iã¨ãªã‚Šã¾ã™ã€‚
+	// ãã—ã¦ã€æŒ‡ã—æ‰‹ã«é–¢ã—ã¦ã¯ã€é§’ã®ç§»å‹•å…ƒã®ä½ç½®ã¨ç§»å‹•å…ˆã®ä½ç½®ã‚’ä¸¦ã¹ã¦æ›¸ãã¾ã™ã€‚
+	// ï¼—ä¸ƒã®é§’ãŒï¼—å…­ã«ç§»å‹•ã—ãŸã®ã§ã‚ã‚Œã°ã€7g7fã¨è¡¨è¨˜ã—ã¾ã™ã€‚ï¼ˆé§’ã®ç¨®é¡ã‚’è¡¨è¨˜ã™ã‚‹å¿…è¦ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚ï¼‰
 	// 
-	// ‹î‚ª¬‚é‚Æ‚«‚ÍAÅŒã‚É + ‚ğ’Ç‰Á‚µ‚Ü‚·B‚W”ª‚Ì‹î‚ª‚Q“ñ‚ÉˆÚ“®‚µ‚Ä¬‚é‚È‚ç8h2b + ‚Æ•\‹L‚µ‚Ü‚·B
-	// ‚¿‹î‚ğ‘Å‚Â‚Æ‚«‚ÍAÅ‰‚É‹î‚Ìí—Ş‚ğ‘å•¶š‚Å‘‚«A‚»‚ê‚É*‚ğ’Ç‰Á‚µA‚³‚ç‚É‘Å‚Á‚½êŠ‚ğ’Ç‰Á‚µ‚Ü‚·B‹à‚ğ‚T“ñ‚É‘Å‚Âê‡‚ÍG * 5b‚Æ‚È‚è‚Ü‚·
+	// é§’ãŒæˆã‚‹ã¨ãã¯ã€æœ€å¾Œã« + ã‚’è¿½åŠ ã—ã¾ã™ã€‚ï¼˜å…«ã®é§’ãŒï¼’äºŒã«ç§»å‹•ã—ã¦æˆã‚‹ãªã‚‰8h2b + ã¨è¡¨è¨˜ã—ã¾ã™ã€‚
+	// æŒã¡é§’ã‚’æ‰“ã¤ã¨ãã¯ã€æœ€åˆã«é§’ã®ç¨®é¡ã‚’å¤§æ–‡å­—ã§æ›¸ãã€ãã‚Œã«*ã‚’è¿½åŠ ã—ã€ã•ã‚‰ã«æ‰“ã£ãŸå ´æ‰€ã‚’è¿½åŠ ã—ã¾ã™ã€‚é‡‘ã‚’ï¼•äºŒã«æ‰“ã¤å ´åˆã¯G * 5bã¨ãªã‚Šã¾ã™
 
 	Move mv;
 
 	if (te.find('*') == string::npos)
 	{
-		// ’Êí‚ÌˆÚ“®
+		// é€šå¸¸ã®ç§»å‹•
 		assert(INRANGE(SZ(te), 4, 5));
 		mv.from.Set(te.substr(0, 2));
 		mv.to.Set(te.substr(2, 2));
@@ -406,7 +406,7 @@ Move Board::GetMoveFromTe(const string& te) const
 	}
 	else
 	{
-		// ‚¿‹î‚ğ‘Å‚Â‚Æ‚«
+		// æŒã¡é§’ã‚’æ‰“ã¤ã¨ã
 		assert(SZ(te) == 4);
 
 		bool isFound = false;
@@ -453,7 +453,7 @@ void Board::SetState(const string& state)
 	vector <string> splitted;
 	Split1(state, splitted);
 
-	// ”Õ–Ê
+	// ç›¤é¢
 	{
 		const string& banmen = splitted[0];
 
@@ -498,8 +498,8 @@ void Board::SetState(const string& state)
 		}
 	}
 
-	// è”Ô
-	// Ÿ‚Ìè”Ô‚É‚Â‚¢‚Ä‚ÍAæè”Ô‚È‚çbAŒãè”Ô‚È‚çw‚Æ•\‹L‚µ‚Ü‚·BiBlackAWhite‚Ì“ª•¶šj
+	// æ‰‹ç•ª
+	// æ¬¡ã®æ‰‹ç•ªã«ã¤ã„ã¦ã¯ã€å…ˆæ‰‹ç•ªãªã‚‰bã€å¾Œæ‰‹ç•ªãªã‚‰wã¨è¡¨è¨˜ã—ã¾ã™ã€‚ï¼ˆBlackã€Whiteã®é ­æ–‡å­—ï¼‰
 	mTeban = E_SEN;
 	if (splitted[1] == "b")
 	{
@@ -514,16 +514,16 @@ void Board::SetState(const string& state)
 		assert(0);
 	}
 
-	// ‚¿‹î
+	// æŒã¡é§’
 	{
 		mMochigoma = vector < vector <int> > (NUM_SEN_GO, vector <int> (NUM_NARAZU_KOMA_TYPE) );
 
 		const string& line = splitted[2];
 
-		// ‚¿‹î‚É‚Â‚¢‚Ä‚ÍAæèŒãè‚Ì‚»‚ê‚¼‚ê‚Ì‚¿‹î‚Ìí—Ş‚ÆA‚»‚Ì–‡”‚ğ•\‹L‚µ‚Ü‚·B
-		// –‡”‚ÍA‚Q–‡ˆÈã‚Å‚ ‚ê‚ÎA‹î‚Ìí—Ş‚Ì‘O‚É‚»‚Ì”š‚ğ•\‹L‚µ‚Ü‚·B
-		// æè‘¤‚ª‹â‚P–‡•à‚Q–‡AŒãè‘¤‚ªŠp‚P–‡•à‚R–‡‚Å‚ ‚ê‚ÎAS2Pb3p‚Æ•\‹L‚³‚ê‚Ü‚·B
-		// ‚Ç‚¿‚ç‚à‚¿‹î‚ª‚È‚¢‚Æ‚«‚Í - i”¼ŠpƒnƒCƒtƒ“j‚ğ•\‹L‚µ‚Ü‚·B
+		// æŒã¡é§’ã«ã¤ã„ã¦ã¯ã€å…ˆæ‰‹å¾Œæ‰‹ã®ãã‚Œãã‚Œã®æŒã¡é§’ã®ç¨®é¡ã¨ã€ãã®æšæ•°ã‚’è¡¨è¨˜ã—ã¾ã™ã€‚
+		// æšæ•°ã¯ã€ï¼’æšä»¥ä¸Šã§ã‚ã‚Œã°ã€é§’ã®ç¨®é¡ã®å‰ã«ãã®æ•°å­—ã‚’è¡¨è¨˜ã—ã¾ã™ã€‚
+		// å…ˆæ‰‹å´ãŒéŠ€ï¼‘æšæ­©ï¼’æšã€å¾Œæ‰‹å´ãŒè§’ï¼‘æšæ­©ï¼“æšã§ã‚ã‚Œã°ã€S2Pb3pã¨è¡¨è¨˜ã•ã‚Œã¾ã™ã€‚
+		// ã©ã¡ã‚‰ã‚‚æŒã¡é§’ãŒãªã„ã¨ãã¯ - ï¼ˆåŠè§’ãƒã‚¤ãƒ•ãƒ³ï¼‰ã‚’è¡¨è¨˜ã—ã¾ã™ã€‚
 		if (line != "-")
 		{
 			int maisu = 1;
@@ -561,7 +561,7 @@ void Board::SetState(const string& state)
 		}
 	}
 
-	// —š—ğ‚ÌƒNƒŠƒA
+	// å±¥æ­´ã®ã‚¯ãƒªã‚¢
 	mMoves.clear();
 }
 
@@ -571,7 +571,7 @@ string Board::GetState() const
 
 	// "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
 
-	// ”Õ–Ê
+	// ç›¤é¢
 	for (int y = 0; y < BOARD_SIZE; ++y)
 	{
 		int numEmpties = 0;
@@ -608,7 +608,7 @@ string Board::GetState() const
 
 	ret += " ";
 
-	// è”Ô
+	// æ‰‹ç•ª
 	if (mTeban==E_SEN)
 	{
 		ret += "b";
@@ -624,14 +624,14 @@ string Board::GetState() const
 
 	ret += " ";
 
-	// ‚¿‹î
+	// æŒã¡é§’
 	{
 		string str;
 
-		// ‚¿‹î‚É‚Â‚¢‚Ä‚ÍAæèŒãè‚Ì‚»‚ê‚¼‚ê‚Ì‚¿‹î‚Ìí—Ş‚ÆA‚»‚Ì–‡”‚ğ•\‹L‚µ‚Ü‚·B
-		// –‡”‚ÍA‚Q–‡ˆÈã‚Å‚ ‚ê‚ÎA‹î‚Ìí—Ş‚Ì‘O‚É‚»‚Ì”š‚ğ•\‹L‚µ‚Ü‚·B
-		// æè‘¤‚ª‹â‚P–‡•à‚Q–‡AŒãè‘¤‚ªŠp‚P–‡•à‚R–‡‚Å‚ ‚ê‚ÎAS2Pb3p‚Æ•\‹L‚³‚ê‚Ü‚·B
-		// ‚Ç‚¿‚ç‚à‚¿‹î‚ª‚È‚¢‚Æ‚«‚Í - i”¼ŠpƒnƒCƒtƒ“j‚ğ•\‹L‚µ‚Ü‚·B
+		// æŒã¡é§’ã«ã¤ã„ã¦ã¯ã€å…ˆæ‰‹å¾Œæ‰‹ã®ãã‚Œãã‚Œã®æŒã¡é§’ã®ç¨®é¡ã¨ã€ãã®æšæ•°ã‚’è¡¨è¨˜ã—ã¾ã™ã€‚
+		// æšæ•°ã¯ã€ï¼’æšä»¥ä¸Šã§ã‚ã‚Œã°ã€é§’ã®ç¨®é¡ã®å‰ã«ãã®æ•°å­—ã‚’è¡¨è¨˜ã—ã¾ã™ã€‚
+		// å…ˆæ‰‹å´ãŒéŠ€ï¼‘æšæ­©ï¼’æšã€å¾Œæ‰‹å´ãŒè§’ï¼‘æšæ­©ï¼“æšã§ã‚ã‚Œã°ã€S2Pb3pã¨è¡¨è¨˜ã•ã‚Œã¾ã™ã€‚
+		// ã©ã¡ã‚‰ã‚‚æŒã¡é§’ãŒãªã„ã¨ãã¯ - ï¼ˆåŠè§’ãƒã‚¤ãƒ•ãƒ³ï¼‰ã‚’è¡¨è¨˜ã—ã¾ã™ã€‚
 
 		for (int s = 0; s < NUM_SEN_GO; ++s)
 		{
@@ -673,7 +673,7 @@ void Board::InitValidMoveGrid()
 	}
 }
 
-// ‹î‚ğ“®‚©‚·Û‚ÉA‹î‚Ì“®‚©‚¹‚éêŠiˆÚ“®æj‚ğAmValidMoveGrid‚É¶¬‚·‚éB
+// é§’ã‚’å‹•ã‹ã™éš›ã«ã€é§’ã®å‹•ã‹ã›ã‚‹å ´æ‰€ï¼ˆç§»å‹•å…ˆï¼‰ã‚’ã€mValidMoveGridã«ç”Ÿæˆã™ã‚‹ã€‚
 void Board::GenerateValidMoveGridGrabbed()
 {
 	for (int y = 0; y < BOARD_SIZE; ++y)
@@ -696,7 +696,7 @@ void Board::GenerateValidMoveGridGrabbed()
 
 		const GridPos nextMoveTo = mNextMove.from + delta;
 		if (IsBanjyo(nextMoveTo) &&
-			GetMasu(nextMoveTo).sengo != GetTeban())// ©•ª‚Ì‹î‚Ì‚ ‚é‚Æ‚±‚ë‚É‚Í“®‚©‚¹‚È‚¢B
+			GetMasu(nextMoveTo).sengo != GetTeban())// è‡ªåˆ†ã®é§’ã®ã‚ã‚‹ã¨ã“ã‚ã«ã¯å‹•ã‹ã›ãªã„ã€‚
 		{
 			mValidMoveGrid[nextMoveTo.y][nextMoveTo.x] = true;
 		}
@@ -724,7 +724,7 @@ void Board::GenerateValidMoveGridGrabbed()
 	}
 }
 
-// ‹î‚ğ‘Å‚ÂÛ‚ÉA‹î‚ğ‘Å‚Ä‚éêŠ‚ğAmValidMoveGrid‚É¶¬‚·‚éB
+// é§’ã‚’æ‰“ã¤éš›ã«ã€é§’ã‚’æ‰“ã¦ã‚‹å ´æ‰€ã‚’ã€mValidMoveGridã«ç”Ÿæˆã™ã‚‹ã€‚
 void Board::GenerateValidMoveGridUtsu()
 {
 	for (int y = 0; y < BOARD_SIZE; ++y)
@@ -733,12 +733,12 @@ void Board::GenerateValidMoveGridUtsu()
 		{
 			mValidMoveGrid[y][x] = true;
 
-			if (GetMasu(y, x).type != E_EMPTY) // ‹ó‚«‚Ü‚·ˆÈŠO‚É‚Í‘Å‚Ä‚È‚¢
+			if (GetMasu(y, x).type != E_EMPTY) // ç©ºãã¾ã™ä»¥å¤–ã«ã¯æ‰“ã¦ãªã„
 			{
 				mValidMoveGrid[y][x] = false;
 			}
 
-			// “ñ•àƒ`ƒFƒbƒN
+			// äºŒæ­©ãƒã‚§ãƒƒã‚¯
 			if (GetUtsuKomaType()==E_FU)
 			{
 				for (int yy = 0; yy < BOARD_SIZE; ++yy)
@@ -751,7 +751,7 @@ void Board::GenerateValidMoveGridUtsu()
 				}
 			}
 
-			// ˆÚ“®•s‰Â”\‚ÈêŠ‚É‚à‘Å‚Ä‚È‚¢
+			// ç§»å‹•ä¸å¯èƒ½ãªå ´æ‰€ã«ã‚‚æ‰“ã¦ãªã„
 			if (IsIkidomari(y, GetUtsuKomaType(), GetTeban()))
 			{
 				mValidMoveGrid[y][x] = false;
@@ -760,7 +760,7 @@ void Board::GenerateValidMoveGridUtsu()
 	}
 }
 
-// s‚«~‚Ü‚è‚ÅAˆÚ“®•s‰Â”\
+// è¡Œãæ­¢ã¾ã‚Šã§ã€ç§»å‹•ä¸å¯èƒ½
 bool Board::IsIkidomari(int y, EKomaType type, ESengo teban) const
 {
 	if (type == E_FU || type == E_KYO)

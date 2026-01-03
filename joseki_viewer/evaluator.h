@@ -1,19 +1,19 @@
-// evaluator.h : �]���\�t�g�ւ̃A�N�Z�X������B
+// evaluator.h : 評価ソフトへのアクセスをする。
 
 #pragma once
 
 #include <Siv3D.hpp>
 #include "util.h"
 
-// siv3d�ł͂Ȃ�windows�ˑ��̃R�[�h�B
-// TODO : ���̕����́ASiv3D���C�u�����ɁA�@�\�ǉ����ꂽ�͂��Ȃ̂ŁA��������g�p����悤�ɂ���B
+// siv3dではなくwindows依存のコード。
+// TODO : この部分は、Siv3Dライブラリに、機能追加されたはずなので、そちらを使用するようにする。
 #include <windows.h> 
 #include <tchar.h>
 #include <stdio.h> 
 #include <strsafe.h>
 namespace s3d
 {
-	// class Server : �W�����o��
+	// class Server : 標準入出力
 	class Server
 	{
 	private:
@@ -125,13 +125,13 @@ namespace s3d
 
 enum EStateEvaluation
 {
-	EStateEvaluation_FindingNode,	// ���ɕ]������ǖʂ�T���Ă���Œ�
-	EStateEvaluation_WaitingScore,	// �]����
+	EStateEvaluation_FindingNode,	// 次に評価する局面を探している最中
+	EStateEvaluation_WaitingScore,	// 評価中
 };
 
 class Tree;
 
-// class Evaluator : �]���\�t�g�ƕ]���ݒ�
+// class Evaluator : 評価ソフトと評価設定
 class Evaluator
 {
 public:
@@ -169,12 +169,12 @@ public:
 	bool Update();
 	void RequestCancel();
 
-	bool IsActive() const { return mServer!=nullptr; }				// �]���\�t�g���N���������H
-	bool IsOptionRead() const { return !mOptions.empty(); }			// �]���\�t�g�̏����ݒ���A�t�@�C�����炷�łɓǂݍ��񂾂��H
+	bool IsActive() const { return mServer!=nullptr; }				// 評価ソフトを起動したか？
+	bool IsOptionRead() const { return !mOptions.empty(); }			// 評価ソフトの初期設定を、ファイルからすでに読み込んだか？
 	long long GetPonderNodes() const { return mPonderNodes; }	
 	long long GetPonderTime() const { return mPonderTime; }
 	const string& GetName() const { return mName; }
-	bool IsNodeEvaluating(int nodeID) const { return mEStateEvaluation == EStateEvaluation_WaitingScore && mEvaludatingNodeID==nodeID; } // ���ݕ]�����Ă���m�[�h�ł���Ȃ�true
+	bool IsNodeEvaluating(int nodeID) const { return mEStateEvaluation == EStateEvaluation_WaitingScore && mEvaludatingNodeID==nodeID; } // 現在評価しているノードであるならtrue
 
 	int GetDurationSec() const { return mDurationMilliSec/1000; }
 	void SetDurationSec(int sec) { mDurationMilliSec = sec * 1000; }
@@ -189,19 +189,19 @@ private:
 	bool IsUSIOKReceived() const { return SZ(mReadLogs) >= 1 && mReadLogs.back().find("usiok") != string::npos; }
 	bool IsReadyOKReceived() const { return SZ(mReadLogs) >= 1 && mReadLogs.back().find("readyok") != string::npos; }
 
-	int mEvaludatingNodeID;				// ���ݕ]�����̃m�[�hID
-	Server* mServer;					// �W�����o��
+	int mEvaludatingNodeID;				// 現在評価中のノードID
+	Server* mServer;					// 標準入出力
 	EStateEvaluation mEStateEvaluation;	//
-	Tree* mTree;						// Siv3D�Ɉˑ����Ȃ��A�����̖�
-	Stopwatch mStopwatch;				// �]���̌o�ߎ��Ԃ��v������X�g�b�v�E�H�b�`
-	Stopwatch mPollingStopwatch;		// �]���̌o�ߎ��Ԃ��v������X�g�b�v�E�H�b�`
-	vector <string> mOptions;			// �]���\�t�g�̏����ݒ�I�v�V����
-	long long mPonderNodes;				// �őP������߂�̂ɁA�]�������萔
-	long long mPonderTime;				// �őP������߂�̂ɁA�]���������ԁB�P�ʂ̓~���b
-	string mName;						// �]���\�t�g�̖��O�iApery�Ƃ��j
-	FilePath mEvaluatorPath;			// �]���\�t�g�̃t�@�C���p�X
-	vector <string> mReadLogs;			// �]���\�t�g����󂯎�������O
+	Tree* mTree;						// Siv3Dに依存しない、棋譜の木
+	Stopwatch mStopwatch;				// 評価の経過時間を計測するストップウォッチ
+	Stopwatch mPollingStopwatch;		// 評価の経過時間を計測するストップウォッチ
+	vector <string> mOptions;			// 評価ソフトの初期設定オプション
+	long long mPonderNodes;				// 最善手を求めるのに、評価した手数
+	long long mPonderTime;				// 最善手を求めるのに、評価した時間。単位はミリ秒
+	string mName;						// 評価ソフトの名前（Aperyとか）
+	FilePath mEvaluatorPath;			// 評価ソフトのファイルパス
+	vector <string> mReadLogs;			// 評価ソフトから受け取ったログ
 
-	int mDurationMilliSec		            = DEFAULT_EVALUATION_SEC * 1000; // �]�����ԁB�P�ʂ̓~���b
-	const int mDurationMilliSecPolling	    =  500;	// ����I�ɕ]���\�t�g�ɖ₢���킹�鎞�ԊԊu�B�P�ʂ̓~���b
+	int mDurationMilliSec		            = DEFAULT_EVALUATION_SEC * 1000; // 評価時間。単位はミリ秒
+	const int mDurationMilliSecPolling	    =  500;	// 定期的に評価ソフトに問い合わせる時間間隔。単位はミリ秒
 };

@@ -2,10 +2,10 @@
 #include "tree.h"
 #include "evaluator.h"
 
-// �]���\�t�g���J��
+// 評価ソフトを開く
 void Evaluator::Open()
 {
-	const auto path = Dialog::GetOpen({ { L"���s�t�@�C�� (*.exe)", L"*.exe" } });
+	const auto path = Dialog::GetOpen({ { L"実行ファイル (*.exe)", L"*.exe" } });
 
 	if (path)
 	{
@@ -13,10 +13,10 @@ void Evaluator::Open()
 	}
 }
 
-// �]���\�t�g�̏����ݒ�I�v�V�������J��
+// 評価ソフトの初期設定オプションを開く
 void Evaluator::OpenOption()
 {
-	const auto path = Dialog::GetOpen({ { L"�e�L�X�g�t�@�C�� (*.txt)", L"*.txt" } });
+	const auto path = Dialog::GetOpen({ { L"テキストファイル (*.txt)", L"*.txt" } });
 	if (path)
 	{
 		mOptions.clear();
@@ -34,10 +34,10 @@ void Evaluator::OpenOption()
 
 void Evaluator::OpenSub(const FilePath& newEvaluatorPath)
 {
-	// ���݁A�m�[�h��]�����ł���Γǂݎ̂�
+	// 現在、ノードを評価中であれば読み捨て
 	RequestCancel();
 
-	// ���݂̕]���\�t�g������΁A�������̂�I��ł����Ƃ��Ă��A����
+	// 現在の評価ソフトがあれば、同じものを選んでいたとしても、閉じる
 	if (mServer != nullptr)
 	{
 		Close();
@@ -51,13 +51,13 @@ void Evaluator::OpenSub(const FilePath& newEvaluatorPath)
 
 		if (mServer->write("usi\n"))
 		{
-			// usiok���󂯎��܂ő҂B
+			// usiokを受け取るまで待つ。
 			while (!IsUSIOKReceived())
 			{
 				UpdateReadFromStdio();
 			}
 
-			// �]���\�t�g�����󂯎��
+			// 評価ソフト名を受け取る
 			for (const string& s : mReadLogs)
 			{
 				vector <string> tmp;
@@ -66,7 +66,7 @@ void Evaluator::OpenSub(const FilePath& newEvaluatorPath)
 
 				if (SZ(tmp) >= 3 && tmp[0] == "id" && tmp[1] == "name")
 				{
-					// �X�y�[�X���͂������]���\�t�g��������̂ŁA�S���q����B
+					// スペースがはいった評価ソフト名もあるので、全部繋げる。
 					mName = "";
 					for (int i=2;i<SZ(tmp);++i)
 					{
@@ -77,20 +77,20 @@ void Evaluator::OpenSub(const FilePath& newEvaluatorPath)
 			}
 			mReadLogs.clear();
 
-			// �I�v�V�����𑗂�
+			// オプションを送る
 			vector <string> options = mOptions;
 			options.push_back("isready\n");
 			string allOptions = accumulate(options.begin(), options.end(), string());
 			if (mServer->write(allOptions))
 			{
-				// usiok���󂯎��܂ő҂B
+				// usiokを受け取るまで待つ。
 				while (!IsReadyOKReceived())
 				{
 					UpdateReadFromStdio();
 				}
 				mReadLogs.clear();
 
-				// �X�^�[�g�I
+				// スタート！
 				if (mServer->write("usinewgame\n"))
 				{
 				}
@@ -111,12 +111,12 @@ void Evaluator::OpenSub(const FilePath& newEvaluatorPath)
 	}
 }
 
-// �]�����I������
+// 評価を終了する
 void Evaluator::Close()
 {
 	if (mServer != nullptr)
 	{
-		// ���̎��_�œǂݎ̂Ă͏I�����Ă�͂��B
+		// この時点で読み捨ては終了してるはず。
 		mServer->write("quit\n");
 
 		delete mServer;
@@ -124,13 +124,13 @@ void Evaluator::Close()
 	}
 }
 
-// ���C�����[�v
+// メインループ
 bool Evaluator::Update()
 {
 	if (mServer)
 	{
 
-		// �]���̏�ԑJ��
+		// 評価の状態遷移
 		switch (mEStateEvaluation)
 		{
 		case EStateEvaluation_FindingNode:
@@ -147,7 +147,7 @@ bool Evaluator::Update()
 			}
 			else
 			{
-				// �S�m�[�h�̕]�����I��
+				// 全ノードの評価が終了
 				return true;
 			}
 		}
@@ -173,7 +173,7 @@ bool Evaluator::Update()
 	return false;
 }
 
-// �]�����J�n����
+// 評価を開始する
 bool Evaluator::Go()
 {
 	assert(mEvaludatingNodeID != NG);
@@ -218,11 +218,11 @@ void Evaluator::RequestCancel()
 	mReadLogs.clear();
 }
 
-// ����I�ɁA�]���\�t�g����A�W�����͌o�R�ŁA�������󂯎�������m�F����B
-// �X�V����������true��Ԃ��B
+// 定期的に、評価ソフトから、標準入力経由で、何かを受け取ったか確認する。
+// 更新があったらtrueを返す。
 bool Evaluator::UpdateReadFromStdio()
 {
-	if (mPollingStopwatch.ms() > mDurationMilliSecPolling) // ���Ԍo�߂�����󂯎���
+	if (mPollingStopwatch.ms() > mDurationMilliSecPolling) // 時間経過したら受け取りに
 	{
 		string readStr;
 		if (mServer->read(readStr))
@@ -244,7 +244,7 @@ bool Evaluator::UpdateReadFromStdio()
 }
 
 
-// �]���\�t�g����A�]���l�ƍőP��𓾂�
+// 評価ソフトから、評価値と最善手を得る
 bool Evaluator::ReceiveBestMoveAndScore()
 {
 	assert(mEvaludatingNodeID != NG);
@@ -256,9 +256,9 @@ bool Evaluator::ReceiveBestMoveAndScore()
 
 	bool isScoreFound = false;
 
-	// bestmove�Ń`�F�b�N���邵���Ȃ��P�[�X
-	// �Z�I�F�I�ǎ��ɃX�R�A���܂܂Ȃ��B
-	// Apery�F�I�ǎ��̃X�R�A���A�Ȃ���������������(mate 1)
+	// bestmoveでチェックするしかないケース
+	// 技巧：終局時にスコアを含まない。
+	// Apery：終局時のスコアが、なぜか自分が勝ちに(mate 1)
 	{
 		const int lastIndex = SZ(mReadLogs) - 1;
 		if (lastIndex >= 0)
@@ -278,7 +278,7 @@ bool Evaluator::ReceiveBestMoveAndScore()
 		}
 	}
 
-	for (int i = SZ(mReadLogs) - 2; i >= 0; --i) // �Ō�̍s��bestmove�Ȃ̂ŁA-2����`�F�b�N�Ő�����
+	for (int i = SZ(mReadLogs) - 2; i >= 0; --i) // 最後の行はbestmoveなので、-2からチェックで正しい
 	{
 		const string& lastInfo = mReadLogs[i];
 // 		std::wstring wsTmp(lastInfo.begin(), lastInfo.end());

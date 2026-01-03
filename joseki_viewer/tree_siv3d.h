@@ -1,4 +1,4 @@
-// tree_siv3d.h : Siv3D‚ÉˆË‘¶‚·‚éŠû•ˆ‚Ì–Ø{«Šû”ÕˆÈŠO‚ÌSiv3D‚ÌGUI‚È‚ÇB
+// tree_siv3d.h : Siv3Dã«ä¾å­˜ã™ã‚‹æ£‹è­œã®æœ¨ï¼‹å°†æ£‹ç›¤ä»¥å¤–ã®Siv3Dã®GUIãªã©ã€‚
 
 #pragma once
 
@@ -9,7 +9,7 @@
 
 class GuiSiv3D;
 
-// TreeSiv3D : «Šû”ÕˆÈŠO‚Ì•”•ª‚·‚×‚Äi‰E‘¤‚ÌƒcƒŠ[•\¦‚ÆA¶‘¤‚Ì«Šû”ÕˆÈŠOj
+// TreeSiv3D : å°†æ£‹ç›¤ä»¥å¤–ã®éƒ¨åˆ†ã™ã¹ã¦ï¼ˆå³å´ã®ãƒ„ãƒªãƒ¼è¡¨ç¤ºã¨ã€å·¦å´ã®å°†æ£‹ç›¤ä»¥å¤–ï¼‰
 class TreeSiv3D : public Tree
 {
 public:
@@ -19,7 +19,7 @@ public:
 		mOffsetX = RIGHT_CENTER_X;
 		mOffsetY = RIGHT_CENTER_Y;
 		mGridScale = 40.f;
-		mFont = Font(8, L"ƒƒCƒŠƒI");
+		mFont = Font(8, L"ãƒ¡ã‚¤ãƒªã‚ª");
 		mFontScore = Font(11, L"Impact");
 		mFontScoreMedium = Font(9, L"Impact");
 		mFontScoreSmall = Font(5, L"MS UI Gothic", FontStyle::Bitmap); // L"Consolas");
@@ -65,12 +65,12 @@ private:
 
 	float GetTreeCenterX() const
 	{
-		return Window::Width()*0.75f; // TODO ‚±‚ê‚Íw’è‰Â”\‚È‚æ‚¤‚É‚µ‚½‚¢B—á‚¦‚Î¶‚Ì«Šû”Õ‚ğ’u‚«‚½‚¢l‚Í‚Ç‚¤‚·‚é‚ÌH
+		return Window::Width()*0.75f; // TODO ã“ã‚Œã¯æŒ‡å®šå¯èƒ½ãªã‚ˆã†ã«ã—ãŸã„ã€‚ä¾‹ãˆã°å·¦ã®å°†æ£‹ç›¤ã‚’ç½®ããŸã„äººã¯ã©ã†ã™ã‚‹ã®ï¼Ÿ
 	}
 
 	float GetTreeCenterY() const
 	{
-		return Window::Height()*0.5f; // TODO ‚±‚ê‚Íw’è‰Â”\‚È‚æ‚¤‚É‚µ‚½‚¢B—á‚¦‚Î¶‚Ì«Šû”Õ‚ğ’u‚«‚½‚¢l‚Í‚Ç‚¤‚·‚é‚ÌH
+		return Window::Height()*0.5f; // TODO ã“ã‚Œã¯æŒ‡å®šå¯èƒ½ãªã‚ˆã†ã«ã—ãŸã„ã€‚ä¾‹ãˆã°å·¦ã®å°†æ£‹ç›¤ã‚’ç½®ããŸã„äººã¯ã©ã†ã™ã‚‹ã®ï¼Ÿ
 	}
 
 //	void DrawScoreBar(int score, int maxScore, float cx, float cy, float w, float h);
@@ -101,7 +101,7 @@ private:
 	Texture mTextureBackground;
 	Sound mNodeSelectSound;
 	GuiSiv3D& mGui;
-	Array<FilePath> mWaitingEvaluationFileList; // tree.h‚ÉˆÚ“®‚Å‚«‚é‚©‚àB
+	Array<FilePath> mWaitingEvaluationFileList; // tree.hã«ç§»å‹•ã§ãã‚‹ã‹ã‚‚ã€‚
 	bool mFolderAnalysis = false;
 	FilePath mCurrentPath;
 
@@ -109,6 +109,6 @@ private:
 	float mOffsetY;
 	float mGridScale;
 
-	Evaluator	mEvaluator; // TODO : •]‰¿ƒ\ƒtƒg‚È‚Ì‚ÅAtree‚ÉˆÚ“®‚µ‚½‚Ù‚¤‚ª—Ç‚¢‚Ì‚Å‚ÍB‚½‚¾ƒtƒ@ƒCƒ‹“Ç‚İ‚İ‚Æ‚©‚ª‚¿‚ª‚¿‚ÉSIV3Dg‚Á‚Ä‚¢‚é‚Ì‚ÅA‚¿‚å‚Á‚ÆˆÚ“®‚Í‘å•Ï‚©‚àB
+	Evaluator	mEvaluator; // TODO : è©•ä¾¡ã‚½ãƒ•ãƒˆãªã®ã§ã€treeã«ç§»å‹•ã—ãŸã»ã†ãŒè‰¯ã„ã®ã§ã¯ã€‚ãŸã ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿ã¨ã‹ãŒã¡ãŒã¡ã«SIV3Dä½¿ã£ã¦ã„ã‚‹ã®ã§ã€ã¡ã‚‡ã£ã¨ç§»å‹•ã¯å¤§å¤‰ã‹ã‚‚ã€‚
 };
 

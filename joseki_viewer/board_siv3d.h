@@ -7,13 +7,13 @@
 using namespace std;
 using namespace s3d;
 
-// 現在の状態。
+// 迴ｾ蝨ｨ縺ｮ迥ｶ諷九�
 enum EInputState
 {
-	E_IDLE,		// どの駒を動かすか選択中
-	E_GRABBED,	// 掴んだ駒をどこへ動かすか選択中
-	E_UTSU,		// 持ち駒をどこへ動かすか選択中
-	E_CHOICE,	// 成るかどうか選択中
+	E_IDLE,		// 縺ｩ縺ｮ鬧偵ｒ蜍輔°縺吶°驕ｸ謚樔ｸｭ
+	E_GRABBED,	// 謗ｴ繧薙□鬧偵ｒ縺ｩ縺薙∈蜍輔°縺吶°驕ｸ謚樔ｸｭ
+	E_UTSU,		// 謖√■鬧偵ｒ縺ｩ縺薙∈蜍輔°縺吶°驕ｸ謚樔ｸｭ
+	E_CHOICE,	// 謌舌ｋ縺九←縺�縺矩∈謚樔ｸｭ
 };
 
 class GuiSiv3D;

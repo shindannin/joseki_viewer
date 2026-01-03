@@ -12,9 +12,9 @@ void Split1(const string& str, vector<string>& out, const char splitter)
 	string tmp = str;
 	do
 	{
-		next = tmp.find(splitter, st); // tmp.find_first_of("+-",st); •¡”‚Ì•¶š‚Å•ª‚¯‚½‚¢‚Æ‚«
+		next = tmp.find(splitter, st); // tmp.find_first_of("+-",st); è¤‡æ•°ã®æ–‡å­—ã§åˆ†ã‘ãŸã„ã¨ã
 		string word = tmp.substr(st, next - st);
-		if (word.length() >= 1) // ‹ó•¶š—ñ‚ ‚è‚Ì‚Æ‚«‚ÍÁ‚·
+		if (word.length() >= 1) // ç©ºæ–‡å­—åˆ—ã‚ã‚Šã®ã¨ãã¯æ¶ˆã™
 		{
 			out.push_back(word);
 		}
@@ -30,9 +30,9 @@ void Split1(const wstring& str, vector<wstring>& out, const wchar_t splitter)
 	wstring tmp = str;
 	do
 	{
-		next = tmp.find(splitter, st); // tmp.find_first_of("+-",st); •¡”‚Ì•¶š‚Å•ª‚¯‚½‚¢‚Æ‚«
+		next = tmp.find(splitter, st); // tmp.find_first_of("+-",st); è¤‡æ•°ã®æ–‡å­—ã§åˆ†ã‘ãŸã„ã¨ã
 		wstring word = tmp.substr(st, next - st);
-		if (word.length() >= 1) // ‹ó•¶š—ñ‚ ‚è‚Ì‚Æ‚«‚ÍÁ‚·
+		if (word.length() >= 1) // ç©ºæ–‡å­—åˆ—ã‚ã‚Šã®ã¨ãã¯æ¶ˆã™
 		{
 			out.push_back(word);
 		}
@@ -41,8 +41,8 @@ void Split1(const wstring& str, vector<wstring>& out, const wchar_t splitter)
 }
 
 
-// ˆÈ‰º‚ÌƒGƒXƒP[ƒvƒV[ƒPƒ“ƒX‚ª‚Ä‚«‚Æ`B—á‚¦‚Î•¶š—ñ‚ÉƒoƒbƒNƒXƒ‰ƒbƒVƒ…‚ª“ü‚Á‚½‚ç¸”s‚µ‚»‚¤‚È‚Ì‚Å’¼‚·B
-// ‰üsƒGƒXƒP[ƒvAƒRƒƒ“ƒg‚ğƒZ[ƒu‰Â”\‚É‚·‚éB
+// ä»¥ä¸‹ã®ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ãŒã¦ãã¨ã€œã€‚ä¾‹ãˆã°æ–‡å­—åˆ—ã«ãƒãƒƒã‚¯ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ãŒå…¥ã£ãŸã‚‰å¤±æ•—ã—ãã†ãªã®ã§ç›´ã™ã€‚
+// æ”¹è¡Œã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã€ã‚³ãƒ¡ãƒ³ãƒˆã‚’ã‚»ãƒ¼ãƒ–å¯èƒ½ã«ã™ã‚‹ã€‚
 wstring EasyEscape(const wstring& ws)
 {
 	wstring ret;
@@ -60,7 +60,7 @@ wstring EasyEscape(const wstring& ws)
 	return ret;
 }
 
-// ‰üsƒGƒXƒP[ƒv‚ğŒ³‚É–ß‚·AƒRƒƒ“ƒg‚ğƒ[ƒh‰Â”\‚É‚·‚éB
+// æ”¹è¡Œã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚’å…ƒã«æˆ»ã™ã€ã‚³ãƒ¡ãƒ³ãƒˆã‚’ãƒ­ãƒ¼ãƒ‰å¯èƒ½ã«ã™ã‚‹ã€‚
 wstring EasyUnescape(const wstring& ws)
 {
 	wstring ret;
@@ -116,7 +116,7 @@ wstring AddNewLine(const wstring& ws, int perNumTe)
 	for (int i = 0; i < static_cast<int>(ws.size()); ++i)
 	{
 		ret += ws[i];
-		if (i + 1 < static_cast<int>(ws.size()) && (ws[i + 1] == L'£' || ws[i + 1] == L'¢'))
+		if (i + 1 < static_cast<int>(ws.size()) && (ws[i + 1] == L'â–²' || ws[i + 1] == L'â–³'))
 		{
 			numTe++;
 			if (numTe%perNumTe == 0)

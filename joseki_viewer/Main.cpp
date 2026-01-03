@@ -1,4 +1,4 @@
-﻿#define NO_S3D_USING // using namespace s3dを無視。これがないとOpenCVのint64とかぶる	
+#define NO_S3D_USING // using namespace s3dを無視。これがないとOpenCVのint64とかぶる	
 
 #define _CRT_SECURE_NO_WARNINGS
 

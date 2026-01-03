@@ -1,4 +1,4 @@
-// tree.h : Šû•ˆ‚Ì–Ø‚É‚Â‚¢‚Ä‚Ìƒtƒ@ƒCƒ‹B‚±‚±‚É‘‚¢‚Ä‚ ‚éƒNƒ‰ƒX‚ÍASiv3D‚É‚ÍˆË‘¶‚¹‚¸A’P‘ÌƒeƒXƒg‚à‰Â”\(unittest1.cpp)B
+// tree.h : æ£‹è­œã®æœ¨ã«ã¤ã„ã¦ã®ãƒ•ã‚¡ã‚¤ãƒ«ã€‚ã“ã“ã«æ›¸ã„ã¦ã‚ã‚‹ã‚¯ãƒ©ã‚¹ã¯ã€Siv3Dã«ã¯ä¾å­˜ã›ãšã€å˜ä½“ãƒ†ã‚¹ãƒˆã‚‚å¯èƒ½(unittest1.cpp)ã€‚
 
 #pragma once
 
@@ -7,14 +7,14 @@
 
 #define MAX_SAVE_SIZE	(0x1000)
 
-// Link : Šû•ˆ‚Ì–Ø‚ÌƒŠƒ“ƒNB‚Pè‚ğ•\‚·B
+// Link : æ£‹è­œã®æœ¨ã®ãƒªãƒ³ã‚¯ã€‚ï¼‘æ‰‹ã‚’è¡¨ã™ã€‚
 struct Link
 {
-	// ƒZ[ƒu‚·‚é
+	// ã‚»ãƒ¼ãƒ–ã™ã‚‹
 	int		destNodeID;
 	string	te;
 
-	// ƒZ[ƒu‚µ‚È‚¢
+	// ã‚»ãƒ¼ãƒ–ã—ãªã„
 	wstring teJap;
 
 	void Save(wfstream& wfs)
@@ -31,13 +31,13 @@ struct Link
 	}
 };
 
-// Node : Šû•ˆ‚Ì–Ø‚Ìƒm[ƒhB‹Ç–Ê‚ğ•\‚·B‚P‚Â‚Ìƒm[ƒh‚ÍA•¡”‚ÌƒŠƒ“ƒNiè‚Ì•ªŠòj‚ğ‚ÂB
+// Node : æ£‹è­œã®æœ¨ã®ãƒãƒ¼ãƒ‰ã€‚å±€é¢ã‚’è¡¨ã™ã€‚ï¼‘ã¤ã®ãƒãƒ¼ãƒ‰ã¯ã€è¤‡æ•°ã®ãƒªãƒ³ã‚¯ï¼ˆæ‰‹ã®åˆ†å²ï¼‰ã‚’æŒã¤ã€‚
 class Node
 {
 public:
-	enum { SCORE_NOT_EVALUATED = 123456789 }; // •]‰¿‚ª‚³‚ê‚Ä‚¢‚È‚¢ó‘Ô
-	enum { SCORE_RESIGN        = 999999999 }; // “Š—¹
-	enum { SCORE_MATE          =  10000000 }; // xè‹l‚İ‚ğ•\‚·
+	enum { SCORE_NOT_EVALUATED = 123456789 }; // è©•ä¾¡ãŒã•ã‚Œã¦ã„ãªã„çŠ¶æ…‹
+	enum { SCORE_RESIGN        = 999999999 }; // æŠ•äº†
+	enum { SCORE_MATE          =  10000000 }; // xæ‰‹è©°ã¿ã‚’è¡¨ã™
 
 	Node();
 	void AddLink(int newNodeID, const string& te, const wstring* pTeJap = nullptr);
@@ -56,7 +56,7 @@ public:
 
 	static int ConvertMateToScore(int mate) 
 	{
-		// mate = 0 ‚Í“Š—¹
+		// mate = 0 ã¯æŠ•äº†
 
 		if (mate == 0)
 		{
@@ -114,27 +114,27 @@ public:
 		}
 		else if (mScore == SCORE_RESIGN)
 		{
-			return L"“Š—¹";
+			return L"æŠ•äº†";
 		}
 		else if (mScore >= SCORE_MATE)
 		{
-			return L"æè " + to_wstring(mScore - SCORE_MATE) + L"è‹l";
+			return L"å…ˆæ‰‹ " + to_wstring(mScore - SCORE_MATE) + L"æ‰‹è©°";
 		}
 		else if (mScore <= -SCORE_MATE)
 		{
-			return L"Œãè " + to_wstring(-mScore - SCORE_MATE) + L"è‹l";
+			return L"å¾Œæ‰‹ " + to_wstring(-mScore - SCORE_MATE) + L"æ‰‹è©°";
 		}
 		else if (mScore > 0)
 		{
-			return L"æè " + to_wstring(mScore);
+			return L"å…ˆæ‰‹ " + to_wstring(mScore);
 		}
 		else if (mScore < 0)
 		{
-			return L"Œãè " + to_wstring(-mScore);
+			return L"å¾Œæ‰‹ " + to_wstring(-mScore);
 		}
 		else
 		{
-			return L"ŒİŠp";
+			return L"äº’è§’";
 		}
 	}
 
@@ -174,16 +174,16 @@ public:
 		GetLineTrim(wfs, ws);	mBestTejun = string(ws.begin(), ws.end());
 	}
 
-	// ƒZ[ƒu‚·‚éî•ñ
-	int				mScore;			// •]‰¿’l
+	// ã‚»ãƒ¼ãƒ–ã™ã‚‹æƒ…å ±
+	int				mScore;			// è©•ä¾¡å€¤
 	int				mParentNodeID;
 	vector <Link>	mLinks;
-	wstring			mSummary;		// ƒRƒƒ“ƒg‚Ì—v–ñ
-	wstring			mComment;		// ƒRƒƒ“ƒg
-	string			mBestTejun;		// Å‘Pè
+	wstring			mSummary;		// ã‚³ãƒ¡ãƒ³ãƒˆã®è¦ç´„
+	wstring			mComment;		// ã‚³ãƒ¡ãƒ³ãƒˆ
+	string			mBestTejun;		// æœ€å–„æ‰‹
 
-	// ƒZ[ƒu‚µ‚È‚¢î•ñ
-	string			mState;			// ƒ‹[ƒgˆÈŠO‚Í–{“–‚Í•K{‚Å‚à‚È‚¢B
+	// ã‚»ãƒ¼ãƒ–ã—ãªã„æƒ…å ±
+	string			mState;			// ãƒ«ãƒ¼ãƒˆä»¥å¤–ã¯æœ¬å½“ã¯å¿…é ˆã§ã‚‚ãªã„ã€‚
 	float			mVisualX;
 	float			mVisualY;
 	float			mWidth;
@@ -191,7 +191,7 @@ public:
 };
 
 
-// Šû•ˆ‚Ì–ØB•¡”‚Ìƒm[ƒh‚ÆA‚»‚ê‚¼‚ê‚Ìƒm[ƒh‚ª‚Â•¡”‚ÌƒŠƒ“ƒN‚©‚ç¬‚éB
+// æ£‹è­œã®æœ¨ã€‚è¤‡æ•°ã®ãƒãƒ¼ãƒ‰ã¨ã€ãã‚Œãã‚Œã®ãƒãƒ¼ãƒ‰ãŒæŒã¤è¤‡æ•°ã®ãƒªãƒ³ã‚¯ã‹ã‚‰æˆã‚‹ã€‚
 class Tree
 {
 public:
@@ -262,32 +262,32 @@ public:
 	{
 		Init();
 
-		// ƒwƒbƒ_[‚ÌƒZƒbƒgi‚Ä‚«‚Æ[j
+		// ãƒ˜ãƒƒãƒ€ãƒ¼ã®ã‚»ãƒƒãƒˆï¼ˆã¦ãã¨ãƒ¼ï¼‰
 		for (const wstring& ws : vws)
 		{
-			if (ws.find(L"ŠJn“úF") == 0)
+			if (ws.find(L"é–‹å§‹æ—¥æ™‚ï¼š") == 0)
 			{
-				mKifHeader.mKaishiNichiji = ws.substr(SZ(wstring(L"ŠJn“úF")));
+				mKifHeader.mKaishiNichiji = ws.substr(SZ(wstring(L"é–‹å§‹æ—¥æ™‚ï¼š")));
 			}
-			else if (ws.find(L"ŠûíF") == 0)
+			else if (ws.find(L"æ£‹æˆ¦ï¼š") == 0)
 			{
-				mKifHeader.mKisen = ws.substr(SZ(wstring(L"ŠûíF")));
+				mKifHeader.mKisen = ws.substr(SZ(wstring(L"æ£‹æˆ¦ï¼š")));
 			}
-			else if (ws.find(L"‚¿ŠÔF") == 0)
+			else if (ws.find(L"æŒã¡æ™‚é–“ï¼š") == 0)
 			{
-				mKifHeader.mMochijikan = ws.substr(SZ(wstring(L"‚¿ŠÔF")));
+				mKifHeader.mMochijikan = ws.substr(SZ(wstring(L"æŒã¡æ™‚é–“ï¼š")));
 			}
-			else if (ws.find(L"è‡Š„F") == 0)
+			else if (ws.find(L"æ‰‹åˆå‰²ï¼š") == 0)
 			{
-				mKifHeader.mTeaiWari = ws.substr(SZ(wstring(L"è‡Š„F")));
+				mKifHeader.mTeaiWari = ws.substr(SZ(wstring(L"æ‰‹åˆå‰²ï¼š")));
 			}
-			else if (ws.find(L"æèF") == 0)
+			else if (ws.find(L"å…ˆæ‰‹ï¼š") == 0)
 			{
-				mKifHeader.mSente = ws.substr(SZ(wstring(L"æèF")));
+				mKifHeader.mSente = ws.substr(SZ(wstring(L"å…ˆæ‰‹ï¼š")));
 			}
-			else if (ws.find(L"ŒãèF") == 0)
+			else if (ws.find(L"å¾Œæ‰‹ï¼š") == 0)
 			{
-				mKifHeader.mGote = ws.substr(SZ(wstring(L"ŒãèF")));
+				mKifHeader.mGote = ws.substr(SZ(wstring(L"å¾Œæ‰‹ï¼š")));
 			}
 		}
 
@@ -313,7 +313,7 @@ public:
 		InitKif(vws);
 	}
 
-	// ¡‚Íg—p‚µ‚Ä‚¢‚Ü‚¹‚ñIi‚±‚ê‚¾‚ÆUTF-8‚ª“Ç‚ß‚È‚¢‚Ì‚ÅAtree_siv3D“à‚ÅTextReaderƒNƒ‰ƒX‚ğg‚¤‚±‚Æ‚Å‘Î‰‚µ‚½j
+	// ä»Šã¯ä½¿ç”¨ã—ã¦ã„ã¾ã›ã‚“ï¼ï¼ˆã“ã‚Œã ã¨UTF-8ãŒèª­ã‚ãªã„ã®ã§ã€tree_siv3Då†…ã§TextReaderã‚¯ãƒ©ã‚¹ã‚’ä½¿ã†ã“ã¨ã§å¯¾å¿œã—ãŸï¼‰
 	void LoadKif_Deprecated(const wstring& path)
 	{
 		wfstream wfs;
@@ -382,12 +382,12 @@ protected:
 	}
 
 
-	// ƒZ[ƒu‚·‚é
+	// ã‚»ãƒ¼ãƒ–ã™ã‚‹
 	int mVersion;
 	vector <Node> mNodes;
 	KifHeader mKifHeader;
 
-	// ƒZ[ƒu‚µ‚È‚¢
+	// ã‚»ãƒ¼ãƒ–ã—ãªã„
 	Board* mBoard;
 
 private:
