@@ -512,7 +512,7 @@ void TreeSiv3D::DrawBestMoveArrows(BoardSiv3D* boardSiv3D) const
 		Vec2 endPos( -1, -1 );
 		boardSiv3D->DrawMove(moves[i], arrowColor, cy, cx, GetArrowWidthForDepth(i), &startPos, &endPos);
 
-		if ((i == 1 || i == 2) && endPos != Vec2(-1, -1))
+		if (endPos != Vec2(-1, -1))
 		{
 			const Vec2 labelPos = endPos;
 			mFont(to_wstring(i + 1)).drawCenter(static_cast<int>(labelPos.x), static_cast<int>(labelPos.y), Color(arrowColor.r, arrowColor.g, arrowColor.b, 255));
