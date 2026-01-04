@@ -503,6 +503,7 @@ void TreeSiv3D::DrawBestMoveArrows(BoardSiv3D* boardSiv3D) const
 	Split1(node.mBestTejun, moves);
 	const int depth = Min(SZ(moves), mBestArrowDepth);
 	const Color arrowColor(255, 0, 255, 127);
+	const bool showLabel = (mBestArrowDepth >= 2);
 
 	for (int i = 0; i < depth; ++i)
 	{
@@ -512,10 +513,10 @@ void TreeSiv3D::DrawBestMoveArrows(BoardSiv3D* boardSiv3D) const
 		Vec2 endPos( -1, -1 );
 		boardSiv3D->DrawMove(moves[i], arrowColor, cy, cx, GetArrowWidthForDepth(i), &startPos, &endPos);
 
-		if (endPos != Vec2(-1, -1))
+		if (showLabel && endPos != Vec2(-1, -1))
 		{
 			const Vec2 labelPos = endPos;
-			mFont(to_wstring(i + 1)).drawCenter(static_cast<int>(labelPos.x), static_cast<int>(labelPos.y), Color(arrowColor.r, arrowColor.g, arrowColor.b, 255));
+			mFontArrowLabel(to_wstring(i + 1)).drawCenter(static_cast<int>(labelPos.x), static_cast<int>(labelPos.y), Color(arrowColor.r, arrowColor.g, arrowColor.b, 255));
 		}
 	}
 }

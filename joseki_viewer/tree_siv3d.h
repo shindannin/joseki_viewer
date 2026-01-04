@@ -20,6 +20,7 @@ public:
 		mOffsetY = RIGHT_CENTER_Y;
 		mGridScale = 40.f;
 		mFont = Font(8, L"メイリオ");
+		mFontArrowLabel = Font(12, L"メイリオ");
 		mFontScore = Font(11, L"Impact");
 		mFontScoreMedium = Font(9, L"Impact");
 		mFontScoreSmall = Font(5, L"MS UI Gothic", FontStyle::Bitmap); // L"Consolas");
@@ -96,6 +97,7 @@ private:
 	void LoadKifFile(FilePath path);
 
 	Font mFont;
+	Font mFontArrowLabel;
 	Font mFontScore;
 	Font mFontScoreMedium;
 	Font mFontScoreSmall;
