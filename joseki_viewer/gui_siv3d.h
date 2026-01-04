@@ -70,10 +70,10 @@ public:
 		mEvaluator.add(L"time_prefix", GUIText::Create(L"　　思考時間", widgetStyle));
 		mEvaluator.add(L"time_sec", GUITextField::Create(DEFAULT_EVALUATION_SEC, widgetStyle2));
 		mEvaluator.addln(L"time_suffix", GUIText::Create(L"秒", widgetStyle));
-		mEvaluator.add(L"multipv_prefix", GUIText::Create(L"　　MultiPV", widgetStyle));
+		mEvaluator.add(L"multipv_prefix", GUIText::Create(L"　　候補数", widgetStyle));
 		mEvaluator.add(L"multipv_num", GUITextField::Create(DEFAULT_MULTIPV_NUM, widgetStyle2));
-		mEvaluator.add(L"multipv_suffix", GUIText::Create(L"本", widgetStyle));
-		mEvaluator.add(L"best_arrow_label", GUIText::Create(L"　矢印手数", widgetStyle));
+		mEvaluator.add(L"multipv_suffix", GUIText::Create(L"", widgetStyle));
+		mEvaluator.add(L"best_arrow_label", GUIText::Create(L"　最善手数", widgetStyle));
 		mEvaluator.addln(L"best_arrow_depth", GUITextField::Create(DEFAULT_BEST_ARROW_DEPTH, widgetStyle2));
 		mEvaluator.textField(L"time_sec").setText(to_wstring(DEFAULT_EVALUATION_SEC));
 		mEvaluator.textField(L"multipv_num").setText(to_wstring(DEFAULT_MULTIPV_NUM));

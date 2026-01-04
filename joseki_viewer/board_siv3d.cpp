@@ -541,7 +541,7 @@ void BoardSiv3D::DrawMove(const string& te, const Color& color, int& cy, int& cx
 	DrawMove(te, color, cy, cx, 10.0, nullptr, nullptr);
 }
 
-void BoardSiv3D::DrawMove(const string& te, const Color& color, int& cy, int& cx, double width, Vec2* startPos, Vec2* endPos) const
+void BoardSiv3D::DrawMove(const string& te, const Color& color, int& cy, int& cx, double width, Vec2* startPos, Vec2* endPos, const Vec2& offset) const
 {
 	if (IsSpecialMoveTe(te))
 	{
@@ -584,20 +584,20 @@ void BoardSiv3D::DrawMove(const string& te, const Color& color, int& cy, int& cx
 		mv.to.x = BoardReverse(mv.to.x);
 	}
 
-	DrawArrow(startY, startX, mv.to.y, mv.to.x, color, cy, cx, width, startPos, endPos);
+	DrawArrow(startY, startX, mv.to.y, mv.to.x, color, cy, cx, width, startPos, endPos, offset);
 }
 
 // 矢印を表示
-void BoardSiv3D::DrawArrow(int startY, int startX, int destY, int destX, const Color& color, int& cy, int& cx, double width, Vec2* startPos, Vec2* endPos) const
+void BoardSiv3D::DrawArrow(int startY, int startX, int destY, int destX, const Color& color, int& cy, int& cx, double width, Vec2* startPos, Vec2* endPos, const Vec2& offset) const
 {
 	const int leftX = GetGridLeftX();
 	const int topY = GetGridTopY();
 
 
-	const float sx = leftX + (BoardReverse(startX) + 0.5f) * mKomaTextureWidth;
-	const float sy = topY  + (startY + 0.5f) * mKomaTextureHeight;
-	const float dx = leftX + (BoardReverse(destX) + 0.5f) * mKomaTextureWidth;
-	const float dy = topY +  (destY + 0.5f) * mKomaTextureHeight;
+	const float sx = leftX + (BoardReverse(startX) + 0.5f) * mKomaTextureWidth + offset.x;
+	const float sy = topY  + (startY + 0.5f) * mKomaTextureHeight + offset.y;
+	const float dx = leftX + (BoardReverse(destX) + 0.5f) * mKomaTextureWidth + offset.x;
+	const float dy = topY +  (destY + 0.5f) * mKomaTextureHeight + offset.y;
 
 	cy = static_cast<int>((sy + dy) * 0.5f);
 	cx = static_cast<int>((sx + dx) * 0.5f);
