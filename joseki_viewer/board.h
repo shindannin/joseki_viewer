@@ -167,6 +167,7 @@ public:
 	wstring DecideMove();
 
 	void SetState(const string& state);
+	bool SetInitialStateFromKif(const vector <wstring>& kifStrings);
 
 	string GetState() const;
 
@@ -264,6 +265,9 @@ private:
 	void InitValidMoveGrid();
 	bool IsTekijin(int y, ESengo teban) const;
 	bool IsIkidomari(int y, EKomaType type, ESengo teban) const;
+	bool ParseMochigomaLine(const wstring& line, ESengo sengo, vector < vector <int> >& mochigoma) const;
+	int ParseJapaneseNumber(const wstring& numStr) const;
+	EKomaType GetKomaTypeFromJap(const wstring& jap) const;
 
 	vector < vector <Masu> > mGrid;				// mGrid[y][x]	将棋盤座標(y,x)のマス情報
 	vector < vector <int> > mMochigoma;			// mMochigoma[ESengo][EKomaType] 持ち駒の数
