@@ -89,7 +89,7 @@ private:
 	s3d::RoundRect GetNodeShape(int centerX, int centerY, NodeSize nodeSize) const;
 	void DrawBeforeBoard() const;
 	void DrawAfterBoard() const;
-	void DrawScore(int centerX, int centerY, const Node& node, NodeSize nodeSize) const;
+	void DrawScore(int centerX, int centerY, int score, NodeSize nodeSize) const;
 	void LoadJsvFile(FilePath path);
 	void LoadKifFile(FilePath path);
 
@@ -111,4 +111,3 @@ private:
 
 	Evaluator	mEvaluator; // TODO : 評価ソフトなので、treeに移動したほうが良いのでは。ただファイル読み込みとかがちがちにSIV3D使っているので、ちょっと移動は大変かも。
 };
-

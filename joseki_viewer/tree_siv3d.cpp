@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <numeric>
 #include <unordered_set>
+#include <iterator>
 
 
 // 表示
@@ -174,7 +175,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 
 		if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_SCORE))
 		{
-			DrawScore(centerX, centerY, node, nodeSize);
+			DrawScore(centerX, centerY, node.mScore, nodeSize);
 		}
 	}
 
@@ -312,12 +313,13 @@ void TreeSiv3D::DrawAfterBoard() const
 			{
 				int cy;
 				int cx;
-				const Node* pDestNode;
+				int score;
 			};
 
 			vector <ScoreOnArrow> scoreOnArrows;
 
 			const Node& node = GetSelectedNode();
+			std::unordered_set<string> nextMoves;
 
 
 			// 次の手の表示
@@ -333,43 +335,64 @@ void TreeSiv3D::DrawAfterBoard() const
 
 				// 矢印表示
 				boardSiv3D->DrawMove(link.te, grabbedColor[boardSiv3D->GetTeban()], cy, cx);
+				nextMoves.insert(link.te);
 
 				// もし1手先のノードの評価値が分かれば、それを後で表示
 				const Node& destNode = GetNode(link.destNodeID);
 				if (destNode.IsScoreEvaluated())
 				{
-					ScoreOnArrow tmp = { cy, cx, &destNode };
+					ScoreOnArrow tmp = { cy, cx, destNode.mScore };
 					scoreOnArrows.push_back(tmp);
 				}
 			}
 
-			// 最善手の表示（紫）
-			if (node.IsScoreEvaluated())
+			const auto& evals = node.mEvaluationResults;
+			const int evalNum = Min(SZ(evals), mEvaluator.GetMultiPVNum());
+			const Color evalColors[] =
 			{
-				int cy, cx;
-				const string firstTe = boardSiv3D->GetFirstTeFromTejun(node.mBestTejun);
+				{ 255, 0, 255, 127 },
+				{ 0, 200, 200, 127 },
+				{ 255, 165, 0, 127 },
+			};
 
-				// 矢印表示
-				if (!firstTe.empty())
+			for (int i = 0; i < evalNum; ++i)
+			{
+				const NodeEvaluation& ev = evals[i];
+				if (ev.tejun.empty())
 				{
-					boardSiv3D->DrawMove(firstTe, { 255, 0, 255, 127 }, cy, cx);
+					continue;
+				}
 
-					// スコア表示の追加。もし、最善手の次の手が評価されている場合は、そちらのほうが正確なので、足さない
-					bool ok = true;
-					for ( const auto& a : scoreOnArrows)
-					{
-						if (a.cy == cy && a.cx == cx)
-						{
-							ok = false;
-							break;
-						}
-					}
+				int cy, cx;
+				const string firstTe = boardSiv3D->GetFirstTeFromTejun(ev.tejun);
+				if (firstTe.empty())
+				{
+					continue;
+				}
 
-					if (ok)
+				const bool hasLink = nextMoves.find(firstTe) != nextMoves.end();
+				if (i >= 1 && hasLink)
+				{
+					continue;
+				}
+
+				const int colorIndex = Min(i, static_cast<int>(std::size(evalColors)) - 1);
+				boardSiv3D->DrawMove(firstTe, evalColors[colorIndex], cy, cx);
+
+				bool ok = (i == 0) ? true : !hasLink;
+				for (const auto& a : scoreOnArrows)
+				{
+					if (a.cy == cy && a.cx == cx)
 					{
-						ScoreOnArrow tmp = { cy, cx, &node };
-						scoreOnArrows.push_back(tmp);
+						ok = false;
+						break;
 					}
+				}
+
+				if (ok)
+				{
+					ScoreOnArrow tmp = { cy, cx, ev.score };
+					scoreOnArrows.push_back(tmp);
 				}
 			}
 
@@ -381,7 +404,7 @@ void TreeSiv3D::DrawAfterBoard() const
 				roundRect.draw(color);
 
 				// ノードスコアの表示
-				DrawScore(tmp.cx, tmp.cy, *tmp.pDestNode, NS_MEDIUM);
+				DrawScore(tmp.cx, tmp.cy, tmp.score, NS_MEDIUM);
 			}
 		}
 	}
@@ -389,11 +412,14 @@ void TreeSiv3D::DrawAfterBoard() const
 
 
 // 評価値の表示
-void TreeSiv3D::DrawScore(int centerX, int centerY, const Node& node, NodeSize nodeSize) const
+void TreeSiv3D::DrawScore(int centerX, int centerY, int score, NodeSize nodeSize) const
 {
-	if (node.IsScoreEvaluated())
+	if (Node::IsScoreEvaluated(score))
 	{
-		string s = node.ConverScoreToString();
+		Node tmpNode;
+		tmpNode.mScore = score;
+
+		string s = tmpNode.ConverScoreToString();
 		wstring ws(s.begin(), s.end());
 
 		const Font* pFont = nullptr;
@@ -410,24 +436,24 @@ void TreeSiv3D::DrawScore(int centerX, int centerY, const Node& node, NodeSize n
 			break;
 		}
 
-		if (node.IsResign())
+		if (tmpNode.IsResign())
 		{
-			if (node.IsSenteKachi())
+			if (tmpNode.IsSenteKachi())
 			{
 				(*pFont)(ws).drawCenter(centerX, centerY, Palette::Red);
 			}
-			else if (node.IsGoteKachi())
+			else if (tmpNode.IsGoteKachi())
 			{
 				(*pFont)(ws).drawCenter(centerX, centerY, Palette::Blue);
 			}
 		}
 		else
 		{
-			if (node.mScore > 0)
+			if (tmpNode.mScore > 0)
 			{
 				(*pFont)(ws).drawCenter(centerX, centerY, Palette::Red);
 			}
-			else if (node.mScore < 0)
+			else if (tmpNode.mScore < 0)
 			{
 				(*pFont)(ws).drawCenter(centerX, centerY, Palette::Blue);
 			}
@@ -600,6 +626,18 @@ void TreeSiv3D::Update()
 			if (sec > 0)
 			{
 				mEvaluator.SetDurationSec(sec);
+			}
+		}
+	}
+	if (mGui.mEvaluator.textField(L"multipv_num").hasChanged)
+	{
+		string text = mGui.mEvaluator.textField(L"multipv_num").text.narrow();
+		if (!text.empty())
+		{
+			const int num = strtol(text.c_str(), NULL, 0);
+			if (num > 0)
+			{
+				mEvaluator.SetMultiPVNum(num);
 			}
 		}
 	}

@@ -223,42 +223,79 @@ void Tree::InitializeAfterLoad()
 			mBoard->SetState(node.mState);
 			node.mTejunJap = mBoard->MoveByTejun(node.mBestTejun);
 		}
+		for (auto& ev : node.mEvaluationResults)
+		{
+			mBoard->SetState(node.mState);
+			ev.tejunJap = mBoard->MoveByTejun(ev.tejun);
+		}
 	}
 
 	SetSelectedNodeID(rootNodeID);
 }
 
-void Tree::UpdateNode(int nodeID, int score, const string& tejun, bool isMate)
+void Tree::UpdateNode(int nodeID, const vector <EvaluationResult>& evalResults)
 {
 	Node& node = mNodes[nodeID];
 
-	// このノードが先手番か後手番か
+	node.mEvaluationResults.clear();
+	node.mBestTejun.clear();
+	node.mTejunJap.clear();
+	node.mScore = Node::SCORE_NOT_EVALUATED;
 
-	node.mBestTejun = tejun;
+	if (evalResults.empty())
+	{
+		UpdateBestRouteNodeIDs();
+		return;
+	}
 
 	Board tmpBoard;
 	tmpBoard.SetState(node.mState);
-	switch (tmpBoard.GetTeban())
+	const ESengo teban = tmpBoard.GetTeban();
+
+	for (int i = 0; i < SZ(evalResults); ++i)
 	{
-	case E_SEN:
-		node.mScore = score;
-		break;
+		int score = evalResults[i].score;
 
-	case E_GO:
-		node.mScore = -score;
-		break;
+		switch (teban)
+		{
+		case E_SEN:
+			break;
 
-	default:
-		assert(0);
-		break;
+		case E_GO:
+			score = -score;
+			break;
+
+		default:
+			assert(0);
+			break;
+		}
+
+		if (evalResults[i].isMate)
+		{
+			score = -score;
+		}
+
+		NodeEvaluation ev;
+		ev.score = score;
+		ev.tejun = evalResults[i].tejun;
+
+		tmpBoard.SetState(node.mState);
+		if (!ev.tejun.empty())
+		{
+			ev.tejunJap = tmpBoard.MoveByTejun(ev.tejun);
+		}
+
+		if (i == 0)
+		{
+			node.mScore = ev.score;
+			node.mBestTejun = ev.tejun;
+			node.mTejunJap = ev.tejunJap;
+		}
+
+		node.mEvaluationResults.push_back(ev);
 	}
 
-	if (isMate)
-	{
-		node.mScore = -node.mScore;
-	}
-
-	node.mTejunJap = tmpBoard.MoveByTejun(tejun);
+	UpdateBestRouteNodeIDs();
 }
 
 // nodeIDの子孫のノードを、再帰でnewNodeIDsに列挙する。
@@ -438,5 +475,3 @@ void Tree::ResetSelectedAncientScore()
 	}
 	UpdateBestRouteNodeIDs();
 }
-
-

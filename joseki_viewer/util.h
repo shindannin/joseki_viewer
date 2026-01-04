@@ -29,9 +29,10 @@ const int SCORE_GRAPH_Y = WINDOW_H - SCORE_GRAPH_H;
 const int SCORE_GRAPH_SW = 4;
 
 const int DEFAULT_EVALUATION_SEC = 2;
+const int DEFAULT_MULTIPV_NUM = 3;
 
 #define VERSION_TITLE L"Siv3D 将棋ビューア Ver 0.07 (2020/03/15)  "
-#define VERSION_DATA (2)
+#define VERSION_DATA (3)
 
 struct KifHeader
 {

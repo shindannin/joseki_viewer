@@ -159,6 +159,7 @@ public:
 		mPonderNodes = 0LL;
 		mPonderTime = 0LL;
 		mReadLogs.clear();
+		mMultiPVNum = DEFAULT_MULTIPV_NUM;
 
 		mPollingStopwatch.restart();
 	}
@@ -168,6 +169,8 @@ public:
 	void Close();
 	bool Update();
 	void RequestCancel();
+	void SetMultiPVNum(int multiPVNum);
+	int GetMultiPVNum() const { return mMultiPVNum; }
 
 	bool IsActive() const { return mServer!=nullptr; }				// 評価ソフトを起動したか？
 	bool IsOptionRead() const { return !mOptions.empty(); }			// 評価ソフトの初期設定を、ファイルからすでに読み込んだか？
@@ -204,4 +207,5 @@ private:
 
 	int mDurationMilliSec		            = DEFAULT_EVALUATION_SEC * 1000; // 評価時間。単位はミリ秒
 	const int mDurationMilliSecPolling	    =  500;	// 定期的に評価ソフトに問い合わせる時間間隔。単位はミリ秒
+	int mMultiPVNum						= DEFAULT_MULTIPV_NUM;
 };
