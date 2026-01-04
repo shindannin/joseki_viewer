@@ -30,6 +30,7 @@ const int SCORE_GRAPH_SW = 4;
 
 const int DEFAULT_EVALUATION_SEC = 2;
 const int DEFAULT_MULTIPV_NUM = 3;
+const int DEFAULT_BEST_ARROW_DEPTH = 1;
 
 #define VERSION_TITLE L"Siv3D 将棋ビューア Ver 0.07 (2020/03/15)  "
 #define VERSION_DATA (3)

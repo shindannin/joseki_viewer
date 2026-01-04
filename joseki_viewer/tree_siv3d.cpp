@@ -380,31 +380,12 @@ void TreeSiv3D::DrawAfterBoard() const
 			const Node& node = GetSelectedNode();
 			std::unordered_set<string> nextMoves;
 
-
-			// 次の手の表示
 			for (const Link& link : node.mLinks)
 			{
-				const Color grabbedColor[NUM_SEN_GO] =
-				{
-					{ 255, 0, 0, 127 },
-					{ 0, 0, 255, 127 },
-				};
-
-				int cy, cx;
-
-				// 矢印表示
-				boardSiv3D->DrawMove(link.te, grabbedColor[boardSiv3D->GetTeban()], cy, cx);
 				nextMoves.insert(link.te);
-
-				// もし1手先のノードの評価値が分かれば、それを後で表示
-				const Node& destNode = GetNode(link.destNodeID);
-				if (destNode.IsScoreEvaluated())
-				{
-					ScoreOnArrow tmp = { cy, cx, destNode.mScore };
-					scoreOnArrows.push_back(tmp);
-				}
 			}
 
+			// MultiPV arrows（第３→第２→最善の順に描画）
 			const auto& evals = node.mEvaluationResults;
 			const int evalNum = Min(SZ(evals), mEvaluator.GetMultiPVNum());
 			const Color evalColors[] =
@@ -414,7 +395,7 @@ void TreeSiv3D::DrawAfterBoard() const
 				{ 255, 165, 0, 127 },
 			};
 
-			for (int i = 0; i < evalNum; ++i)
+			for (int i = evalNum - 1; i >= 0; --i)
 			{
 				const NodeEvaluation& ev = evals[i];
 				if (ev.tejun.empty())
@@ -436,7 +417,17 @@ void TreeSiv3D::DrawAfterBoard() const
 				}
 
 				const int colorIndex = Min(i, static_cast<int>(std::size(evalColors)) - 1);
-				boardSiv3D->DrawMove(firstTe, evalColors[colorIndex], cy, cx);
+				Vec2 offset(0, 0);
+				if (i == 1)
+				{
+					offset = Vec2(2, 0);
+				}
+				else if (i == 2)
+				{
+					offset = Vec2(0, 2);
+				}
+
+				boardSiv3D->DrawMove(firstTe, evalColors[colorIndex], cy, cx, 10.0, nullptr, nullptr, offset);
 
 				bool ok = (i == 0) ? true : !hasLink;
 				for (const auto& a : scoreOnArrows)
@@ -455,6 +446,32 @@ void TreeSiv3D::DrawAfterBoard() const
 				}
 			}
 
+			// 最善手矢印（MultiPVより前面）
+			DrawBestMoveArrows(boardSiv3D);
+
+			// 次の手の表示（最後に描画して最前面に）
+			for (const Link& link : node.mLinks)
+			{
+				const Color grabbedColor[NUM_SEN_GO] =
+				{
+					{ 255, 0, 0, 127 },
+					{ 0, 0, 255, 127 },
+				};
+
+				int cy, cx;
+
+				// 矢印表示
+				boardSiv3D->DrawMove(link.te, grabbedColor[boardSiv3D->GetTeban()], cy, cx);
+
+				// もし1手先のノードの評価値が分かれば、それを後で表示
+				const Node& destNode = GetNode(link.destNodeID);
+				if (destNode.IsScoreEvaluated())
+				{
+					ScoreOnArrow tmp = { cy, cx, destNode.mScore };
+					scoreOnArrows.push_back(tmp);
+				}
+			}
+
 			for (const ScoreOnArrow& tmp : scoreOnArrows)
 			{
 				// ノード背景の表示
@@ -467,6 +484,55 @@ void TreeSiv3D::DrawAfterBoard() const
 			}
 		}
 	}
+}
+
+void TreeSiv3D::DrawBestMoveArrows(BoardSiv3D* boardSiv3D) const
+{
+	if (mBestArrowDepth <= 0)
+	{
+		return;
+	}
+
+	const Node& node = GetSelectedNode();
+	if (node.mBestTejun.empty())
+	{
+		return;
+	}
+
+	vector <string> moves;
+	Split1(node.mBestTejun, moves);
+	const int depth = Min(SZ(moves), mBestArrowDepth);
+	const Color arrowColor(255, 0, 255, 127);
+	const bool showLabel = (mBestArrowDepth >= 2);
+
+	for (int i = 0; i < depth; ++i)
+	{
+		int cy = -1;
+		int cx = -1;
+		Vec2 startPos( -1, -1 );
+		Vec2 endPos( -1, -1 );
+		boardSiv3D->DrawMove(moves[i], arrowColor, cy, cx, GetArrowWidthForDepth(i), &startPos, &endPos);
+
+		if (showLabel && endPos != Vec2(-1, -1))
+		{
+			const Vec2 labelPos = endPos;
+			mFontArrowLabel(to_wstring(i + 1)).drawCenter(static_cast<int>(labelPos.x), static_cast<int>(labelPos.y), Color(arrowColor.r, arrowColor.g, arrowColor.b, 255));
+		}
+	}
+}
+
+double TreeSiv3D::GetArrowWidthForDepth(int depthIndex) const
+{
+	if (depthIndex <= 0)
+	{
+		return 10.0;
+	}
+	else if (depthIndex == 1)
+	{
+		return 6.0;
+	}
+
+	return 4.0;
 }
 
 
@@ -697,6 +763,18 @@ void TreeSiv3D::Update()
 			if (num > 0)
 			{
 				mEvaluator.SetMultiPVNum(num);
+			}
+		}
+	}
+	if (mGui.mEvaluator.textField(L"best_arrow_depth").hasChanged)
+	{
+		string text = mGui.mEvaluator.textField(L"best_arrow_depth").text.narrow();
+		if (!text.empty())
+		{
+			const int depth = strtol(text.c_str(), NULL, 0);
+			if (depth >= 1)
+			{
+				mBestArrowDepth = depth;
 			}
 		}
 	}
