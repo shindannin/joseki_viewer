@@ -1,6 +1,7 @@
 #include <algorithm>
 #include "tree.h"
 #include "evaluator.h"
+#include <map>
 
 // 評価ソフトを開く
 void Evaluator::Open()
@@ -79,6 +80,7 @@ void Evaluator::OpenSub(const FilePath& newEvaluatorPath)
 
 			// オプションを送る
 			vector <string> options = mOptions;
+			options.push_back("setoption name MultiPV value " + to_string(mMultiPVNum) + "\n");
 			options.push_back("isready\n");
 			string allOptions = accumulate(options.begin(), options.end(), string());
 			if (mServer->write(allOptions))
@@ -191,7 +193,7 @@ bool Evaluator::Go()
 
 	if (mServer != nullptr && mServer->write(writeStr))
 	{
-		writeStr = "go btime 0 wtime 0 byoyomi " + to_string(mDurationMilliSec) + "\n";
+		writeStr = "go btime 0 wtime 0 byoyomi " + to_string(mDurationMilliSec) + " multipv " + to_string(mMultiPVNum) + "\n";
 		return mServer->write(writeStr);
 	}
 
@@ -216,6 +218,21 @@ void Evaluator::RequestCancel()
 
 	mEStateEvaluation = EStateEvaluation_FindingNode;
 	mReadLogs.clear();
+}
+
+void Evaluator::SetMultiPVNum(int multiPVNum)
+{
+	if (multiPVNum <= 0)
+	{
+		return;
+	}
+
+	mMultiPVNum = multiPVNum;
+
+	if (mServer)
+	{
+		mServer->write("setoption name MultiPV value " + to_string(mMultiPVNum) + "\n");
+	}
 }
 
 // 定期的に、評価ソフトから、標準入力経由で、何かを受け取ったか確認する。
@@ -255,6 +272,8 @@ bool Evaluator::ReceiveBestMoveAndScore()
 	}
 
 	bool isScoreFound = false;
+	bool isBestMoveResign = false;
+	vector <EvaluationResult> evalResults;
 
 	// bestmoveでチェックするしかないケース
 	// 技巧：終局時にスコアを含まない。
@@ -273,31 +292,43 @@ bool Evaluator::ReceiveBestMoveAndScore()
 			if (tmp[1] == "resign")
 			{
 				isScoreFound = true;
-				mTree->UpdateNode(mEvaludatingNodeID, Node::ConvertMateToScore(0), "", true);
+				isBestMoveResign = true;
+				EvaluationResult ev;
+				ev.score = Node::ConvertMateToScore(0);
+				ev.tejun = "";
+				ev.isMate = true;
+				evalResults.push_back(ev);
 			}
 		}
 	}
 
-	for (int i = SZ(mReadLogs) - 2; i >= 0; --i) // 最後の行はbestmoveなので、-2からチェックで正しい
+	std::map<int, EvaluationResult> multipvResults;
+
+	for (int i = 0; i < SZ(mReadLogs) - 1; ++i) // 最後の行はbestmoveなので含めない
 	{
-		const string& lastInfo = mReadLogs[i];
-// 		std::wstring wsTmp(lastInfo.begin(), lastInfo.end());
-// 		Print(wsTmp);
+		const string& info = mReadLogs[i];
 
 		vector <string> tmp;
-		Split1(lastInfo, tmp, ' ');
+		Split1(info, tmp, ' ');
 		Trim(tmp.back());
+
+		if (tmp.empty() || tmp[0] != "info")
+		{
+			continue;
+		}
 
 		int score = 0;
 		string tejun;
-
-		assert(tmp[0]=="info");
-
 		bool isJustNowScoreFound = false;
+		int multipv = 1;
 
 		for (int k = 0; k < SZ(tmp); ++k)
 		{
-			if (!isScoreFound && tmp[k] == "score" && k + 2 < SZ(tmp))
+			if (tmp[k] == "multipv" && k + 1 < SZ(tmp))
+			{
+				multipv = stoi(tmp[k + 1]);
+			}
+			else if (tmp[k] == "score" && k + 2 < SZ(tmp))
 			{
 				if (tmp[k + 1] == "cp")
 				{
@@ -312,7 +343,7 @@ bool Evaluator::ReceiveBestMoveAndScore()
 			}
 			else if (tmp[k] == "pv")
 			{
-				for (int x = k+1; x < SZ(tmp); ++x)
+				for (int x = k + 1; x < SZ(tmp); ++x)
 				{
 					if (tmp[x] == "None")
 					{
@@ -327,11 +358,11 @@ bool Evaluator::ReceiveBestMoveAndScore()
 					}
 				}
 			}
-			else if (tmp[k] == "nodes")
+			else if (tmp[k] == "nodes" && k + 1 < SZ(tmp) && multipv == 1)
 			{
 				mPonderNodes = stoll(tmp[k + 1]);
 			}
-			else if (tmp[k] == "time")
+			else if (tmp[k] == "time" && k + 1 < SZ(tmp) && multipv == 1)
 			{
 				mPonderTime = stoll(tmp[k + 1]);
 			}
@@ -339,13 +370,40 @@ bool Evaluator::ReceiveBestMoveAndScore()
 
 		if (isJustNowScoreFound)
 		{
+			EvaluationResult ev;
+			ev.score = score;
+			ev.tejun = tejun;
+			ev.isMate = false;
+			multipvResults[multipv] = ev; // 最新を上書き
 			isScoreFound = true;
-			mTree->UpdateNode(mEvaludatingNodeID, score, tejun, false);
-			break;
 		}
 	}
 
+	if (!multipvResults.empty())
+	{
+		for (const auto& kv : multipvResults)
+		{
+			evalResults.push_back(kv.second);
+			if (SZ(evalResults) >= mMultiPVNum)
+			{
+				break;
+			}
+		}
+	}
+
+	if (SZ(evalResults) > mMultiPVNum)
+	{
+		evalResults.resize(mMultiPVNum);
+	}
+
+	if (evalResults.empty() && isBestMoveResign)
+	{
+		isScoreFound = true;
+	}
+
 	assert(isScoreFound);
+
+	mTree->UpdateNode(mEvaludatingNodeID, evalResults);
 
 	mReadLogs.clear();
 	return true;

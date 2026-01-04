@@ -70,7 +70,11 @@ public:
 		mEvaluator.add(L"time_prefix", GUIText::Create(L"　　思考時間", widgetStyle));
 		mEvaluator.add(L"time_sec", GUITextField::Create(DEFAULT_EVALUATION_SEC, widgetStyle2));
 		mEvaluator.addln(L"time_suffix", GUIText::Create(L"秒", widgetStyle));
+		mEvaluator.add(L"multipv_prefix", GUIText::Create(L"　　MultiPV", widgetStyle));
+		mEvaluator.add(L"multipv_num", GUITextField::Create(DEFAULT_MULTIPV_NUM, widgetStyle2));
+		mEvaluator.addln(L"multipv_suffix", GUIText::Create(L"本", widgetStyle));
 		mEvaluator.textField(L"time_sec").setText(to_wstring(DEFAULT_EVALUATION_SEC));
+		mEvaluator.textField(L"multipv_num").setText(to_wstring(DEFAULT_MULTIPV_NUM));
 		mEvaluator.add(L"folder_analysis", GUIButton::Create(L"フォルダ内連続解析", widgetStyle2));
 		mEvaluator.add(L"folder_analysis_waiting_num", GUIText::Create(L"0", widgetStyle));
 

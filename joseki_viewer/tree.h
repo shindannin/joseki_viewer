@@ -31,6 +31,20 @@ struct Link
 	}
 };
 
+struct EvaluationResult
+{
+	int score;
+	string tejun;
+	bool isMate;
+};
+
+struct NodeEvaluation
+{
+	int score;
+	string tejun;
+	wstring tejunJap;
+};
+
 // Node : 棋譜の木のノード。局面を表す。１つのノードは、複数のリンク（手の分岐）を持つ。
 class Node
 {
@@ -50,7 +64,13 @@ public:
 	bool IsGoteKachi() const  { return mScore == -SCORE_RESIGN; }
 	bool IsBranch() const { return SZ(mLinks) >= 2; }
 
-	void ResetScore() { mScore = SCORE_NOT_EVALUATED; } 
+	void ResetScore()
+	{
+		mScore = SCORE_NOT_EVALUATED;
+		mBestTejun.clear();
+		mTejunJap.clear();
+		mEvaluationResults.clear();
+	} 
 	int GetParentNodeID() const { return mParentNodeID; }
 
 
@@ -138,7 +158,7 @@ public:
 		}
 	}
 
-	void Save(wfstream& wfs)
+	void Save(wfstream& wfs, int version)
 	{
 //		wfs << wstring(mState.begin(), mState.end()) << endl;
 		wfs << mScore << endl;
@@ -151,9 +171,18 @@ public:
 		wfs << mSummary << endl;
 		wfs << EasyEscape(mComment) << endl;
 		wfs << wstring(mBestTejun.begin(), mBestTejun.end()) << endl;
+		if (version >= 3)
+		{
+			wfs << SZ(mEvaluationResults) << endl;
+			for (const auto& ev : mEvaluationResults)
+			{
+				wfs << ev.score << endl;
+				wfs << wstring(ev.tejun.begin(), ev.tejun.end()) << endl;
+			}
+		}
 	}
 
-	void Load(wfstream& wfs)
+	void Load(wfstream& wfs, int version)
 	{
 		wstring ws;
 //		GetLineTrim(wfs, ws);	mState = string(ws.begin(), ws.end());
@@ -172,6 +201,29 @@ public:
 		GetLineTrim(wfs, ws);	mSummary = ws;
 		GetLineTrim(wfs, ws);	mComment = EasyUnescape(ws);
 		GetLineTrim(wfs, ws);	mBestTejun = string(ws.begin(), ws.end());
+		mEvaluationResults.clear();
+		if (version >= 3)
+		{
+			int evalSize = 0;
+			GetLineTrim(wfs, ws);	evalSize = stoi(ws);
+			for (int i = 0; i < evalSize; ++i)
+			{
+				NodeEvaluation ev;
+				GetLineTrim(wfs, ws);	ev.score = stoi(ws);
+				GetLineTrim(wfs, ws);	ev.tejun = string(ws.begin(), ws.end());
+				mEvaluationResults.push_back(ev);
+			}
+		}
+		else
+		{
+			if (IsScoreEvaluated())
+			{
+				NodeEvaluation ev;
+				ev.score = mScore;
+				ev.tejun = mBestTejun;
+				mEvaluationResults.push_back(ev);
+			}
+		}
 	}
 
 	// セーブする情報
@@ -181,6 +233,7 @@ public:
 	wstring			mSummary;		// コメントの要約
 	wstring			mComment;		// コメント
 	string			mBestTejun;		// 最善手
+	vector <NodeEvaluation> mEvaluationResults;
 
 	// セーブしない情報
 	string			mState;			// ルート以外は本当は必須でもない。
@@ -208,7 +261,7 @@ public:
 	int GetNextEvaludatedNodeID() const;
 	const Node& GetNode(int nodeID) const { return mNodes[nodeID]; }
 	void InitializeAfterLoad();
-	void UpdateNode(int nodeID, int score, const string& tejun, bool isMate=false);
+	void UpdateNode(int nodeID, const vector <EvaluationResult>& evalResults);
 	void SetSelectedNodeID(int nodeID);
 	void SetFixUpdatedNodeID(int nodeID);
 	int  GetSelectedNodeID() const { return mSelectedNodeID; }
@@ -220,13 +273,14 @@ public:
 		wfstream wfs;
 		wfs.open(path, std::fstream::out);
 
-		wfs << VERSION_DATA << endl; // mVersion
+		mVersion = VERSION_DATA;
+		wfs << mVersion << endl; // mVersion
 		mKifHeader.Save(wfs);
 
 		wfs << SZ(mNodes) << endl;
 		for (int i = 0; i < SZ(mNodes); ++i)
 		{
-			mNodes[i].Save(wfs);
+			mNodes[i].Save(wfs, mVersion);
 		}
 
 		wfs.close();
@@ -252,7 +306,7 @@ public:
 		mNodes.resize(numNodes);
 		for (int i = 0; i < SZ(mNodes); ++i)
 		{
-			mNodes[i].Load(wfs);
+			mNodes[i].Load(wfs, mVersion);
 		}
 
 		wfs.close();
