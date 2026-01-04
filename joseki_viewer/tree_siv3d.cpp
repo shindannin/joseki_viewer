@@ -368,6 +368,8 @@ void TreeSiv3D::DrawAfterBoard() const
 		BoardSiv3D* boardSiv3D = dynamic_cast<BoardSiv3D*>(mBoard);
 		if (boardSiv3D != nullptr)
 		{
+			DrawBestMoveArrows(boardSiv3D);
+
 			struct ScoreOnArrow
 			{
 				int cy;
@@ -467,6 +469,53 @@ void TreeSiv3D::DrawAfterBoard() const
 			}
 		}
 	}
+}
+
+void TreeSiv3D::DrawBestMoveArrows(BoardSiv3D* boardSiv3D) const
+{
+	if (mBestArrowDepth <= 0)
+	{
+		return;
+	}
+
+	const Node& node = GetSelectedNode();
+	if (node.mBestTejun.empty())
+	{
+		return;
+	}
+
+	vector <string> moves;
+	Split1(node.mBestTejun, moves);
+	const int depth = Min(SZ(moves), mBestArrowDepth);
+	const Color arrowColor = COLOR_LINK_BEST;
+
+	for (int i = 0; i < depth; ++i)
+	{
+		int cy = -1;
+		int cx = -1;
+		Vec2 startPos( -1, -1 );
+		Vec2 endPos( -1, -1 );
+		boardSiv3D->DrawMove(moves[i], arrowColor, cy, cx, GetArrowWidthForDepth(i), &startPos, &endPos);
+
+		if ((i == 1 || i == 2) && startPos != Vec2(-1, -1))
+		{
+			mFont(to_wstring(i + 1)).drawCenter(static_cast<int>(startPos.x), static_cast<int>(startPos.y), Color(arrowColor.r, arrowColor.g, arrowColor.b, 255));
+		}
+	}
+}
+
+double TreeSiv3D::GetArrowWidthForDepth(int depthIndex) const
+{
+	if (depthIndex <= 0)
+	{
+		return 10.0;
+	}
+	else if (depthIndex == 1)
+	{
+		return 6.0;
+	}
+
+	return 4.0;
 }
 
 
@@ -697,6 +746,18 @@ void TreeSiv3D::Update()
 			if (num > 0)
 			{
 				mEvaluator.SetMultiPVNum(num);
+			}
+		}
+	}
+	if (mGui.mSettings.textField(L"best_arrow_depth").hasChanged)
+	{
+		string text = mGui.mSettings.textField(L"best_arrow_depth").text.narrow();
+		if (!text.empty())
+		{
+			const int depth = strtol(text.c_str(), NULL, 0);
+			if (depth >= 1)
+			{
+				mBestArrowDepth = depth;
 			}
 		}
 	}

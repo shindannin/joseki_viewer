@@ -538,10 +538,23 @@ bool BoardSiv3D::CalcUtsuKomaType(EKomaType& utsuKomaType) const
 // 移動をあらわす表示。また、その中央座標をcy,cxで返す（矢印の上の評価値表示など、tree側で使用する目的）
 void BoardSiv3D::DrawMove(const string& te, const Color& color, int& cy, int& cx) const
 {
+	DrawMove(te, color, cy, cx, 10.0, nullptr, nullptr);
+}
+
+void BoardSiv3D::DrawMove(const string& te, const Color& color, int& cy, int& cx, double width, Vec2* startPos, Vec2* endPos) const
+{
 	if (IsSpecialMoveTe(te))
 	{
 		cy = -1;
 		cx = -1;
+		if (startPos != nullptr)
+		{
+			*startPos = Vec2(-1, -1);
+		}
+		if (endPos != nullptr)
+		{
+			*endPos = Vec2(-1, -1);
+		}
 		return;
 	}
 
@@ -571,11 +584,11 @@ void BoardSiv3D::DrawMove(const string& te, const Color& color, int& cy, int& cx
 		mv.to.x = BoardReverse(mv.to.x);
 	}
 
-	DrawArrow(startY, startX, mv.to.y, mv.to.x, color, cy, cx);
+	DrawArrow(startY, startX, mv.to.y, mv.to.x, color, cy, cx, width, startPos, endPos);
 }
 
 // 矢印を表示
-void BoardSiv3D::DrawArrow(int startY, int startX, int destY, int destX, const Color& color, int& cy, int& cx) const
+void BoardSiv3D::DrawArrow(int startY, int startX, int destY, int destX, const Color& color, int& cy, int& cx, double width, Vec2* startPos, Vec2* endPos) const
 {
 	const int leftX = GetGridLeftX();
 	const int topY = GetGridTopY();
@@ -589,12 +602,19 @@ void BoardSiv3D::DrawArrow(int startY, int startX, int destY, int destX, const C
 	cy = static_cast<int>((sy + dy) * 0.5f);
 	cx = static_cast<int>((sx + dx) * 0.5f);
 
-	Line(sx, sy, dx, dy).drawArrow(10, { 20, 20 }, color);
+	if (startPos != nullptr)
+	{
+		*startPos = Vec2(sx, sy);
+	}
+	if (endPos != nullptr)
+	{
+		*endPos = Vec2(dx, dy);
+	}
+
+	Line(sx, sy, dx, dy).drawArrow(width, { 20, 20 }, color);
 }
 
 bool BoardSiv3D::GetReverse() const
 {
 	return mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::REVERSE_BOARD);
 }
-
-

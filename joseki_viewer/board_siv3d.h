@@ -42,10 +42,11 @@ public:
 	int GetGridLeftX() const;
 	int GetGridTopY() const;
 	void DrawMove(const string& te, const Color& color, int& cy, int& cx) const;
+	void DrawMove(const string& te, const Color& color, int& cy, int& cx, double width, Vec2* startPos, Vec2* endPos) const;
 	bool IsInputStateIdle() const { return mInputState==E_IDLE; }
 
 private:
-	void DrawArrow(int startY, int startX, int destY, int destX, const Color& color, int& cy, int& cx) const;
+	void DrawArrow(int startY, int startX, int destY, int destX, const Color& color, int& cy, int& cx, double width, Vec2* startPos, Vec2* endPos) const;
 	void UpdateDecided(string& te, wstring& teJap, bool& isMoved);
 	bool GetReverse() const;
 

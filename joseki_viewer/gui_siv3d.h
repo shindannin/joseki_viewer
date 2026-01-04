@@ -93,6 +93,9 @@ public:
 			GUICheckBox::Create({ L"評価値", L"指し手", L"タグ", L"小さいノード", L"矢印", L"評価値グラフ", L"選択ノードの固定", L"評価ノードの固定", L"盤面反転", L"サウンド", L"デバッグ" },
 				{ SHOW_SCORE, SHOW_TE, SHOW_TAG, FIX_SELECTED_NODE, SHOW_ARROW, SHOW_SCOREGRAPH, SOUND }, // デフォルトでONのもの
 				true, widgetStyle2));
+		mSettings.addln(L"best_arrow_label", GUIText::Create(L"最善手矢印手数", widgetStyle2));
+		mSettings.addln(L"best_arrow_depth", GUITextField::Create(DEFAULT_BEST_ARROW_DEPTH, widgetStyle2));
+		mSettings.textField(L"best_arrow_depth").setText(to_wstring(DEFAULT_BEST_ARROW_DEPTH));
 
 		mDelete = GUI(style4);
 		mDelete.setPos(WINDOW_W - 114, 234);

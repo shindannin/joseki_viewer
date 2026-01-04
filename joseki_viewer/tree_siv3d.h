@@ -90,6 +90,8 @@ private:
 	void DrawBeforeBoard() const;
 	void DrawAfterBoard() const;
 	void DrawScore(int centerX, int centerY, int score, NodeSize nodeSize) const;
+	void DrawBestMoveArrows(class BoardSiv3D* boardSiv3D) const;
+	double GetArrowWidthForDepth(int depthIndex) const;
 	void LoadJsvFile(FilePath path);
 	void LoadKifFile(FilePath path);
 
@@ -111,4 +113,5 @@ private:
 	mutable int mScoreGraphOffsetTesu = 0;
 
 	Evaluator	mEvaluator; // TODO : 評価ソフトなので、treeに移動したほうが良いのでは。ただファイル読み込みとかがちがちにSIV3D使っているので、ちょっと移動は大変かも。
+	int mBestArrowDepth = DEFAULT_BEST_ARROW_DEPTH;
 };
