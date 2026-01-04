@@ -1,5 +1,6 @@
 #include <cassert>
 #include <algorithm>
+#include <cwctype>
 #include "util.h"
 
 #include "board.h"
@@ -21,6 +22,160 @@ void Board::Init()
 void Board::InitState()
 {
 	SetState("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
+}
+
+int Board::ParseJapaneseNumber(const wstring& numStr) const
+{
+	if (numStr.empty())
+	{
+		return 0;
+	}
+
+	int val = 0;
+	for (const wchar_t c : numStr)
+	{
+		if (iswdigit(c))
+		{
+			val = val * 10 + static_cast<int>(c - L'0');
+		}
+		else
+		{
+			switch (c)
+			{
+			case L'〇':
+			case L'零':
+				val = val * 10;
+				break;
+			case L'一':
+				val += 1;
+				break;
+			case L'二':
+				val += 2;
+				break;
+			case L'三':
+				val += 3;
+				break;
+			case L'四':
+				val += 4;
+				break;
+			case L'五':
+				val += 5;
+				break;
+			case L'六':
+				val += 6;
+				break;
+			case L'七':
+				val += 7;
+				break;
+			case L'八':
+				val += 8;
+				break;
+			case L'九':
+				val += 9;
+				break;
+			case L'十':
+				if (val == 0)
+				{
+					val = 10;
+				}
+				else
+				{
+					val += 10;
+				}
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	return val;
+}
+
+EKomaType Board::GetKomaTypeFromJap(const wstring& jap) const
+{
+	for (int k = 0; k < NUM_KOMA_TYPE; ++k)
+	{
+		for (int j = 0; j < NUM_JAP_DESCRIPTIONS; ++j)
+		{
+			const wstring& name = mKoma[k].jap[j];
+			if (jap == name)
+			{
+				return static_cast<EKomaType>(k);
+			}
+
+			if (SZ(name) == 1 && SZ(jap) == 1 && jap[0] == name[0])
+			{
+				return static_cast<EKomaType>(k);
+			}
+		}
+	}
+
+	return E_EMPTY;
+}
+
+bool Board::ParseMochigomaLine(const wstring& line, ESengo sengo, vector < vector <int> >& mochigoma) const
+{
+	const size_t pos = line.find(L"：");
+	if (pos == wstring::npos)
+	{
+		return false;
+	}
+
+	wstring content = line.substr(pos + 1);
+	Trim(content);
+
+	if (content == L"なし")
+	{
+		return true;
+	}
+
+	vector <wstring> tokens;
+	Split1(content, tokens, L' ');
+
+	for (const wstring& token : tokens)
+	{
+		if (token.empty())
+		{
+			continue;
+		}
+
+		int splitIdx = static_cast<int>(token.size());
+		while (splitIdx > 0)
+		{
+			const wchar_t c = token[splitIdx - 1];
+			if (iswdigit(c) ||
+				c == L'〇' || c == L'零' || c == L'一' || c == L'二' || c == L'三' ||
+				c == L'四' || c == L'五' || c == L'六' || c == L'七' || c == L'八' ||
+				c == L'九' || c == L'十')
+			{
+				splitIdx--;
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		const wstring komaStr = token.substr(0, splitIdx);
+		const wstring numStr = token.substr(splitIdx);
+
+		const EKomaType type = GetKomaTypeFromJap(komaStr);
+		if (type == E_EMPTY)
+		{
+			continue;
+		}
+
+		int maisu = numStr.empty() ? 1 : ParseJapaneseNumber(numStr);
+		if (maisu <= 0)
+		{
+			maisu = 1;
+		}
+
+		mochigoma[sengo][type] += maisu;
+	}
+
+	return true;
 }
 
 // 返り値 true : 指定したy座標は、teban（先手or後手）側にとって、敵陣である。
@@ -611,6 +766,130 @@ void Board::SetState(const string& state)
 
 	// 履歴のクリア
 	mMoves.clear();
+}
+
+bool Board::SetInitialStateFromKif(const vector <wstring>& kifStrings)
+{
+	vector <wstring> boardLines;
+	wstring senteMochigomaLine;
+	wstring goteMochigomaLine;
+	bool tebanSet = false;
+
+	for (const wstring& lineRaw : kifStrings)
+	{
+		wstring line = lineRaw;
+		Trim(line);
+
+		if (line.find(L"先手の持駒") != wstring::npos)
+		{
+			senteMochigomaLine = line;
+		}
+		else if (line.find(L"後手の持駒") != wstring::npos)
+		{
+			goteMochigomaLine = line;
+		}
+		else if (line.find(L"先手番") != wstring::npos)
+		{
+			mTeban = E_SEN;
+			tebanSet = true;
+		}
+		else if (line.find(L"後手番") != wstring::npos)
+		{
+			mTeban = E_GO;
+			tebanSet = true;
+		}
+		else if (!line.empty() && line[0] == L'|' && boardLines.size() < BOARD_SIZE)
+		{
+			boardLines.push_back(line);
+		}
+	}
+
+	if (boardLines.size() != BOARD_SIZE)
+	{
+		return false;
+	}
+
+	vector < vector <Masu> > grid(BOARD_SIZE, vector <Masu>(BOARD_SIZE));
+
+	for (int y = 0; y < BOARD_SIZE; ++y)
+	{
+		const wstring& row = boardLines[y];
+		const size_t left = row.find(L'|');
+		const size_t right = row.rfind(L'|');
+		if (left == wstring::npos || right == wstring::npos || right <= left + 1)
+		{
+			return false;
+		}
+
+		const wstring content = row.substr(left + 1, right - left - 1);
+		vector <Masu> parsed;
+
+		for (int i = 0; i < static_cast<int>(content.size()); ++i)
+		{
+			const wchar_t c = content[i];
+			if (c == L' ' || c == L'　')
+			{
+				continue;
+			}
+			if (c == L'・')
+			{
+				Masu m;
+				parsed.push_back(m);
+				continue;
+			}
+
+			ESengo sengo = E_SEN;
+			wchar_t pieceChar = c;
+			if (c == L'v')
+			{
+				sengo = E_GO;
+				if (i + 1 < static_cast<int>(content.size()))
+				{
+					pieceChar = content[++i];
+				}
+			}
+
+			Masu m;
+			m.sengo = sengo;
+			m.type = GetKomaTypeFromJap(wstring(1, pieceChar));
+			if (m.type == E_EMPTY)
+			{
+				m.sengo = E_NO_SENGO;
+			}
+			parsed.push_back(m);
+		}
+
+		if (static_cast<int>(parsed.size()) != BOARD_SIZE)
+		{
+			return false;
+		}
+
+		for (int x = 0; x < BOARD_SIZE; ++x)
+		{
+			grid[y][BOARD_SIZE - 1 - x] = parsed[x];
+		}
+	}
+
+	vector < vector <int> > mochigoma(NUM_SEN_GO, vector <int>(NUM_NARAZU_KOMA_TYPE));
+	if (!senteMochigomaLine.empty())
+	{
+		ParseMochigomaLine(senteMochigomaLine, E_SEN, mochigoma);
+	}
+	if (!goteMochigomaLine.empty())
+	{
+		ParseMochigomaLine(goteMochigomaLine, E_GO, mochigoma);
+	}
+
+	mGrid = grid;
+	mMochigoma = mochigoma;
+	if (!tebanSet)
+	{
+		mTeban = E_SEN;
+	}
+	mMoves.clear();
+	InitValidMoveGrid();
+
+	return true;
 }
 
 string Board::GetState() const

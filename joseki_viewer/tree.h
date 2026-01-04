@@ -355,6 +355,8 @@ public:
 		}
 
 		mBoard->Init();
+		mBoard->SetInitialStateFromKif(vws);
+		mNodes[0].mState = mBoard->GetState();
 		const string tejun = mBoard->GetTejunFromKif(vws);
 		{
 			vector <string> vs;
