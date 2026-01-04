@@ -176,6 +176,7 @@ public:
 	string GetTeFromMove(const Move& mv) const;
 	string GetFirstTeFromTejun(const string& tejun) const;
 	Move GetMoveFromTe(const string& te) const;
+	bool IsSpecialMoveTe(const string& te) const;
 
 
 	void InitNextMove() { mNextMove.Init(); }

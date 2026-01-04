@@ -396,8 +396,19 @@ string Board::GetFirstTeFromTejun(const string& tejun) const
 }
 
 
+bool Board::IsSpecialMoveTe(const string& te) const
+{
+	return te == "resign" || te == "win";
+}
+
+
 Move Board::GetMoveFromTe(const string& te) const
 {
+	if (IsSpecialMoveTe(te))
+	{
+		return Move();
+	}
+
 	// http://www.geocities.jp/shogidokoro/usi.html より
 	// 次に、指し手の表記について解説します。
 	// 筋に関しては１から９までの数字で表記され、
@@ -453,6 +464,10 @@ wstring Board::MoveByTejun(const string& tejun)
 	for (const string& te : vs)
 	{
 		tejunJap += MoveByTe(te);
+		if (IsSpecialMoveTe(te))
+		{
+			break;
+		}
 	}
 
 	return tejunJap;
@@ -460,6 +475,21 @@ wstring Board::MoveByTejun(const string& tejun)
 
 wstring Board::MoveByTe(const string& te)
 {
+	if (IsSpecialMoveTe(te))
+	{
+		mNextMove.Init();
+		if (te == "resign")
+		{
+			return L"投了";
+		}
+		else if (te == "win")
+		{
+			return L"勝ち";
+		}
+
+		return L"";
+	}
+
 	mNextMove = GetMoveFromTe(te);
 	return DecideMove();
 }

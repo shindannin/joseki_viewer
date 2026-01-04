@@ -8,36 +8,42 @@ void Split1(const string& str, vector<string>& out, const char splitter)
 {
 	out.clear();
 	string::size_type st = 0;
-	string::size_type next = 0;
-	string tmp = str;
-	do
+	while (st <= str.size())
 	{
-		next = tmp.find(splitter, st); // tmp.find_first_of("+-",st); 複数の文字で分けたいとき
-		string word = tmp.substr(st, next - st);
-		if (word.length() >= 1) // 空文字列ありのときは消す
+		const string::size_type next = str.find(splitter, st); // str.find_first_of("+-",st); 複数の文字で分けたいとき
+		const string word = (next == string::npos) ? str.substr(st) : str.substr(st, next - st);
+		if (!word.empty()) // 空文字列ありのときは消す
 		{
 			out.push_back(word);
 		}
+
+		if (next == string::npos)
+		{
+			break;
+		}
 		st = next + 1;
-	} while (next != string::npos);
+	}
 }
 
 void Split1(const wstring& str, vector<wstring>& out, const wchar_t splitter)
 {
 	out.clear();
 	wstring::size_type st = 0;
-	wstring::size_type next = 0;
-	wstring tmp = str;
-	do
+	while (st <= str.size())
 	{
-		next = tmp.find(splitter, st); // tmp.find_first_of("+-",st); 複数の文字で分けたいとき
-		wstring word = tmp.substr(st, next - st);
-		if (word.length() >= 1) // 空文字列ありのときは消す
+		const wstring::size_type next = str.find(splitter, st); // str.find_first_of(L"+-",st); 複数の文字で分けたいとき
+		const wstring word = (next == wstring::npos) ? str.substr(st) : str.substr(st, next - st);
+		if (!word.empty()) // 空文字列ありのときは消す
 		{
 			out.push_back(word);
 		}
+
+		if (next == wstring::npos)
+		{
+			break;
+		}
 		st = next + 1;
-	} while (next != wstring::npos);
+	}
 }
 
 

@@ -538,6 +538,13 @@ bool BoardSiv3D::CalcUtsuKomaType(EKomaType& utsuKomaType) const
 // 移動をあらわす表示。また、その中央座標をcy,cxで返す（矢印の上の評価値表示など、tree側で使用する目的）
 void BoardSiv3D::DrawMove(const string& te, const Color& color, int& cy, int& cx) const
 {
+	if (IsSpecialMoveTe(te))
+	{
+		cy = -1;
+		cx = -1;
+		return;
+	}
+
 	Move mv = GetMoveFromTe(te);
 	int startY, startX;
 	if (mv.utsuKomaType == E_EMPTY)
@@ -589,6 +596,5 @@ bool BoardSiv3D::GetReverse() const
 {
 	return mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::REVERSE_BOARD);
 }
-
 
 

@@ -272,8 +272,13 @@ bool Evaluator::ReceiveBestMoveAndScore()
 	}
 
 	bool isScoreFound = false;
-	bool isBestMoveResign = false;
 	vector <EvaluationResult> evalResults;
+	enum class TerminalBestMove
+	{
+		None,
+		Resign,
+		Win,
+	} terminalBestMove = TerminalBestMove::None;
 
 	// bestmoveでチェックするしかないケース
 	// 技巧：終局時にスコアを含まない。
@@ -291,12 +296,20 @@ bool Evaluator::ReceiveBestMoveAndScore()
 			assert(tmp[0] == "bestmove");
 			if (tmp[1] == "resign")
 			{
+				terminalBestMove = TerminalBestMove::Resign;
+			}
+			else if (tmp[1] == "win")
+			{
+				terminalBestMove = TerminalBestMove::Win;
+			}
+
+			if (terminalBestMove != TerminalBestMove::None)
+			{
 				isScoreFound = true;
-				isBestMoveResign = true;
 				EvaluationResult ev;
-				ev.score = Node::ConvertMateToScore(0);
+				ev.score = (terminalBestMove == TerminalBestMove::Resign) ? -Node::SCORE_RESIGN : Node::SCORE_RESIGN;
 				ev.tejun = "";
-				ev.isMate = true;
+				ev.isMate = false;
 				evalResults.push_back(ev);
 			}
 		}
@@ -336,8 +349,20 @@ bool Evaluator::ReceiveBestMoveAndScore()
 				}
 				else if (tmp[k + 1] == "mate")
 				{
-					const int mate = stoi(tmp[k + 2]);
-					score = Node::ConvertMateToScore(mate);
+					const string mateStr = tmp[k + 2];
+					if (mateStr == "+")
+					{
+						score = Node::SCORE_MATE;
+					}
+					else if (mateStr == "-")
+					{
+						score = -Node::SCORE_MATE;
+					}
+					else
+					{
+						const int mate = stoi(mateStr);
+						score = Node::ConvertMateToScore(mate);
+					}
 				}
 				isJustNowScoreFound = true;
 			}
@@ -396,7 +421,7 @@ bool Evaluator::ReceiveBestMoveAndScore()
 		evalResults.resize(mMultiPVNum);
 	}
 
-	if (evalResults.empty() && isBestMoveResign)
+	if (evalResults.empty() && terminalBestMove != TerminalBestMove::None)
 	{
 		isScoreFound = true;
 	}
