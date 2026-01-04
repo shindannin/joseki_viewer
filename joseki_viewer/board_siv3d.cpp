@@ -594,10 +594,10 @@ void BoardSiv3D::DrawArrow(int startY, int startX, int destY, int destX, const C
 	const int topY = GetGridTopY();
 
 
-	const float sx = leftX + (BoardReverse(startX) + 0.5f) * mKomaTextureWidth + offset.x;
-	const float sy = topY  + (startY + 0.5f) * mKomaTextureHeight + offset.y;
-	const float dx = leftX + (BoardReverse(destX) + 0.5f) * mKomaTextureWidth + offset.x;
-	const float dy = topY +  (destY + 0.5f) * mKomaTextureHeight + offset.y;
+	const float sx = leftX + (BoardReverse(startX) + 0.5f) * mKomaTextureWidth + static_cast<float>(offset.x);
+	const float sy = topY  + (startY + 0.5f) * mKomaTextureHeight + static_cast<float>(offset.y);
+	const float dx = leftX + (BoardReverse(destX) + 0.5f) * mKomaTextureWidth + static_cast<float>(offset.x);
+	const float dy = topY +  (destY + 0.5f) * mKomaTextureHeight + static_cast<float>(offset.y);
 
 	cy = static_cast<int>((sy + dy) * 0.5f);
 	cx = static_cast<int>((sx + dx) * 0.5f);
