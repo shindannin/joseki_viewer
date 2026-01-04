@@ -132,8 +132,17 @@ public:
 		{
 			return L"";
 		}
-		else if (mScore == SCORE_RESIGN)
+		else if (IsResign())
 		{
+			if (mScore > 0)
+			{
+				return L"先手勝ち";
+			}
+			else if (mScore < 0)
+			{
+				return L"後手勝ち";
+			}
+
 			return L"投了";
 		}
 		else if (mScore >= SCORE_MATE)
