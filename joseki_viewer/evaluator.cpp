@@ -156,6 +156,14 @@ bool Evaluator::Update()
 		break;
 
 		case EStateEvaluation_WaitingScore:
+			if (!mStopSent && mStopwatch.ms() >= mDurationMilliSec)
+			{
+				if (mServer && mServer->write("stop\n"))
+				{
+					mStopSent = true;
+				}
+			}
+
 			if (UpdateReadFromStdio())
 			{
 				if (ReceiveBestMoveAndScore())
@@ -193,7 +201,8 @@ bool Evaluator::Go()
 
 	if (mServer != nullptr && mServer->write(writeStr))
 	{
-		writeStr = "go btime 0 wtime 0 byoyomi " + to_string(mDurationMilliSec) + " multipv " + to_string(mMultiPVNum) + "\n";
+		mStopSent = false;
+		writeStr = "go infinite\n";
 		return mServer->write(writeStr);
 	}
 
@@ -208,6 +217,7 @@ void Evaluator::RequestCancel()
 		{
 			if (mServer->write("stop\n"))
 			{
+				mStopSent = true;
 				while (!IsBestMoveReceived())
 				{
 					UpdateReadFromStdio();
