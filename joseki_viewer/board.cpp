@@ -225,8 +225,15 @@ string Board::GetTejunFromKif(const vector <wstring>& kifStrings) const
 
 		if (firstChunk == tesuu)
 		{
-			const wstring& kifTe = splitted[1];
-			if (kifTe == L"投了")
+			if (splitted.size() < 2)
+			{
+				break;
+			}
+
+			wstring kifTe = splitted[1];
+			Trim(kifTe);
+
+			if (kifTe == L"投了" || kifTe == L"中断" || kifTe.find(L"詰") != wstring::npos)
 			{
 				break;
 			}
@@ -241,19 +248,30 @@ string Board::GetTejunFromKif(const vector <wstring>& kifStrings) const
 			}
 			else
 			{
+				if (kifTe.size() < 2)
+				{
+					break;
+				}
+
 				// 「７」
 				for (x = 0; x < BOARD_SIZE; ++x)
 				{
 					if(mJapX[x][0]==kifTe[0]) break;
 				}
-				assert(x != BOARD_SIZE);
+				if (x == BOARD_SIZE)
+				{
+					break;
+				}
 
 				// 「六」
 				for (y = 0; y < BOARD_SIZE; ++y)
 				{
 					if (mJapY[y][0] == kifTe[1]) break;
 				}
-				assert(y != BOARD_SIZE);
+				if (y == BOARD_SIZE)
+				{
+					break;
+				}
 			}
 			
 			const ESengo sengo = ((tesuu%2)==1) ? E_SEN : E_GO;
