@@ -497,9 +497,10 @@ void TreeSiv3D::DrawBestMoveArrows(BoardSiv3D* boardSiv3D) const
 		Vec2 endPos( -1, -1 );
 		boardSiv3D->DrawMove(moves[i], arrowColor, cy, cx, GetArrowWidthForDepth(i), &startPos, &endPos);
 
-		if ((i == 1 || i == 2) && startPos != Vec2(-1, -1))
+		if ((i == 1 || i == 2) && endPos != Vec2(-1, -1))
 		{
-			mFont(to_wstring(i + 1)).drawCenter(static_cast<int>(startPos.x), static_cast<int>(startPos.y), Color(arrowColor.r, arrowColor.g, arrowColor.b, 255));
+			const Vec2 labelPos = endPos;
+			mFont(to_wstring(i + 1)).drawCenter(static_cast<int>(labelPos.x), static_cast<int>(labelPos.y), Color(arrowColor.r, arrowColor.g, arrowColor.b, 255));
 		}
 	}
 }
@@ -749,9 +750,9 @@ void TreeSiv3D::Update()
 			}
 		}
 	}
-	if (mGui.mSettings.textField(L"best_arrow_depth").hasChanged)
+	if (mGui.mEvaluator.textField(L"best_arrow_depth").hasChanged)
 	{
-		string text = mGui.mSettings.textField(L"best_arrow_depth").text.narrow();
+		string text = mGui.mEvaluator.textField(L"best_arrow_depth").text.narrow();
 		if (!text.empty())
 		{
 			const int depth = strtol(text.c_str(), NULL, 0);
