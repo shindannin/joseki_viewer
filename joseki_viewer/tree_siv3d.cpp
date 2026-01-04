@@ -248,11 +248,23 @@ void TreeSiv3D::DrawBeforeBoard() const
 
 		const vector <int> scores = GetBestRouteScores();
 		const vector <bool> branch = GetBestRouteBranch();
+		const int visibleMoveCount = offW / scaleX;
+		const int maxOffset = Max(0, SZ(scores) - 1 - visibleMoveCount);
+		mScoreGraphOffsetTesu = CLAMP(mScoreGraphOffsetTesu, 0, maxOffset);
+		const int startIndex = mScoreGraphOffsetTesu;
+		const int endIndex = Min(SZ(scores) - 1, startIndex + visibleMoveCount);
 
 		int current_score = 0;
+		for (int i = 0; i < startIndex && i + 1 < SZ(scores); ++i)
+		{
+			if (Node::IsScoreEvaluated(scores[i + 1]))
+			{
+				current_score = isReverse ? -scores[i + 1] : scores[i + 1];
+			}
+		}
 
 		// 折れ線グラフ
-		for (int i = 0; i < SZ(scores) - 1; ++i)
+		for (int i = startIndex; i < endIndex; ++i)
 		{
 			const float scaleY = (float)halfH / maxScore;
 
@@ -267,9 +279,9 @@ void TreeSiv3D::DrawBeforeBoard() const
 				}
 				c = COLOR_LINK_BEST;
 			}
-			const int stX = offX + i * scaleX;
+			const int stX = offX + (i - startIndex) * scaleX;
 			const int stY = offY + halfH + CLAMP(static_cast<int>(current_score * scaleY), -halfH + 1, halfH - 1);
-			const int deX = offX + (i + 1) * scaleX;
+			const int deX = offX + (i - startIndex + 1) * scaleX;
 			const int deY = offY + halfH + CLAMP(static_cast<int>(next_score * scaleY), -halfH + 1, halfH - 1);
 
 			Line(stX, stY, deX, deY).draw(2, c);
@@ -292,9 +304,56 @@ void TreeSiv3D::DrawBeforeBoard() const
 		// 細長選択バー
 		if (IsInScoreGraph(Mouse::Pos().x, Mouse::Pos().y))
 		{
-			const int order = CalcOrder(static_cast<float>(Mouse::Pos().x), static_cast<float>(offX), static_cast<float>(scaleX));
-			const int x = offX + order * scaleX;
+			const int order = CalcOrder(static_cast<float>(Mouse::Pos().x), static_cast<float>(offX), static_cast<float>(scaleX)) + startIndex;
+			const int clampedOrder = CLAMP(order, startIndex, startIndex + visibleMoveCount);
+			const int x = offX + (clampedOrder - startIndex) * scaleX;
 			Rect( static_cast<int>(x - scaleX * 0.5f), offY, scaleX, offH).draw(Color(255, 255, 0, 64));
+		}
+
+		{
+			const int firstMark = ((startIndex + 49) / 50) * 50;
+			const Color markerColor(255, 255, 255, 96);
+			const int markerBaseY = offY + offH - 8;
+			for (int mark = Max(0, firstMark); mark <= startIndex + visibleMoveCount; mark += 50)
+			{
+				const int x = offX + (mark - startIndex) * scaleX;
+				Line(x, offY + offH - 4, x, offY + offH).draw(1, markerColor);
+				mFont(to_wstring(mark)).drawAt(x, markerBaseY, markerColor);
+			}
+		}
+
+		if (maxOffset > 0)
+		{
+			const int btnSize = 16;
+			const int btnY = offY + offH - btnSize - 6;
+			Rect leftBtn(offX - btnSize - 4, btnY, btnSize, btnSize);
+			Rect rightBtn(offX + offW + 4, btnY, btnSize, btnSize);
+
+			const auto drawButton = [&](const Rect& rect, const String& label, bool enabled)
+			{
+				const Color baseColor = enabled ? Color(255, 255, 255, 64) : Color(255, 255, 255, 24);
+				rect.draw(baseColor);
+				rect.drawFrame(1, 0, Color(255, 255, 255, enabled ? 96 : 32));
+				mFont(label).drawAt(rect.center(), Color(32, 32, 32, enabled ? 192 : 64));
+			};
+
+			const bool canScrollLeft = mScoreGraphOffsetTesu > 0;
+			const bool canScrollRight = mScoreGraphOffsetTesu < maxOffset;
+			drawButton(leftBtn, L"<", canScrollLeft);
+			drawButton(rightBtn, L">", canScrollRight);
+
+			const Point mousePos = Mouse::Pos();
+			if (Input::MouseL.clicked)
+			{
+				if (canScrollLeft && leftBtn.contains(mousePos))
+				{
+					mScoreGraphOffsetTesu = Max(0, mScoreGraphOffsetTesu - 10);
+				}
+				else if (canScrollRight && rightBtn.contains(mousePos))
+				{
+					mScoreGraphOffsetTesu = Min(maxOffset, mScoreGraphOffsetTesu + 10);
+				}
+			}
 		}
 	}
 
@@ -694,7 +753,7 @@ void TreeSiv3D::Update()
 			if (mGui.mSettings.checkBox(L"settings").checked(GuiSiv3D::SHOW_SCOREGRAPH))
 			{
 				// 現在何番目を選択しているか？
-				int order = CalcOrder(static_cast<float>(Mouse::Pos().x), static_cast<float>(SCORE_GRAPH_X), static_cast<float>(SCORE_GRAPH_SW));
+				int order = CalcOrder(static_cast<float>(Mouse::Pos().x), static_cast<float>(SCORE_GRAPH_X), static_cast<float>(SCORE_GRAPH_SW)) + mScoreGraphOffsetTesu;
 
 				const vector <int>& bestRoundNodeIDs = GetBestRouteNodeIDs();
 				const int num = SZ(bestRoundNodeIDs);
