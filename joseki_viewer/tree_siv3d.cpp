@@ -334,7 +334,7 @@ void TreeSiv3D::DrawBeforeBoard() const
 				const Color baseColor = enabled ? Color(255, 255, 255, 64) : Color(255, 255, 255, 24);
 				rect.draw(baseColor);
 				rect.drawFrame(1, 0, Color(255, 255, 255, enabled ? 96 : 32));
-				mFont(label).drawAt(rect.center(), Color(32, 32, 32, enabled ? 192 : 64));
+				mFont(label).drawAt(rect.center, Color(32, 32, 32, enabled ? 192 : 64));
 			};
 
 			const bool canScrollLeft = mScoreGraphOffsetTesu > 0;

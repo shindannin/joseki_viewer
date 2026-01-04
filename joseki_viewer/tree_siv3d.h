@@ -108,7 +108,7 @@ private:
 	float mOffsetX;
 	float mOffsetY;
 	float mGridScale;
-	int mScoreGraphOffsetTesu = 0;
+	mutable int mScoreGraphOffsetTesu = 0;
 
 	Evaluator	mEvaluator; // TODO : 評価ソフトなので、treeに移動したほうが良いのでは。ただファイル読み込みとかがちがちにSIV3D使っているので、ちょっと移動は大変かも。
 };
