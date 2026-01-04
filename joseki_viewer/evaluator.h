@@ -160,6 +160,7 @@ public:
 		mPonderTime = 0LL;
 		mReadLogs.clear();
 		mMultiPVNum = DEFAULT_MULTIPV_NUM;
+		mStopSent = false;
 
 		mPollingStopwatch.restart();
 	}
@@ -205,6 +206,7 @@ private:
 	FilePath mEvaluatorPath;			// 評価ソフトのファイルパス
 	vector <string> mReadLogs;			// 評価ソフトから受け取ったログ
 
+	bool mStopSent = false;				// go infinite に対して stop を送ったかどうか
 	int mDurationMilliSec		            = DEFAULT_EVALUATION_SEC * 1000; // 評価時間。単位はミリ秒
 	const int mDurationMilliSecPolling	    =  500;	// 定期的に評価ソフトに問い合わせる時間間隔。単位はミリ秒
 	int mMultiPVNum						= DEFAULT_MULTIPV_NUM;
